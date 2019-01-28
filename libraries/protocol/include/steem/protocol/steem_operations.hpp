@@ -240,9 +240,6 @@ namespace steem { namespace protocol {
 //      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
 //   };
 
-      void validate()const;
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
-   };
 
 //   struct vote_operation : public base_operation
 //   {
