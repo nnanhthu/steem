@@ -333,30 +333,30 @@ struct pre_apply_operation_visitor
 
    database& _db;
 
-   void operator()( const delete_comment_operation& op )const
-   {
-      const auto& comment = _db.find< comment_object, chain::by_permlink >( boost::make_tuple( op.author, op.permlink ) );
-
-      if( comment == nullptr )
-         return;
-
-      const auto& idx = _db.get_index< tag_index, by_author_comment >();
-      const auto& auth = _db.get_account( op.author );
-
-      auto tag_itr = idx.lower_bound( boost::make_tuple( auth.id, comment->id ) );
-      vector< const tag_object* > to_remove;
-
-      while( tag_itr != idx.end() && tag_itr->author == auth.id && tag_itr->comment == comment->id )
-      {
-         to_remove.push_back( &(*tag_itr) );
-         ++tag_itr;
-      }
-
-      for( const auto* tag_ptr : to_remove )
-      {
-         _db.remove( *tag_ptr );
-      }
-   }
+//   void operator()( const delete_comment_operation& op )const
+//   {
+//      const auto& comment = _db.find< comment_object, chain::by_permlink >( boost::make_tuple( op.author, op.permlink ) );
+//
+//      if( comment == nullptr )
+//         return;
+//
+//      const auto& idx = _db.get_index< tag_index, by_author_comment >();
+//      const auto& auth = _db.get_account( op.author );
+//
+//      auto tag_itr = idx.lower_bound( boost::make_tuple( auth.id, comment->id ) );
+//      vector< const tag_object* > to_remove;
+//
+//      while( tag_itr != idx.end() && tag_itr->author == auth.id && tag_itr->comment == comment->id )
+//      {
+//         to_remove.push_back( &(*tag_itr) );
+//         ++tag_itr;
+//      }
+//
+//      for( const auto* tag_ptr : to_remove )
+//      {
+//         _db.remove( *tag_ptr );
+//      }
+//   }
 
    template<typename Op>
    void operator()( Op&& )const{} /// ignore all other ops
@@ -371,13 +371,13 @@ struct operation_visitor
 
    tags_plugin_impl& _my;
 
-   void operator()( const comment_operation& op )const
-   {
-      if( _my._started )
-      {
-         _my.update_tags( _my._db.get_comment( op.author, op.permlink ), op.json_metadata.size() );
-      }
-   }
+//   void operator()( const comment_operation& op )const
+//   {
+//      if( _my._started )
+//      {
+//         _my.update_tags( _my._db.get_comment( op.author, op.permlink ), op.json_metadata.size() );
+//      }
+//   }
 
    void operator()( const transfer_operation& op )const
    {
@@ -414,37 +414,37 @@ struct operation_visitor
       }
    }
 
-   void operator()( const vote_operation& op )const
-   {
-      if( _my._started )
-      {
-         _my.update_tags( _my._db.get_comment( op.author, op.permlink ) );
-      }
-   }
+//   void operator()( const vote_operation& op )const
+//   {
+//      if( _my._started )
+//      {
+//         _my.update_tags( _my._db.get_comment( op.author, op.permlink ) );
+//      }
+//   }
 
-   void operator()( const comment_reward_operation& op )const
-   {
-         const auto& c = _my._db.get_comment( op.author, op.permlink );
-         _my.update_tags( c );
-
-#ifndef IS_LOW_MEM
-         comment_metadata meta = _my.filter_tags( c, _my._db.get< comment_content_object, chain::by_comment >( c.id ) );
-
-         for( const string& tag : meta.tags )
-         {
-            _my._db.modify( _my.get_stats( tag ), [&]( tag_stats_object& ts )
-            {
-               ts.total_payout += op.payout;
-            });
-         }
-#endif
-   }
-
-   void operator()( const comment_payout_update_operation& op )const
-   {
-      const auto& c = _my._db.get_comment( op.author, op.permlink );
-      _my.update_tags( c, !_my._started );
-   }
+//   void operator()( const comment_reward_operation& op )const
+//   {
+//         const auto& c = _my._db.get_comment( op.author, op.permlink );
+//         _my.update_tags( c );
+//
+//#ifndef IS_LOW_MEM
+//         comment_metadata meta = _my.filter_tags( c, _my._db.get< comment_content_object, chain::by_comment >( c.id ) );
+//
+//         for( const string& tag : meta.tags )
+//         {
+//            _my._db.modify( _my.get_stats( tag ), [&]( tag_stats_object& ts )
+//            {
+//               ts.total_payout += op.payout;
+//            });
+//         }
+//#endif
+//   }
+//
+//   void operator()( const comment_payout_update_operation& op )const
+//   {
+//      const auto& c = _my._db.get_comment( op.author, op.permlink );
+//      _my.update_tags( c, !_my._started );
+//   }
 
    template<typename Op>
    void operator()( Op&& )const{} /// ignore all other ops

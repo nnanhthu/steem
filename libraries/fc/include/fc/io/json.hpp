@@ -56,8 +56,8 @@ namespace fc
          template<typename T>
          static T from_file( const fc::path& p, parse_type ptype = legacy_parser, uint32_t depth = 0 )
          {
-            depth++;
-            return json::from_file( p, ptype, depth ).as<T>();
+             depth++;
+             return json::from_file( p, ptype, depth ).as<T>();
          }
 
          template<typename T>

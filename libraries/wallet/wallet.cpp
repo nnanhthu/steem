@@ -1844,6 +1844,7 @@ condenser_api::legacy_signed_transaction wallet_api::transfer(
    string from,
    string to,
    condenser_api::legacy_asset amount,
+   condenser_api::legacy_asset fee,
    string memo,
    bool broadcast )
 { try {
@@ -1853,6 +1854,7 @@ condenser_api::legacy_signed_transaction wallet_api::transfer(
     op.from = from;
     op.to = to;
     op.amount = amount.to_asset();
+    op.fee = fee.to_asset();
 
     op.memo = get_encrypted_memo( from, to, memo );
 
@@ -1861,115 +1863,115 @@ condenser_api::legacy_signed_transaction wallet_api::transfer(
     tx.validate();
 
    return my->sign_transaction( tx, broadcast );
-} FC_CAPTURE_AND_RETHROW( (from)(to)(amount)(memo)(broadcast) ) }
+} FC_CAPTURE_AND_RETHROW( (from)(to)(amount)(fee)(memo)(broadcast) ) }
 
-condenser_api::legacy_signed_transaction wallet_api::escrow_transfer(
-   string from,
-   string to,
-   string agent,
-   uint32_t escrow_id,
-   condenser_api::legacy_asset sbd_amount,
-   condenser_api::legacy_asset steem_amount,
-   condenser_api::legacy_asset fee,
-   time_point_sec ratification_deadline,
-   time_point_sec escrow_expiration,
-   string json_meta,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   escrow_transfer_operation op;
-   op.from = from;
-   op.to = to;
-   op.agent = agent;
-   op.escrow_id = escrow_id;
-   op.sbd_amount = sbd_amount.to_asset();
-   op.steem_amount = steem_amount.to_asset();
-   op.fee = fee.to_asset();
-   op.ratification_deadline = ratification_deadline;
-   op.escrow_expiration = escrow_expiration;
-   op.json_meta = json_meta;
+//condenser_api::legacy_signed_transaction wallet_api::escrow_transfer(
+//   string from,
+//   string to,
+//   string agent,
+//   uint32_t escrow_id,
+//   condenser_api::legacy_asset sbd_amount,
+//   condenser_api::legacy_asset steem_amount,
+//   condenser_api::legacy_asset fee,
+//   time_point_sec ratification_deadline,
+//   time_point_sec escrow_expiration,
+//   string json_meta,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   escrow_transfer_operation op;
+//   op.from = from;
+//   op.to = to;
+//   op.agent = agent;
+//   op.escrow_id = escrow_id;
+//   op.sbd_amount = sbd_amount.to_asset();
+//   op.steem_amount = steem_amount.to_asset();
+//   op.fee = fee.to_asset();
+//   op.ratification_deadline = ratification_deadline;
+//   op.escrow_expiration = escrow_expiration;
+//   op.json_meta = json_meta;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
+//condenser_api::legacy_signed_transaction wallet_api::escrow_approve(
+//   string from,
+//   string to,
+//   string agent,
+//   string who,
+//   uint32_t escrow_id,
+//   bool approve,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   escrow_approve_operation op;
+//   op.from = from;
+//   op.to = to;
+//   op.agent = agent;
+//   op.who = who;
+//   op.escrow_id = escrow_id;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-   return my->sign_transaction( tx, broadcast );
-}
+//condenser_api::legacy_signed_transaction wallet_api::escrow_dispute(
+//   string from,
+//   string to,
+//   string agent,
+//   string who,
+//   uint32_t escrow_id,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   escrow_dispute_operation op;
+//   op.from = from;
+//   op.to = to;
+//   op.agent = agent;
+//   op.who = who;
+//   op.escrow_id = escrow_id;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-condenser_api::legacy_signed_transaction wallet_api::escrow_approve(
-   string from,
-   string to,
-   string agent,
-   string who,
-   uint32_t escrow_id,
-   bool approve,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   escrow_approve_operation op;
-   op.from = from;
-   op.to = to;
-   op.agent = agent;
-   op.who = who;
-   op.escrow_id = escrow_id;
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-
-   return my->sign_transaction( tx, broadcast );
-}
-
-condenser_api::legacy_signed_transaction wallet_api::escrow_dispute(
-   string from,
-   string to,
-   string agent,
-   string who,
-   uint32_t escrow_id,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   escrow_dispute_operation op;
-   op.from = from;
-   op.to = to;
-   op.agent = agent;
-   op.who = who;
-   op.escrow_id = escrow_id;
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-
-   return my->sign_transaction( tx, broadcast );
-}
-
-condenser_api::legacy_signed_transaction wallet_api::escrow_release(
-   string from,
-   string to,
-   string agent,
-   string who,
-   string receiver,
-   uint32_t escrow_id,
-   condenser_api::legacy_asset sbd_amount,
-   condenser_api::legacy_asset steem_amount,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   escrow_release_operation op;
-   op.from = from;
-   op.to = to;
-   op.agent = agent;
-   op.who = who;
-   op.receiver = receiver;
-   op.escrow_id = escrow_id;
-   op.sbd_amount = sbd_amount.to_asset();
-   op.steem_amount = steem_amount.to_asset();
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-   return my->sign_transaction( tx, broadcast );
-}
+//condenser_api::legacy_signed_transaction wallet_api::escrow_release(
+//   string from,
+//   string to,
+//   string agent,
+//   string who,
+//   string receiver,
+//   uint32_t escrow_id,
+//   condenser_api::legacy_asset sbd_amount,
+//   condenser_api::legacy_asset steem_amount,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   escrow_release_operation op;
+//   op.from = from;
+//   op.to = to;
+//   op.agent = agent;
+//   op.who = who;
+//   op.receiver = receiver;
+//   op.escrow_id = escrow_id;
+//   op.sbd_amount = sbd_amount.to_asset();
+//   op.steem_amount = steem_amount.to_asset();
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//   return my->sign_transaction( tx, broadcast );
+//}
 
 /**
  *  Transfers into savings happen immediately, transfers from savings take 72 hours
@@ -2268,97 +2270,97 @@ vector< condenser_api::api_limit_order_object > wallet_api::get_open_orders( str
    return my->_remote_api->get_open_orders( owner );
 }
 
-condenser_api::legacy_signed_transaction wallet_api::create_order(
-   string owner,
-   uint32_t order_id,
-   condenser_api::legacy_asset amount_to_sell,
-   condenser_api::legacy_asset min_to_receive,
-   bool fill_or_kill,
-   uint32_t expiration_sec,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   limit_order_create_operation op;
-   op.owner = owner;
-   op.orderid = order_id;
-   op.amount_to_sell = amount_to_sell.to_asset();
-   op.min_to_receive = min_to_receive.to_asset();
-   op.fill_or_kill = fill_or_kill;
-   op.expiration = expiration_sec ? (fc::time_point::now() + fc::seconds(expiration_sec)) : fc::time_point::maximum();
+//condenser_api::legacy_signed_transaction wallet_api::create_order(
+//   string owner,
+//   uint32_t order_id,
+//   condenser_api::legacy_asset amount_to_sell,
+//   condenser_api::legacy_asset min_to_receive,
+//   bool fill_or_kill,
+//   uint32_t expiration_sec,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   limit_order_create_operation op;
+//   op.owner = owner;
+//   op.orderid = order_id;
+//   op.amount_to_sell = amount_to_sell.to_asset();
+//   op.min_to_receive = min_to_receive.to_asset();
+//   op.fill_or_kill = fill_or_kill;
+//   op.expiration = expiration_sec ? (fc::time_point::now() + fc::seconds(expiration_sec)) : fc::time_point::maximum();
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
+//condenser_api::legacy_signed_transaction wallet_api::cancel_order(
+//   string owner,
+//   uint32_t orderid,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   limit_order_cancel_operation op;
+//   op.owner = owner;
+//   op.orderid = orderid;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-   return my->sign_transaction( tx, broadcast );
-}
+//condenser_api::legacy_signed_transaction wallet_api::post_comment(
+//   string author,
+//   string permlink,
+//   string parent_author,
+//   string parent_permlink,
+//   string title,
+//   string body,
+//   string json,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   comment_operation op;
+//   op.parent_author =  parent_author;
+//   op.parent_permlink = parent_permlink;
+//   op.author = author;
+//   op.permlink = permlink;
+//   op.title = title;
+//   op.body = body;
+//   op.json_metadata = json;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
-condenser_api::legacy_signed_transaction wallet_api::cancel_order(
-   string owner,
-   uint32_t orderid,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   limit_order_cancel_operation op;
-   op.owner = owner;
-   op.orderid = orderid;
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-
-   return my->sign_transaction( tx, broadcast );
-}
-
-condenser_api::legacy_signed_transaction wallet_api::post_comment(
-   string author,
-   string permlink,
-   string parent_author,
-   string parent_permlink,
-   string title,
-   string body,
-   string json,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   comment_operation op;
-   op.parent_author =  parent_author;
-   op.parent_permlink = parent_permlink;
-   op.author = author;
-   op.permlink = permlink;
-   op.title = title;
-   op.body = body;
-   op.json_metadata = json;
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-
-   return my->sign_transaction( tx, broadcast );
-}
-
-condenser_api::legacy_signed_transaction wallet_api::vote(
-   string voter,
-   string author,
-   string permlink,
-   int16_t weight,
-   bool broadcast )
-{
-   FC_ASSERT( !is_locked() );
-   FC_ASSERT( abs(weight) <= 100, "Weight must be between -100 and 100 and not 0" );
-
-   vote_operation op;
-   op.voter = voter;
-   op.author = author;
-   op.permlink = permlink;
-   op.weight = weight * STEEM_1_PERCENT;
-
-   signed_transaction tx;
-   tx.operations.push_back( op );
-   tx.validate();
-
-   return my->sign_transaction( tx, broadcast );
-}
+//condenser_api::legacy_signed_transaction wallet_api::vote(
+//   string voter,
+//   string author,
+//   string permlink,
+//   int16_t weight,
+//   bool broadcast )
+//{
+//   FC_ASSERT( !is_locked() );
+//   FC_ASSERT( abs(weight) <= 100, "Weight must be between -100 and 100 and not 0" );
+//
+//   vote_operation op;
+//   op.voter = voter;
+//   op.author = author;
+//   op.permlink = permlink;
+//   op.weight = weight * STEEM_1_PERCENT;
+//
+//   signed_transaction tx;
+//   tx.operations.push_back( op );
+//   tx.validate();
+//
+//   return my->sign_transaction( tx, broadcast );
+//}
 
 void wallet_api::set_transaction_expiration(uint32_t seconds)
 {

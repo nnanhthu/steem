@@ -9,17 +9,17 @@
 #include <iostream>
 #include <vector>
 
-#define CURATE_OFF      0
-#define VCURATE_OFF     1
-#define CONTENT_OFF     2
-#define VCONTENT_OFF    3
-#define PRODUCER_OFF    4
-#define VPRODUCER_OFF   5
-#define LIQUIDITY_OFF   6
-#define VLIQUIDITY_OFF  7
-#define POW_OFF         8
-#define VPOW_OFF        9
-#define REWARD_TYPES   10
+//#define CURATE_OFF      0
+//#define VCURATE_OFF     1
+//#define CONTENT_OFF     2
+//#define VCONTENT_OFF    3
+#define PRODUCER_OFF    0//4
+#define VPRODUCER_OFF   1//5
+#define LIQUIDITY_OFF   2//6
+#define VLIQUIDITY_OFF  3//7
+#define POW_OFF         4//8
+#define VPOW_OFF        5//9
+#define REWARD_TYPES   6//10
 
 using steem::protocol::asset;
 using steem::protocol::share_type;
@@ -84,19 +84,20 @@ int main( int argc, char** argv, char** envp )
    {
       uint32_t vesting_factor = (block_num < STEEM_START_VESTING_BLOCK) ? 0 : 9;
 
-      share_type curate_reward   = calc_percent_reward_per_block< STEEM_CURATE_APR_PERCENT >( current_supply );
-      reward_delta[ CURATE_OFF ] = std::max( curate_reward, STEEM_MIN_CURATE_REWARD.amount );
-      reward_delta[ VCURATE_OFF ] = reward_delta[ CURATE_OFF ] * vesting_factor;
-
-      share_type content_reward  = calc_percent_reward_per_block< STEEM_CONTENT_APR_PERCENT >( current_supply );
-      reward_delta[ CONTENT_OFF ] = std::max( content_reward, STEEM_MIN_CONTENT_REWARD.amount );
-      reward_delta[ VCONTENT_OFF ] = reward_delta[ CONTENT_OFF ] * vesting_factor;
+//      share_type curate_reward   = calc_percent_reward_per_block< STEEM_CURATE_APR_PERCENT >( current_supply );
+//      reward_delta[ CURATE_OFF ] = std::max( curate_reward, STEEM_MIN_CURATE_REWARD.amount );
+//      reward_delta[ VCURATE_OFF ] = reward_delta[ CURATE_OFF ] * vesting_factor;
+//
+//      share_type content_reward  = calc_percent_reward_per_block< STEEM_CONTENT_APR_PERCENT >( current_supply );
+//      reward_delta[ CONTENT_OFF ] = std::max( content_reward, STEEM_MIN_CONTENT_REWARD.amount );
+//      reward_delta[ VCONTENT_OFF ] = reward_delta[ CONTENT_OFF ] * vesting_factor;
 
       share_type producer_reward = calc_percent_reward_per_block< STEEM_PRODUCER_APR_PERCENT >( current_supply );
       reward_delta[ PRODUCER_OFF ] = std::max( producer_reward, STEEM_MIN_PRODUCER_REWARD.amount );
       reward_delta[ VPRODUCER_OFF ] = reward_delta[ PRODUCER_OFF ] * vesting_factor;
 
-      current_supply += reward_delta[CURATE_OFF] + reward_delta[VCURATE_OFF] + reward_delta[CONTENT_OFF] + reward_delta[VCONTENT_OFF] + reward_delta[PRODUCER_OFF] + reward_delta[VPRODUCER_OFF];
+      //current_supply += reward_delta[CURATE_OFF] + reward_delta[VCURATE_OFF] + reward_delta[CONTENT_OFF] + reward_delta[VCONTENT_OFF] + reward_delta[PRODUCER_OFF] + reward_delta[VPRODUCER_OFF];
+       current_supply += reward_delta[PRODUCER_OFF] + reward_delta[VPRODUCER_OFF];
       // supply for above is computed by using pre-updated supply for computing all 3 amounts.
       // supply for below reward types is basically a self-contained event which updates the supply immediately before the next reward type's computation.
 
