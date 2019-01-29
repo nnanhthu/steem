@@ -48,7 +48,8 @@
 #define STEEM_BLOCKCHAIN_VERSION              ( version(0, 20, 8) )
 
 #define STEEM_INIT_PUBLIC_KEY_STR             "KNO6GkXgEKTYc7gNv1GWJ5ZseyESHQnN7nr3rxdo5sBjzWQcdMyKy"
-#define STEEM_CHAIN_ID (fc::sha256::hash("known"))
+#define BLOCKCHAIN_NAME "KNOWBC"
+#define STEEM_CHAIN_ID (fc::sha256::hash(BLOCKCHAIN_NAME))
 #define STEEM_ADDRESS_PREFIX                  "KNO"
 
 #define STEEM_GENESIS_TIME                    (fc::time_point_sec(1458835200))
@@ -70,7 +71,7 @@
 #define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
-#define STEEM_INIT_SUPPLY                     int64_t(0)
+#define STEEM_INIT_SUPPLY                     int64_t(1000000000000ll)
 
 #define STEEM_MIN_TRANSFER_FEE           1
 #define STEEM_MAX_TRANSFER_FEE           int64_t(10)
@@ -92,13 +93,13 @@
 #define STEEM_NUM_INIT_MINERS                 1
 #define STEEM_INIT_TIME                       (fc::time_point_sec());
 
-#define STEEM_MAX_WITNESSES                   21
+#define STEEM_MAX_WITNESSES                   3
 
-#define STEEM_MAX_VOTED_WITNESSES_HF0         19
+#define STEEM_MAX_VOTED_WITNESSES_HF0         1
 #define STEEM_MAX_MINER_WITNESSES_HF0         1
 #define STEEM_MAX_RUNNER_WITNESSES_HF0        1
 
-#define STEEM_MAX_VOTED_WITNESSES_HF17        20
+#define STEEM_MAX_VOTED_WITNESSES_HF17        2
 #define STEEM_MAX_MINER_WITNESSES_HF17        0
 #define STEEM_MAX_RUNNER_WITNESSES_HF17       1
 
