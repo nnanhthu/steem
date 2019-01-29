@@ -185,7 +185,7 @@ namespace steem { namespace protocol {
       validate_account_name( from );
       validate_account_name( to );
       //Validate transaction fee:
-      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ) || is_asset_type( fee, STEEM_SYMBOL ), "Transaction fee must be EUR or KNOW" );
+      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Transaction fee must be EUR" );
       FC_ASSERT( fee.amount > 0, "Transfer fee cannot be negative" );
       //Validate amount
       FC_ASSERT( amount.symbol != VESTS_SYMBOL, "Transferring of Steem Power (STMP) is not allowed." );

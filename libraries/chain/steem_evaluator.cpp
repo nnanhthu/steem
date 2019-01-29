@@ -1061,28 +1061,48 @@ namespace steem {
 //   FC_CAPTURE_AND_RETHROW( (o) )
 //}
 
-        void transfer_evaluator::do_apply(const transfer_operation &o) {
-            if (_db.is_producing()) {
-                FC_ASSERT(o.fee <= asset(STEEM_MAX_TRANSFER_FEE, o.fee.symbol), "Transfer fee cannot be too large");
+        void transfer_evaluator::do_apply( const transfer_operation& o )
+        {
+            if(_db.is_producing() )
+            {
+                FC_ASSERT( o.fee <= asset( STEEM_MAX_TRANSFER_FEE, o.fee.symbol ), "Transfer fee cannot be too large" );
             }
 
-            FC_ASSERT(o.fee >= asset(STEEM_MIN_TRANSFER_FEE, o.fee.symbol), "Insufficient fee. paid: ${p} fee: ${f}",
-                      ("p", o.fee)
-                              ("f", STEEM_MIN_TRANSFER_FEE));
-            if (o.fee.symbol == o.amount.symbol) {
+            FC_ASSERT( o.fee >= asset (STEEM_MIN_TRANSFER_FEE, o.fee.symbol), "Insufficient fee. paid: ${p} fee: ${f}",
+                       ("p", o.fee)
+                               ("f", STEEM_MIN_TRANSFER_FEE) );
+            //Transfer SBD (Fee must be SBD)
+            if(o.fee.symbol == o.amount.symbol){
                 asset totalAmount = o.fee + o.amount;
-                FC_ASSERT(_db.get_balance(o.from, o.amount.symbol) >= totalAmount,
-                          "Account does not have sufficient funds for transfer.");
-                _db.adjust_balance(o.from, -totalAmount);
-            } else {
-                FC_ASSERT(_db.get_balance(o.from, o.fee.symbol) >= o.fee, "Insufficient balance to pay fee.",
-                          ("from.balance", _db.get_balance(o.from, o.fee.symbol))("required", o.fee));
-                FC_ASSERT(_db.get_balance(o.from, o.amount.symbol) >= o.amount,
-                          "Account does not have sufficient funds for transfer.");
-                _db.adjust_balance(o.from, -o.amount);
-                _db.adjust_balance(o.from, -o.fee);
+                FC_ASSERT( _db.get_balance( o.from, o.amount.symbol ) >= totalAmount, "Account does not have sufficient funds for transfer." );
+                _db.adjust_balance( o.from, -totalAmount );
+            }else { //Transfer different coin from SBD
+                //Check if SBD_Balance is enough
+                if (_db.get_balance(o.from, o.fee.symbol) >= o.fee) {
+                    FC_ASSERT(_db.get_balance(o.from, o.amount.symbol) >= o.amount,
+                              "Account does not have sufficient funds for transfer.");
+                    _db.adjust_balance(o.from, -o.amount);
+                    _db.adjust_balance(o.from, -o.fee);
+                } else {
+                    //Account does not have enough SBD to pay fee, calculate fee by STEEM
+                    asset feeBySteem = util::to_steem(_db.get_feed_history().current_median_history, o.fee);
+                    if (is_asset_type(o.amount, STEEM_SYMBOL)) {
+                        //If amount is also STEEM
+                        asset totalAmount = feeBySteem + o.amount;
+                        FC_ASSERT( _db.get_balance( o.from, o.amount.symbol ) >= totalAmount, "Account does not have sufficient funds for transfer." );
+                        _db.adjust_balance( o.from, -totalAmount );
+                    }else{
+                        //Amount is not STEEM
+                        FC_ASSERT(_db.get_balance(o.from, o.amount.symbol) >= o.amount,
+                                  "Account does not have sufficient funds for transfer.");
+                        FC_ASSERT(_db.get_balance(o.from, feeBySteem.symbol) >= feeBySteem, "Insufficient balance to pay fee.",
+                                  ("from.balance", _db.get_balance(o.from, feeBySteem.symbol))("required", feeBySteem));
+                        _db.adjust_balance(o.from, -o.amount);
+                        _db.adjust_balance(o.from, -feeBySteem);
+                    }
+                }
             }
-            _db.adjust_balance(o.to, o.amount);
+            _db.adjust_balance( o.to, o.amount );
         }
 
         void transfer_to_vesting_evaluator::do_apply(const transfer_to_vesting_operation &o) {
