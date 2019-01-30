@@ -1085,7 +1085,10 @@ namespace steem {
                     _db.adjust_balance(o.from, -o.fee);
                 } else {
                     //Account does not have enough SBD to pay fee, calculate fee by STEEM
-                    asset feeBySteem = util::to_steem(_db.get_feed_history().current_median_history, o.fee);
+                    const auto& fhistory = _db.get_feed_history();
+                    FC_ASSERT( !fhistory.current_median_history.is_null(), "Cannot convert SBD because there is no price feed." );
+
+                    asset feeBySteem = util::to_steem(fhistory.current_median_history, o.fee);
                     if (is_asset_type(o.amount, STEEM_SYMBOL)) {
                         //If amount is also STEEM
                         asset totalAmount = feeBySteem + o.amount;
