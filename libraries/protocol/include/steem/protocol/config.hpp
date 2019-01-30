@@ -244,7 +244,11 @@
 #define STEEM_SOFT_MAX_BLOCK_SIZE             (2*1024*1024)
 #define STEEM_MIN_BLOCK_SIZE                  115
 #define STEEM_BLOCKS_PER_HOUR                 (60*60/STEEM_BLOCK_INTERVAL)
-#define STEEM_FEED_INTERVAL_BLOCKS            (STEEM_BLOCKS_PER_HOUR)
+/**
+ * For testing
+ * */
+#define STEEM_BLOCKS_PER_5MINUTES             (60*5/STEEM_BLOCK_INTERVAL)
+#define STEEM_FEED_INTERVAL_BLOCKS            (STEEM_BLOCKS_PER_5MINUTES)
 #define STEEM_FEED_HISTORY_WINDOW_PRE_HF_16   (24*7) /// 7 days * 24 hours per day
 #define STEEM_FEED_HISTORY_WINDOW             (12*7) // 3.5 days
 #define STEEM_MAX_FEED_AGE_SECONDS            (60*60*24*7) // 7 days
