@@ -130,8 +130,8 @@ namespace steem {
                 FC_ASSERT(o.props.maximum_block_size <= STEEM_SOFT_MAX_BLOCK_SIZE,
                           "Max block size cannot be more than 2MiB");
             }
-            //Add constraint: Node must have at least STEEM_MIN_WITNESS_FUND native coins to become a witness
-            FC_ASSERT(_db.get_balance(o.owner, STEEM_SYMBOL) >= asset(STEEM_MIN_WITNESS_FUND, STEEM_SYMBOL),
+            //Add constraint: Node must have at least STEEM_MIN_WITNESS_FUND vested coins to become a witness
+            FC_ASSERT(_db.get_balance(o.owner, VESTS_SYMBOL) >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL),
                       "Account does not have sufficient funds to be a witness.");
 
             const auto &by_witness_name_idx = _db.get_index<witness_index>().indices().get<by_name>();
