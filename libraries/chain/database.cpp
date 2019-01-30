@@ -88,11 +88,11 @@ struct get_impacted_fee {
 
             // ops
             void operator()(const account_create_operation &op) {
-               _impacted = op.fee;
+               //_impacted = op.fee;
             }
 
             void operator()(const account_create_with_delegation_operation &op) {
-               _impacted = op.fee;
+               //_impacted = op.fee;
             }
 
 //            void operator()(const comment_operation &op) {
