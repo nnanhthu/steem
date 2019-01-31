@@ -52,83 +52,83 @@ struct pre_operation_visitor
    template< typename T >
    void operator()( const T& )const {}
 
-   void operator()( const vote_operation& op )const
-   {
-      try
-      {
-         auto& db = _plugin._db;
-         const auto& c = db.get_comment( op.author, op.permlink );
-
-         if( db.calculate_discussion_payout_time( c ) == fc::time_point_sec::maximum() ) return;
-
-         const auto& cv_idx = db.get_index< comment_vote_index >().indices().get< by_comment_voter >();
-         auto cv = cv_idx.find( std::make_tuple( c.id, db.get_account( op.voter ).id ) );
-
-         if( cv != cv_idx.end() )
-         {
-            auto rep_delta = ( cv->rshares >> 6 );
-
-            const auto& rep_idx = db.get_index< reputation_index >().indices().get< by_account >();
-            auto voter_rep = rep_idx.find( op.voter );
-            auto author_rep = rep_idx.find( op.author );
-
-            if( author_rep != rep_idx.end() )
-            {
-               // Rule #1: Must have non-negative reputation to effect another user's reputation
-               if( voter_rep != rep_idx.end() && voter_rep->reputation < 0 ) return;
-
-               // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
-               if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > author_rep->reputation - rep_delta ) ) return;
-
-               if( rep_delta == author_rep->reputation )
-               {
-                  db.remove( *author_rep );
-               }
-               else
-               {
-                  db.modify( *author_rep, [&]( reputation_object& r )
-                  {
-                     r.reputation -= ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
-                  });
-               }
-            }
-         }
-      }
-      catch( const fc::exception& e ) {}
-   }
-
-   void operator()( const delete_comment_operation& op )const
-   {
-      try
-      {
-         auto& db = _plugin._db;
-         const auto* comment = db.find_comment( op.author, op.permlink );
-
-         if( comment == nullptr ) return;
-         if( comment->parent_author.size() ) return;
-
-         const auto& feed_idx = db.get_index< feed_index >().indices().get< by_comment >();
-         auto itr = feed_idx.lower_bound( comment->id );
-
-         while( itr != feed_idx.end() && itr->comment == comment->id )
-         {
-            const auto& old_feed = *itr;
-            ++itr;
-            db.remove( old_feed );
-         }
-
-         const auto& blog_idx = db.get_index< blog_index >().indices().get< by_comment >();
-         auto blog_itr = blog_idx.lower_bound( comment->id );
-
-         while( blog_itr != blog_idx.end() && blog_itr->comment == comment->id )
-         {
-            const auto& old_blog = *blog_itr;
-            ++blog_itr;
-            db.remove( old_blog );
-         }
-      }
-      FC_CAPTURE_AND_RETHROW()
-   }
+//   void operator()( const vote_operation& op )const
+//   {
+//      try
+//      {
+//         auto& db = _plugin._db;
+//         const auto& c = db.get_comment( op.author, op.permlink );
+//
+//         if( db.calculate_discussion_payout_time( c ) == fc::time_point_sec::maximum() ) return;
+//
+//         const auto& cv_idx = db.get_index< comment_vote_index >().indices().get< by_comment_voter >();
+//         auto cv = cv_idx.find( std::make_tuple( c.id, db.get_account( op.voter ).id ) );
+//
+//         if( cv != cv_idx.end() )
+//         {
+//            auto rep_delta = ( cv->rshares >> 6 );
+//
+//            const auto& rep_idx = db.get_index< reputation_index >().indices().get< by_account >();
+//            auto voter_rep = rep_idx.find( op.voter );
+//            auto author_rep = rep_idx.find( op.author );
+//
+//            if( author_rep != rep_idx.end() )
+//            {
+//               // Rule #1: Must have non-negative reputation to effect another user's reputation
+//               if( voter_rep != rep_idx.end() && voter_rep->reputation < 0 ) return;
+//
+//               // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
+//               if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > author_rep->reputation - rep_delta ) ) return;
+//
+//               if( rep_delta == author_rep->reputation )
+//               {
+//                  db.remove( *author_rep );
+//               }
+//               else
+//               {
+//                  db.modify( *author_rep, [&]( reputation_object& r )
+//                  {
+//                     r.reputation -= ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
+//                  });
+//               }
+//            }
+//         }
+//      }
+//      catch( const fc::exception& e ) {}
+//   }
+//
+//   void operator()( const delete_comment_operation& op )const
+//   {
+//      try
+//      {
+//         auto& db = _plugin._db;
+//         const auto* comment = db.find_comment( op.author, op.permlink );
+//
+//         if( comment == nullptr ) return;
+//         if( comment->parent_author.size() ) return;
+//
+//         const auto& feed_idx = db.get_index< feed_index >().indices().get< by_comment >();
+//         auto itr = feed_idx.lower_bound( comment->id );
+//
+//         while( itr != feed_idx.end() && itr->comment == comment->id )
+//         {
+//            const auto& old_feed = *itr;
+//            ++itr;
+//            db.remove( old_feed );
+//         }
+//
+//         const auto& blog_idx = db.get_index< blog_index >().indices().get< by_comment >();
+//         auto blog_itr = blog_idx.lower_bound( comment->id );
+//
+//         while( blog_itr != blog_idx.end() && blog_itr->comment == comment->id )
+//         {
+//            const auto& old_blog = *blog_itr;
+//            ++blog_itr;
+//            db.remove( old_blog );
+//         }
+//      }
+//      FC_CAPTURE_AND_RETHROW()
+//   }
 };
 
 struct post_operation_visitor
@@ -176,117 +176,117 @@ struct post_operation_visitor
       FC_CAPTURE_AND_RETHROW()
    }
 
-   void operator()( const comment_operation& op )const
-   {
-      try
-      {
-         if( op.parent_author.size() > 0 ) return;
-         auto& db = _plugin._db;
-         const auto& c = db.get_comment( op.author, op.permlink );
-
-         if( c.created != db.head_block_time() ) return;
-
-         const auto& idx = db.get_index< follow_index >().indices().get< by_following_follower >();
-         const auto& comment_idx = db.get_index< feed_index >().indices().get< by_comment >();
-         const auto& old_feed_idx = db.get_index< feed_index >().indices().get< by_feed >();
-         auto itr = idx.find( op.author );
-
-         performance_data pd;
-
-         if( db.head_block_time() >= _plugin._self.start_feeds )
-         {
-            while( itr != idx.end() && itr->following == op.author )
-            {
-               if( itr->what & ( 1 << blog ) )
-               {
-                  auto feed_itr = comment_idx.find( boost::make_tuple( c.id, itr->follower ) );
-                  bool is_empty = feed_itr == comment_idx.end();
-
-                  pd.init( c.id, is_empty );
-                  uint32_t next_id = perf.delete_old_objects< performance_data::t_creation_type::part_feed >( old_feed_idx, itr->follower, _plugin._self.max_feed_size, pd );
-
-                  if( pd.s.creation && is_empty )
-                  {
-                     db.create< feed_object >( [&]( feed_object& f )
-                     {
-                        f.account = itr->follower;
-                        f.comment = c.id;
-                        f.account_feed_id = next_id;
-                     });
-                  }
-
-               }
-               ++itr;
-            }
-         }
-
-         const auto& comment_blog_idx = db.get_index< blog_index >().indices().get< by_comment >();
-         auto blog_itr = comment_blog_idx.find( boost::make_tuple( c.id, op.author ) );
-         const auto& old_blog_idx = db.get_index< blog_index >().indices().get< by_blog >();
-         bool is_empty = blog_itr == comment_blog_idx.end();
-
-         pd.init( c.id, is_empty );
-         uint32_t next_id = perf.delete_old_objects< performance_data::t_creation_type::full_blog >( old_blog_idx, op.author, _plugin._self.max_feed_size, pd );
-
-         if( pd.s.creation && is_empty )
-         {
-            db.create< blog_object >( [&]( blog_object& b)
-            {
-               b.account = op.author;
-               b.comment = c.id;
-               b.blog_feed_id = next_id;
-            });
-         }
-      }
-      FC_LOG_AND_RETHROW()
-   }
-
-   void operator()( const vote_operation& op )const
-   {
-      try
-      {
-         auto& db = _plugin._db;
-         const auto& comment = db.get_comment( op.author, op.permlink );
-
-         if( db.calculate_discussion_payout_time( comment ) == fc::time_point_sec::maximum() )
-            return;
-
-         const auto& cv_idx = db.get_index< comment_vote_index >().indices().get< by_comment_voter >();
-         auto cv = cv_idx.find( boost::make_tuple( comment.id, db.get_account( op.voter ).id ) );
-
-         const auto& rep_idx = db.get_index< reputation_index >().indices().get< by_account >();
-         auto voter_rep = rep_idx.find( op.voter );
-         auto author_rep = rep_idx.find( op.author );
-
-         // Rules are a plugin, do not effect consensus, and are subject to change.
-         // Rule #1: Must have non-negative reputation to effect another user's reputation
-         if( voter_rep != rep_idx.end() && voter_rep->reputation < 0 ) return;
-
-         if( author_rep == rep_idx.end() )
-         {
-            // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
-            // User rep is 0, so requires voter having positive rep
-            if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > 0 )) return;
-
-            db.create< reputation_object >( [&]( reputation_object& r )
-            {
-               r.account = op.author;
-               r.reputation = ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
-            });
-         }
-         else
-         {
-            // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
-            if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > author_rep->reputation ) ) return;
-
-            db.modify( *author_rep, [&]( reputation_object& r )
-            {
-               r.reputation += ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
-            });
-         }
-      }
-      FC_CAPTURE_AND_RETHROW()
-   }
+//   void operator()( const comment_operation& op )const
+//   {
+//      try
+//      {
+//         if( op.parent_author.size() > 0 ) return;
+//         auto& db = _plugin._db;
+//         const auto& c = db.get_comment( op.author, op.permlink );
+//
+//         if( c.created != db.head_block_time() ) return;
+//
+//         const auto& idx = db.get_index< follow_index >().indices().get< by_following_follower >();
+//         const auto& comment_idx = db.get_index< feed_index >().indices().get< by_comment >();
+//         const auto& old_feed_idx = db.get_index< feed_index >().indices().get< by_feed >();
+//         auto itr = idx.find( op.author );
+//
+//         performance_data pd;
+//
+//         if( db.head_block_time() >= _plugin._self.start_feeds )
+//         {
+//            while( itr != idx.end() && itr->following == op.author )
+//            {
+//               if( itr->what & ( 1 << blog ) )
+//               {
+//                  auto feed_itr = comment_idx.find( boost::make_tuple( c.id, itr->follower ) );
+//                  bool is_empty = feed_itr == comment_idx.end();
+//
+//                  pd.init( c.id, is_empty );
+//                  uint32_t next_id = perf.delete_old_objects< performance_data::t_creation_type::part_feed >( old_feed_idx, itr->follower, _plugin._self.max_feed_size, pd );
+//
+//                  if( pd.s.creation && is_empty )
+//                  {
+//                     db.create< feed_object >( [&]( feed_object& f )
+//                     {
+//                        f.account = itr->follower;
+//                        f.comment = c.id;
+//                        f.account_feed_id = next_id;
+//                     });
+//                  }
+//
+//               }
+//               ++itr;
+//            }
+//         }
+//
+//         const auto& comment_blog_idx = db.get_index< blog_index >().indices().get< by_comment >();
+//         auto blog_itr = comment_blog_idx.find( boost::make_tuple( c.id, op.author ) );
+//         const auto& old_blog_idx = db.get_index< blog_index >().indices().get< by_blog >();
+//         bool is_empty = blog_itr == comment_blog_idx.end();
+//
+//         pd.init( c.id, is_empty );
+//         uint32_t next_id = perf.delete_old_objects< performance_data::t_creation_type::full_blog >( old_blog_idx, op.author, _plugin._self.max_feed_size, pd );
+//
+//         if( pd.s.creation && is_empty )
+//         {
+//            db.create< blog_object >( [&]( blog_object& b)
+//            {
+//               b.account = op.author;
+//               b.comment = c.id;
+//               b.blog_feed_id = next_id;
+//            });
+//         }
+//      }
+//      FC_LOG_AND_RETHROW()
+//   }
+//
+//   void operator()( const vote_operation& op )const
+//   {
+//      try
+//      {
+//         auto& db = _plugin._db;
+//         const auto& comment = db.get_comment( op.author, op.permlink );
+//
+//         if( db.calculate_discussion_payout_time( comment ) == fc::time_point_sec::maximum() )
+//            return;
+//
+//         const auto& cv_idx = db.get_index< comment_vote_index >().indices().get< by_comment_voter >();
+//         auto cv = cv_idx.find( boost::make_tuple( comment.id, db.get_account( op.voter ).id ) );
+//
+//         const auto& rep_idx = db.get_index< reputation_index >().indices().get< by_account >();
+//         auto voter_rep = rep_idx.find( op.voter );
+//         auto author_rep = rep_idx.find( op.author );
+//
+//         // Rules are a plugin, do not effect consensus, and are subject to change.
+//         // Rule #1: Must have non-negative reputation to effect another user's reputation
+//         if( voter_rep != rep_idx.end() && voter_rep->reputation < 0 ) return;
+//
+//         if( author_rep == rep_idx.end() )
+//         {
+//            // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
+//            // User rep is 0, so requires voter having positive rep
+//            if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > 0 )) return;
+//
+//            db.create< reputation_object >( [&]( reputation_object& r )
+//            {
+//               r.account = op.author;
+//               r.reputation = ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
+//            });
+//         }
+//         else
+//         {
+//            // Rule #2: If you are down voting another user, you must have more reputation than them to impact their reputation
+//            if( cv->rshares < 0 && !( voter_rep != rep_idx.end() && voter_rep->reputation > author_rep->reputation ) ) return;
+//
+//            db.modify( *author_rep, [&]( reputation_object& r )
+//            {
+//               r.reputation += ( cv->rshares >> 6 ); // Shift away precision from vests. It is noise
+//            });
+//         }
+//      }
+//      FC_CAPTURE_AND_RETHROW()
+//   }
 };
 
 void follow_plugin_impl::pre_operation( const operation_notification& note )

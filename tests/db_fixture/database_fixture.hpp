@@ -254,9 +254,9 @@ struct database_fixture {
       const share_type& fee
    );
 
-   void fund( const string& account_name, const share_type& amount = 500000 );
+   void fund( const string& account_name, const share_type& amount = 500000, const share_type& fee = 0 );
    void fund( const string& account_name, const asset& amount );
-   void transfer( const string& from, const string& to, const asset& amount );
+   void transfer( const string& from, const string& to, const asset& amount, const asset& fee );
    void convert( const string& account_name, const asset& amount );
    void vest( const string& from, const string& to, const asset& amount );
    void vest( const string& from, const share_type& amount );

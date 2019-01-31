@@ -65,21 +65,21 @@ namespace steem { namespace protocol {
    };
 
 
-   struct comment_operation : public base_operation
-   {
-      account_name_type parent_author;
-      string            parent_permlink;
-
-      account_name_type author;
-      string            permlink;
-
-      string            title;
-      string            body;
-      string            json_metadata;
-
-      void validate()const;
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
-   };
+//   struct comment_operation : public base_operation
+//   {
+//      account_name_type parent_author;
+//      string            parent_permlink;
+//
+//      account_name_type author;
+//      string            permlink;
+//
+//      string            title;
+//      string            body;
+//      string            json_metadata;
+//
+//      void validate()const;
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
+//   };
 
    struct beneficiary_route_type
    {
@@ -171,14 +171,14 @@ namespace steem { namespace protocol {
    };
 #endif /// STEEM_ENABLE_SMT
 
-   typedef static_variant<
-            comment_payout_beneficiaries
-#ifdef STEEM_ENABLE_SMT
-            ,allowed_vote_assets
-#endif /// STEEM_ENABLE_SMT
-           > comment_options_extension;
-
-   typedef flat_set< comment_options_extension > comment_options_extensions_type;
+//   typedef static_variant<
+//            comment_payout_beneficiaries
+//#ifdef STEEM_ENABLE_SMT
+//            ,allowed_vote_assets
+//#endif /// STEEM_ENABLE_SMT
+//           > comment_options_extension;
+//
+//   typedef flat_set< comment_options_extension > comment_options_extensions_type;
 
    /**
     *  Authors of posts may not want all of the benefits that come from creating a post. This
@@ -188,20 +188,20 @@ namespace steem { namespace protocol {
     *  The percent_steem_dollars may be decreased, but never increased
     *
     */
-   struct comment_options_operation : public base_operation
-   {
-      account_name_type author;
-      string            permlink;
-
-      asset             max_accepted_payout    = asset( 1000000000, SBD_SYMBOL );       /// SBD value of the maximum payout this post will receive
-      uint16_t          percent_steem_dollars  = STEEM_100_PERCENT; /// the percent of Steem Dollars to key, unkept amounts will be received as Steem Power
-      bool              allow_votes            = true;      /// allows a post to receive votes;
-      bool              allow_curation_rewards = true; /// allows voters to recieve curation rewards. Rewards return to reward fund.
-      comment_options_extensions_type extensions;
-
-      void validate()const;
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
-   };
+//   struct comment_options_operation : public base_operation
+//   {
+//      account_name_type author;
+//      string            permlink;
+//
+//      asset             max_accepted_payout    = asset( 1000000000, SBD_SYMBOL );       /// SBD value of the maximum payout this post will receive
+//      uint16_t          percent_steem_dollars  = STEEM_100_PERCENT; /// the percent of Steem Dollars to key, unkept amounts will be received as Steem Power
+//      bool              allow_votes            = true;      /// allows a post to receive votes;
+//      bool              allow_curation_rewards = true; /// allows voters to recieve curation rewards. Rewards return to reward fund.
+//      comment_options_extensions_type extensions;
+//
+//      void validate()const;
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
+//   };
 
 
    struct claim_account_operation : public base_operation
@@ -231,26 +231,26 @@ namespace steem { namespace protocol {
    };
 
 
-   struct delete_comment_operation : public base_operation
-   {
-      account_name_type author;
-      string            permlink;
+//   struct delete_comment_operation : public base_operation
+//   {
+//      account_name_type author;
+//      string            permlink;
+//
+//      void validate()const;
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
+//   };
 
-      void validate()const;
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
-   };
 
-
-   struct vote_operation : public base_operation
-   {
-      account_name_type    voter;
-      account_name_type    author;
-      string               permlink;
-      int16_t              weight = 0;
-
-      void validate()const;
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(voter); }
-   };
+//   struct vote_operation : public base_operation
+//   {
+//      account_name_type    voter;
+//      account_name_type    author;
+//      string               permlink;
+//      int16_t              weight = 0;
+//
+//      void validate()const;
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(voter); }
+//   };
 
 
    /**
@@ -265,6 +265,8 @@ namespace steem { namespace protocol {
       account_name_type to;
       /// The amount of asset to transfer from @ref from to @ref to
       asset             amount;
+      /// Fee to transfer
+      asset             fee;
 
       /// The memo is plain-text, any encryption on the memo is up to
       /// a higher level protocol.
@@ -294,25 +296,25 @@ namespace steem { namespace protocol {
     *  Escrow transactions are uniquely identified by 'from' and 'escrow_id', the 'escrow_id' is defined
     *  by the sender.
     */
-   struct escrow_transfer_operation : public base_operation
-   {
-      account_name_type from;
-      account_name_type to;
-      account_name_type agent;
-      uint32_t          escrow_id = 30;
-
-      asset             sbd_amount = asset( 0, SBD_SYMBOL );
-      asset             steem_amount = asset( 0, STEEM_SYMBOL );
-      asset             fee;
-
-      time_point_sec    ratification_deadline;
-      time_point_sec    escrow_expiration;
-
-      string            json_meta;
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(from); }
-   };
+//   struct escrow_transfer_operation : public base_operation
+//   {
+//      account_name_type from;
+//      account_name_type to;
+//      account_name_type agent;
+//      uint32_t          escrow_id = 30;
+//
+//      asset             sbd_amount = asset( 0, SBD_SYMBOL );
+//      asset             steem_amount = asset( 0, STEEM_SYMBOL );
+//      asset             fee;
+//
+//      time_point_sec    ratification_deadline;
+//      time_point_sec    escrow_expiration;
+//
+//      string            json_meta;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(from); }
+//   };
 
 
    /**
@@ -320,19 +322,19 @@ namespace steem { namespace protocol {
     *  the blockchain. Once a part approves the escrow, the cannot revoke their approval.
     *  Subsequent escrow approve operations, regardless of the approval, will be rejected.
     */
-   struct escrow_approve_operation : public base_operation
-   {
-      account_name_type from;
-      account_name_type to;
-      account_name_type agent;
-      account_name_type who; // Either to or agent
-
-      uint32_t          escrow_id = 30;
-      bool              approve = true;
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
-   };
+//   struct escrow_approve_operation : public base_operation
+//   {
+//      account_name_type from;
+//      account_name_type to;
+//      account_name_type agent;
+//      account_name_type who; // Either to or agent
+//
+//      uint32_t          escrow_id = 30;
+//      bool              approve = true;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
+//   };
 
 
    /**
@@ -340,18 +342,18 @@ namespace steem { namespace protocol {
     *  raise it for dispute. Once a payment is in dispute, the agent has authority over
     *  who gets what.
     */
-   struct escrow_dispute_operation : public base_operation
-   {
-      account_name_type from;
-      account_name_type to;
-      account_name_type agent;
-      account_name_type who;
-
-      uint32_t          escrow_id = 30;
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
-   };
+//   struct escrow_dispute_operation : public base_operation
+//   {
+//      account_name_type from;
+//      account_name_type to;
+//      account_name_type agent;
+//      account_name_type who;
+//
+//      uint32_t          escrow_id = 30;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
+//   };
 
 
    /**
@@ -364,21 +366,21 @@ namespace steem { namespace protocol {
     *  If there is a dispute regardless of expiration, the agent can release funds to either party
     *     following whichever agreement was in place between the parties.
     */
-   struct escrow_release_operation : public base_operation
-   {
-      account_name_type from;
-      account_name_type to; ///< the original 'to'
-      account_name_type agent;
-      account_name_type who; ///< the account that is attempting to release the funds, determines valid 'receiver'
-      account_name_type receiver; ///< the account that should receive funds (might be from, might be to)
-
-      uint32_t          escrow_id = 30;
-      asset             sbd_amount = asset( 0, SBD_SYMBOL ); ///< the amount of sbd to release
-      asset             steem_amount = asset( 0, STEEM_SYMBOL ); ///< the amount of steem to release
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
-   };
+//   struct escrow_release_operation : public base_operation
+//   {
+//      account_name_type from;
+//      account_name_type to; ///< the original 'to'
+//      account_name_type agent;
+//      account_name_type who; ///< the account that is attempting to release the funds, determines valid 'receiver'
+//      account_name_type receiver; ///< the account that should receive funds (might be from, might be to)
+//
+//      uint32_t          escrow_id = 30;
+//      asset             sbd_amount = asset( 0, SBD_SYMBOL ); ///< the amount of sbd to release
+//      asset             steem_amount = asset( 0, STEEM_SYMBOL ); ///< the amount of steem to release
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(who); }
+//   };
 
 
    /**
@@ -631,67 +633,67 @@ namespace steem { namespace protocol {
    /**
     * This operation creates a limit order and matches it against existing open orders.
     */
-   struct limit_order_create_operation : public base_operation
-   {
-      account_name_type owner;
-      uint32_t          orderid = 0; /// an ID assigned by owner, must be unique
-      asset             amount_to_sell;
-      asset             min_to_receive;
-      bool              fill_or_kill = false;
-      time_point_sec    expiration = time_point_sec::maximum();
-
-      void  validate()const;
-      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
-
-      price             get_price()const { return amount_to_sell / min_to_receive; }
-
-      pair< asset_symbol_type, asset_symbol_type > get_market()const
-      {
-         return amount_to_sell.symbol < min_to_receive.symbol ?
-                std::make_pair(amount_to_sell.symbol, min_to_receive.symbol) :
-                std::make_pair(min_to_receive.symbol, amount_to_sell.symbol);
-      }
-   };
+//   struct limit_order_create_operation : public base_operation
+//   {
+//      account_name_type owner;
+//      uint32_t          orderid = 0; /// an ID assigned by owner, must be unique
+//      asset             amount_to_sell;
+//      asset             min_to_receive;
+//      bool              fill_or_kill = false;
+//      time_point_sec    expiration = time_point_sec::maximum();
+//
+//      void  validate()const;
+//      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
+//
+//      price             get_price()const { return amount_to_sell / min_to_receive; }
+//
+//      pair< asset_symbol_type, asset_symbol_type > get_market()const
+//      {
+//         return amount_to_sell.symbol < min_to_receive.symbol ?
+//                std::make_pair(amount_to_sell.symbol, min_to_receive.symbol) :
+//                std::make_pair(min_to_receive.symbol, amount_to_sell.symbol);
+//      }
+//   };
 
 
    /**
     *  This operation is identical to limit_order_create except it serializes the price rather
     *  than calculating it from other fields.
     */
-   struct limit_order_create2_operation : public base_operation
-   {
-      account_name_type owner;
-      uint32_t          orderid = 0; /// an ID assigned by owner, must be unique
-      asset             amount_to_sell;
-      bool              fill_or_kill = false;
-      price             exchange_rate;
-      time_point_sec    expiration = time_point_sec::maximum();
-
-      void  validate()const;
-      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
-
-      price             get_price()const { return exchange_rate; }
-
-      pair< asset_symbol_type, asset_symbol_type > get_market()const
-      {
-         return exchange_rate.base.symbol < exchange_rate.quote.symbol ?
-                std::make_pair(exchange_rate.base.symbol, exchange_rate.quote.symbol) :
-                std::make_pair(exchange_rate.quote.symbol, exchange_rate.base.symbol);
-      }
-   };
+//   struct limit_order_create2_operation : public base_operation
+//   {
+//      account_name_type owner;
+//      uint32_t          orderid = 0; /// an ID assigned by owner, must be unique
+//      asset             amount_to_sell;
+//      bool              fill_or_kill = false;
+//      price             exchange_rate;
+//      time_point_sec    expiration = time_point_sec::maximum();
+//
+//      void  validate()const;
+//      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
+//
+//      price             get_price()const { return exchange_rate; }
+//
+//      pair< asset_symbol_type, asset_symbol_type > get_market()const
+//      {
+//         return exchange_rate.base.symbol < exchange_rate.quote.symbol ?
+//                std::make_pair(exchange_rate.base.symbol, exchange_rate.quote.symbol) :
+//                std::make_pair(exchange_rate.quote.symbol, exchange_rate.base.symbol);
+//      }
+//   };
 
 
    /**
     *  Cancels an order and returns the balance to owner.
     */
-   struct limit_order_cancel_operation : public base_operation
-   {
-      account_name_type owner;
-      uint32_t          orderid = 0;
-
-      void  validate()const;
-      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
-   };
+//   struct limit_order_cancel_operation : public base_operation
+//   {
+//      account_name_type owner;
+//      uint32_t          orderid = 0;
+//
+//      void  validate()const;
+//      void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
+//   };
 
 
    struct pow
@@ -1110,7 +1112,7 @@ FC_REFLECT( steem::protocol::account_update_operation,
             (memo_key)
             (json_metadata) )
 
-FC_REFLECT( steem::protocol::transfer_operation, (from)(to)(amount)(memo) )
+FC_REFLECT( steem::protocol::transfer_operation, (from)(to)(amount)(fee)(memo) )
 FC_REFLECT( steem::protocol::transfer_to_vesting_operation, (from)(to)(amount) )
 FC_REFLECT( steem::protocol::withdraw_vesting_operation, (account)(vesting_shares) )
 FC_REFLECT( steem::protocol::set_withdraw_vesting_route_operation, (from_account)(to_account)(percent)(auto_vest) )
@@ -1118,16 +1120,16 @@ FC_REFLECT( steem::protocol::witness_update_operation, (owner)(url)(block_signin
 FC_REFLECT( steem::protocol::witness_set_properties_operation, (owner)(props)(extensions) )
 FC_REFLECT( steem::protocol::account_witness_vote_operation, (account)(witness)(approve) )
 FC_REFLECT( steem::protocol::account_witness_proxy_operation, (account)(proxy) )
-FC_REFLECT( steem::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata) )
-FC_REFLECT( steem::protocol::vote_operation, (voter)(author)(permlink)(weight) )
+//FC_REFLECT( steem::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata) )
+//FC_REFLECT( steem::protocol::vote_operation, (voter)(author)(permlink)(weight) )
 FC_REFLECT( steem::protocol::custom_operation, (required_auths)(id)(data) )
 FC_REFLECT( steem::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json) )
 FC_REFLECT( steem::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data) )
-FC_REFLECT( steem::protocol::limit_order_create_operation, (owner)(orderid)(amount_to_sell)(min_to_receive)(fill_or_kill)(expiration) )
-FC_REFLECT( steem::protocol::limit_order_create2_operation, (owner)(orderid)(amount_to_sell)(exchange_rate)(fill_or_kill)(expiration) )
-FC_REFLECT( steem::protocol::limit_order_cancel_operation, (owner)(orderid) )
+//FC_REFLECT( steem::protocol::limit_order_create_operation, (owner)(orderid)(amount_to_sell)(min_to_receive)(fill_or_kill)(expiration) )
+//FC_REFLECT( steem::protocol::limit_order_create2_operation, (owner)(orderid)(amount_to_sell)(exchange_rate)(fill_or_kill)(expiration) )
+//FC_REFLECT( steem::protocol::limit_order_cancel_operation, (owner)(orderid) )
 
-FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
+//FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
 
 FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
 FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
@@ -1137,13 +1139,13 @@ FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_
 FC_REFLECT( steem::protocol::allowed_vote_assets, (votable_assets) )
 #endif
 
-FC_REFLECT_TYPENAME( steem::protocol::comment_options_extension )
-FC_REFLECT( steem::protocol::comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions) )
+//FC_REFLECT_TYPENAME( steem::protocol::comment_options_extension )
+//FC_REFLECT( steem::protocol::comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions) )
 
-FC_REFLECT( steem::protocol::escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration) );
-FC_REFLECT( steem::protocol::escrow_approve_operation, (from)(to)(agent)(who)(escrow_id)(approve) );
-FC_REFLECT( steem::protocol::escrow_dispute_operation, (from)(to)(agent)(who)(escrow_id) );
-FC_REFLECT( steem::protocol::escrow_release_operation, (from)(to)(agent)(who)(receiver)(escrow_id)(sbd_amount)(steem_amount) );
+//FC_REFLECT( steem::protocol::escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration) );
+//FC_REFLECT( steem::protocol::escrow_approve_operation, (from)(to)(agent)(who)(escrow_id)(approve) );
+//FC_REFLECT( steem::protocol::escrow_dispute_operation, (from)(to)(agent)(who)(escrow_id) );
+//FC_REFLECT( steem::protocol::escrow_release_operation, (from)(to)(agent)(who)(receiver)(escrow_id)(sbd_amount)(steem_amount) );
 FC_REFLECT( steem::protocol::claim_account_operation, (creator)(fee)(extensions) );
 FC_REFLECT( steem::protocol::create_claimed_account_operation, (creator)(new_account_name)(owner)(active)(posting)(memo_key)(json_metadata)(extensions) );
 FC_REFLECT( steem::protocol::request_account_recovery_operation, (recovery_account)(account_to_recover)(new_owner_authority)(extensions) );

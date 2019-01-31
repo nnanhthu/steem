@@ -113,6 +113,12 @@ namespace steem { namespace chain {
          };
 
          /**
+          * Get fee from operation
+          * @param op
+          * @param result
+          */
+         void operation_get_impacted_fee(const operation &op, asset &result);
+         /**
           * @brief Open a database, creating a new one if necessary
           *
           * Opens a database in the specified directory. If no initialized database is found the database
@@ -519,6 +525,7 @@ namespace steem { namespace chain {
 
          void update_global_dynamic_data( const signed_block& b );
          void update_signing_witness(const witness_object& signing_witness, const signed_block& new_block);
+         void process_fee_witness(const witness_object& signing_witness, vector<signed_transaction> transactions);
          void update_last_irreversible_block();
          void migrate_irreversible_state();
          void clear_expired_transactions();

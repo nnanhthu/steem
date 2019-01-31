@@ -377,14 +377,15 @@ const witness_object& database_fixture::witness_create(
 
 void database_fixture::fund(
    const string& account_name,
-   const share_type& amount
+   const share_type& amount,
+   const share_type& fee
    )
 {
    try
    {
-      transfer( STEEM_INIT_MINER_NAME, account_name, asset( amount, STEEM_SYMBOL ) );
+      transfer( STEEM_INIT_MINER_NAME, account_name, asset( amount, STEEM_SYMBOL ), asset( fee, SBD_SYMBOL )  );
 
-   } FC_CAPTURE_AND_RETHROW( (account_name)(amount) )
+   } FC_CAPTURE_AND_RETHROW( (account_name)(amount)(fee) )
 }
 
 void database_fixture::fund(
@@ -465,7 +466,8 @@ void database_fixture::convert(
 void database_fixture::transfer(
    const string& from,
    const string& to,
-   const asset& amount )
+   const asset& amount,
+   const asset& fee)
 {
    try
    {
@@ -473,6 +475,7 @@ void database_fixture::transfer(
       op.from = from;
       op.to = to;
       op.amount = amount;
+      op.fee = fee;
 
       trx.operations.push_back( op );
       trx.set_expiration( db->head_block_time() + STEEM_MAX_TIME_UNTIL_EXPIRATION );
@@ -485,7 +488,7 @@ void database_fixture::transfer(
 
       db->push_transaction( trx, ~0 );
       trx.clear();
-   } FC_CAPTURE_AND_RETHROW( (from)(to)(amount) )
+   } FC_CAPTURE_AND_RETHROW( (from)(to)(amount)(fee) )
 }
 
 void database_fixture::vest( const string& from, const string& to, const asset& amount )

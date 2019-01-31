@@ -638,6 +638,7 @@ class wallet_api
        * @param from The account the funds are coming from
        * @param to The account the funds are going to
        * @param amount The funds being transferred. i.e. "100.000 STEEM"
+       * @param fee The fee being paid for transfer transaction. i.e. "1 SBD"
        * @param memo A memo for the transactionm, encrypted with the to account's public memo key
        * @param broadcast true if you wish to broadcast the transaction
        */
@@ -645,6 +646,7 @@ class wallet_api
          string from,
          string to,
          condenser_api::legacy_asset amount,
+         condenser_api::legacy_asset fee,
          string memo,
          bool broadcast = false);
 
@@ -1134,10 +1136,10 @@ FC_API( steem::wallet::wallet_api,
         (vote_for_witness)
         (follow)
         (transfer)
-        (escrow_transfer)
-        (escrow_approve)
-        (escrow_dispute)
-        (escrow_release)
+//        (escrow_transfer)
+//        (escrow_approve)
+//        (escrow_dispute)
+//        (escrow_release)
         (transfer_to_vesting)
         (withdraw_vesting)
         (set_withdraw_vesting_route)
@@ -1145,10 +1147,10 @@ FC_API( steem::wallet::wallet_api,
         (publish_feed)
         (get_order_book)
         (get_open_orders)
-        (create_order)
-        (cancel_order)
-        (post_comment)
-        (vote)
+//        (create_order)
+//        (cancel_order)
+//        (post_comment)
+//        (vote)
         (set_transaction_expiration)
         (request_account_recovery)
         (recover_account)

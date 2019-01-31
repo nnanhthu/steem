@@ -258,16 +258,16 @@ namespace detail
                         case operation::tag<interest_operation>::value:
                         case operation::tag<transfer_operation>::value:
                         case operation::tag<liquidity_reward_operation>::value:
-                        case operation::tag<author_reward_operation>::value:
-                        case operation::tag<curation_reward_operation>::value:
-                        case operation::tag<comment_benefactor_reward_operation>::value:
+//                        case operation::tag<author_reward_operation>::value:
+//                        case operation::tag<curation_reward_operation>::value:
+//                        case operation::tag<comment_benefactor_reward_operation>::value:
                         case operation::tag<transfer_to_savings_operation>::value:
                         case operation::tag<transfer_from_savings_operation>::value:
                         case operation::tag<cancel_transfer_from_savings_operation>::value:
-                        case operation::tag<escrow_transfer_operation>::value:
-                        case operation::tag<escrow_approve_operation>::value:
-                        case operation::tag<escrow_dispute_operation>::value:
-                        case operation::tag<escrow_release_operation>::value:
+//                        case operation::tag<escrow_transfer_operation>::value:
+//                        case operation::tag<escrow_approve_operation>::value:
+//                        case operation::tag<escrow_dispute_operation>::value:
+//                        case operation::tag<escrow_release_operation>::value:
                         case operation::tag<fill_convert_request_operation>::value:
                         case operation::tag<fill_order_operation>::value:
                         case operation::tag<claim_reward_balance_operation>::value:
@@ -276,14 +276,14 @@ namespace detail
                               eacnt.transfer_history.emplace( item.first, api_operation_object( item.second, visitor.l_op ) );
                            }
                            break;
-                        case operation::tag<comment_operation>::value:
+//                        case operation::tag<comment_operation>::value:
                         //   eacnt.post_history[item.first] =  item.second;
-                           break;
-                        case operation::tag<limit_order_create_operation>::value:
-                        case operation::tag<limit_order_cancel_operation>::value:
+//                           break;
+//                        case operation::tag<limit_order_create_operation>::value:
+//                        case operation::tag<limit_order_cancel_operation>::value:
                         //   eacnt.market_history[item.first] =  item.second;
-                           break;
-                        case operation::tag<vote_operation>::value:
+//                           break;
+//                        case operation::tag<vote_operation>::value:
                         case operation::tag<account_witness_vote_operation>::value:
                         case operation::tag<account_witness_proxy_operation>::value:
                         //   eacnt.vote_history[item.first] =  item.second;
