@@ -131,7 +131,7 @@ namespace steem {
                           "Max block size cannot be more than 2MiB");
             }
             //Add constraint: Node must have at least STEEM_MIN_WITNESS_FUND vested coins to become a witness
-            FC_ASSERT( acc.reward_vesting_balance >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL), "Account does not have sufficient funds to be a witness." );
+            FC_ASSERT( acc.vesting_shares >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL), "Account does not have sufficient funds to be a witness." );
 
             const auto &by_witness_name_idx = _db.get_index<witness_index>().indices().get<by_name>();
             auto wit_itr = by_witness_name_idx.find(o.owner);
