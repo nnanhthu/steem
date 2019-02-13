@@ -36,8 +36,8 @@
 #else
 
 #define VESTS_SYMBOL_U64  (uint64_t('V') | (uint64_t('E') << 8) | (uint64_t('S') << 16) | (uint64_t('T') << 24)| (uint64_t('S') << 32)) //VESTS
-#define STEEM_SYMBOL_U64  (uint64_t('K') | (uint64_t('N') << 8) | (uint64_t('O') << 16) | (uint64_t('W') << 24)) //KNOW
-#define SBD_SYMBOL_U64    (uint64_t('E') | (uint64_t('U') << 8) | (uint64_t('R') << 16)) //EUR
+#define STEEM_SYMBOL_U64  (uint64_t('B') | (uint64_t('O') << 8) | (uint64_t('W') << 16) | (uint64_t('C') << 24)) //BOWC
+#define SBD_SYMBOL_U64    (uint64_t('B') | (uint64_t('E') << 8) | (uint64_t('O') << 16) | (uint64_t('S') << 24)) //BEOS
 
 #endif
 

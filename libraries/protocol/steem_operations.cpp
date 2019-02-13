@@ -33,7 +33,7 @@ namespace steem { namespace protocol {
    {
       validate_account_name( new_account_name );
       validate_account_name( creator );
-      FC_ASSERT( is_asset_type( fee, STEEM_SYMBOL ), "Account creation fee must be STEEM" );
+      FC_ASSERT( is_asset_type( fee, STEEM_SYMBOL ), "Account creation fee must be BOWC" );
       FC_ASSERT( is_asset_type( delegation, VESTS_SYMBOL ), "Delegation must be VESTS" );
 
       owner.validate();
@@ -145,7 +145,7 @@ namespace steem { namespace protocol {
    void claim_account_operation::validate()const
    {
       validate_account_name( creator );
-      FC_ASSERT( is_asset_type( fee, STEEM_SYMBOL ), "Account creation fee must be STEEM" );
+      FC_ASSERT( is_asset_type( fee, STEEM_SYMBOL ), "Account creation fee must be BOWC" );
       FC_ASSERT( fee >= asset( 0, STEEM_SYMBOL ), "Account creation fee cannot be negative" );
       FC_ASSERT( fee <= asset( STEEM_MAX_ACCOUNT_CREATION_FEE, STEEM_SYMBOL ), "Account creation fee cannot be too large" );
 
@@ -185,7 +185,7 @@ namespace steem { namespace protocol {
       validate_account_name( from );
       validate_account_name( to );
       //Validate transaction fee:
-      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Transaction fee must be EUR" );
+      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Transaction fee must be BEOS" );
       FC_ASSERT( fee.amount > 0, "Transfer fee cannot be negative" );
       //Validate amount
       FC_ASSERT( amount.symbol != VESTS_SYMBOL, "Transferring of Steem Power (STMP) is not allowed." );
