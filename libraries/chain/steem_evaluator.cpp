@@ -111,7 +111,7 @@ namespace steem {
         }
 
         void witness_update_evaluator::do_apply(const witness_update_operation &o) {
-            _db.get_account(o.owner); // verify owner exists
+            account_object acc = _db.get_account(o.owner); // verify owner exists
 
             if (_db.has_hardfork(STEEM_HARDFORK_0_14__410)) {
                 FC_ASSERT(o.props.account_creation_fee.symbol.is_canon());
@@ -131,8 +131,7 @@ namespace steem {
                           "Max block size cannot be more than 2MiB");
             }
             //Add constraint: Node must have at least STEEM_MIN_WITNESS_FUND vested coins to become a witness
-            FC_ASSERT(_db.get_balance(o.owner, VESTS_SYMBOL) >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL),
-                      "Account does not have sufficient funds to be a witness.");
+            FC_ASSERT( acc.reward_vesting_balance >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL), "Account does not have sufficient funds to be a witness." );
 
             const auto &by_witness_name_idx = _db.get_index<witness_index>().indices().get<by_name>();
             auto wit_itr = by_witness_name_idx.find(o.owner);
