@@ -111,7 +111,7 @@ namespace steem {
         }
 
         void witness_update_evaluator::do_apply(const witness_update_operation &o) {
-            account_object acc = _db.get_account(o.owner); // verify owner exists
+            const auto& acc = _db.get_account(o.owner); // verify owner exists
 
             if (_db.has_hardfork(STEEM_HARDFORK_0_14__410)) {
                 FC_ASSERT(o.props.account_creation_fee.symbol.is_canon());
