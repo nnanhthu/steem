@@ -1,5 +1,5 @@
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 #include <steem/jsonball/jsonball.hpp>
 #include <steem/chain/smt_objects/smt_market_maker.hpp>
@@ -41,4 +41,4 @@ const std::vector< rational_u64 >& get_mm_ticks()
 
 } }
 
-#endif
+//#endif

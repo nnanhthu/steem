@@ -229,7 +229,7 @@ fc::ecc::private_key database_fixture::generate_private_key(string seed)
    return fc::ecc::private_key::regenerate( fc::sha256::hash( seed ) );
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 asset_symbol_type database_fixture::get_new_smt_symbol( uint8_t token_decimal_places, chain::database* db )
 {
    // The list of available nais is not dependent on SMT desired precision (token_decimal_places).
@@ -239,7 +239,7 @@ asset_symbol_type database_fixture::get_new_smt_symbol( uint8_t token_decimal_pl
    // Note that token's precision is needed now, when creating actual symbol.
    return asset_symbol_type::from_nai( new_nai.to_nai(), token_decimal_places );
 }
-#endif
+//#endif
 
 void database_fixture::open_database()
 {
@@ -643,14 +643,14 @@ void database_fixture::validate_database()
    try
    {
       db->validate_invariants();
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
       db->validate_smt_invariants();
-#endif
+//#endif
    }
    FC_LOG_AND_RETHROW();
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 template< typename T >
 asset_symbol_type t_smt_database_fixture< T >::create_smt( const string& account_name, const fc::ecc::private_key& key,
@@ -852,7 +852,7 @@ template smt_capped_generation_policy t_smt_database_fixture< clean_database_fix
    uint32_t max_unit_ratio
 );
 
-#endif
+//#endif
 
 json_rpc_database_fixture::json_rpc_database_fixture()
 {

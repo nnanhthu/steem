@@ -4,7 +4,7 @@
 #include <steem/protocol/asset.hpp>
 #include <steem/protocol/misc_utilities.hpp>
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 #define SMT_MAX_UNIT_ROUTES            10
 #define SMT_MAX_UNIT_COUNT             20
@@ -424,4 +424,4 @@ FC_REFLECT_DERIVED(
    (extensions)
    )
    
-#endif
+//#endif

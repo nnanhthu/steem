@@ -570,14 +570,14 @@ struct verify_signatures_return
    bool valid;
 };
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 typedef void_type get_smt_next_identifier_args;
 
 struct get_smt_next_identifier_return
 {
    vector< asset_symbol_type > nais;
 };
-#endif
+//#endif
 
 } } } // steem::database_api
 
@@ -802,7 +802,7 @@ FC_REFLECT( steem::plugins::database_api::verify_signatures_args,
 FC_REFLECT( steem::plugins::database_api::verify_signatures_return,
    (valid) )
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 FC_REFLECT( steem::plugins::database_api::get_smt_next_identifier_return,
    (nais) )
-#endif
+//#endif

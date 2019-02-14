@@ -3,7 +3,7 @@
 #include <steem/chain/steem_object_types.hpp>
 #include <steem/protocol/smt_operations.hpp>
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 namespace steem { namespace chain {
 
@@ -294,4 +294,4 @@ FC_REFLECT( steem::chain::smt_event_token_object,
 CHAINBASE_SET_INDEX_TYPE( steem::chain::smt_token_object, steem::chain::smt_token_index )
 CHAINBASE_SET_INDEX_TYPE( steem::chain::smt_event_token_object, steem::chain::smt_event_token_index )
 
-#endif
+//#endif

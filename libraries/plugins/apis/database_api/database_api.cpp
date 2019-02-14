@@ -68,9 +68,9 @@ class database_api_impl
          (verify_authority)
          (verify_account_authority)
          (verify_signatures)
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          (get_smt_next_identifier)
-#endif
+//#endif
       )
 
       template< typename ResultType >
@@ -1440,7 +1440,7 @@ DEFINE_API_IMPL( database_api_impl, verify_signatures )
    return result;
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 //////////////////////////////////////////////////////////////////////
 //                                                                  //
 // SMT                                                              //
@@ -1453,7 +1453,7 @@ DEFINE_API_IMPL( database_api_impl, get_smt_next_identifier )
    result.nais = _db.get_smt_next_identifier();
    return result;
 }
-#endif
+//#endif
 
 DEFINE_LOCKLESS_APIS( database_api, (get_config)(get_version) )
 
@@ -1503,9 +1503,9 @@ DEFINE_READ_APIS( database_api,
    (verify_authority)
    (verify_account_authority)
    (verify_signatures)
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    (get_smt_next_identifier)
-#endif
+//#endif
 )
 
 } } } // steem::plugins::database_api

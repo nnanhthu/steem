@@ -137,12 +137,12 @@ class database_api
           */
          (verify_signatures)
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          /**
          * @return array of Numeric Asset Identifier (NAI) available to be used for new SMT to be created.
          */
          (get_smt_next_identifier)
-#endif
+//#endif
       )
 
    private:

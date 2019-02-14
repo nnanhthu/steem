@@ -25,9 +25,9 @@ namespace steem { namespace plugins { namespace condenser_api {
 
    typedef static_variant<
             protocol::comment_payout_beneficiaries
-   #ifdef STEEM_ENABLE_SMT
+   //#ifdef STEEM_ENABLE_SMT
             ,protocol::allowed_vote_assets
-   #endif
+   //#endif
          > legacy_comment_options_extensions;
 
    typedef vector< legacy_comment_options_extensions > legacy_comment_options_extensions_type;

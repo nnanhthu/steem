@@ -335,6 +335,7 @@ class wallet_api
        * @returns the brain key in its normalized form
        */
       string normalize_brain_key(string s) const;
+      condenser_api::legacy_signed_transaction create_token( string creator, string new_account_name, string json_meta, bool broadcast );
 
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
@@ -1120,6 +1121,7 @@ FC_API( steem::wallet::wallet_api,
         (get_withdraw_routes)
 
         /// transaction api
+        (create_token)
         (create_account)
         (create_account_with_keys)
         (create_account_delegated)
