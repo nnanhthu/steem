@@ -965,6 +965,10 @@ namespace steem {
             return my->_remote_api->get_block(num);
         }
 
+        asset_symbol_type wallet_api::get_available_smt(uint8_t decimals) {
+            return my->_remote_api->get_available_smt(decimals);
+        }
+
         vector <condenser_api::api_operation_object>
         wallet_api::get_ops_in_block(uint32_t block_num, bool only_virtual) {
             return my->_remote_api->get_ops_in_block(block_num, only_virtual);
@@ -1223,24 +1227,55 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
  * This method is used by faucets to create new SMT token controlled by control_account
  */
         condenser_api::legacy_signed_transaction wallet_api::create_token(
-                string creator,
-                string new_account_name,
-                string json_meta,
+                string control_account_name,
+                asset_symbol_type symbol,
+                asset smt_creation_fee,
+                //flat_set< account_name_type > auths,
                 bool broadcast) {
             try {
                 FC_ASSERT(!is_locked());
-                auto owner = suggest_brain_key();
-                auto active = suggest_brain_key();
-                auto posting = suggest_brain_key();
-                auto memo = suggest_brain_key();
-                import_key(owner.wif_priv_key);
-                import_key(active.wif_priv_key);
-                import_key(posting.wif_priv_key);
-                import_key(memo.wif_priv_key);
-                return create_account_with_keys(creator, new_account_name, json_meta, owner.pub_key, active.pub_key,
-                                                posting.pub_key, memo.pub_key, broadcast);
+                smt_create_operation op;
+                op.control_account = control_account_name;
+                op.symbol = symbol;
+                op.precision = symbol.decimals();
+                op.smt_creation_fee = smt_creation_fee;
+//                op.get_required_owner_authorities( auths );
+//                op.get_required_posting_authorities( auths );
+//                op.get_required_active_authorities( auths );
+
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                return my->sign_transaction(tx, broadcast);
             }
-            FC_CAPTURE_AND_RETHROW((creator)(new_account_name)(json_meta))
+            FC_CAPTURE_AND_RETHROW((control_account_name)(symbol)(smt_creation_fee))
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::create_token_without_symbol(
+                string control_account_name,
+                uint8_t decimals,
+                asset smt_creation_fee,
+                //flat_set< account_name_type > auths,
+                bool broadcast) {
+            try {
+                FC_ASSERT(!is_locked());
+                smt_create_operation op;
+                op.control_account = control_account_name;
+                op.symbol = get_available_smt(decimals);
+                op.precision = decimals;
+                op.smt_creation_fee = smt_creation_fee;
+//                op.get_required_owner_authorities( auths );
+//                op.get_required_posting_authorities( auths );
+//                op.get_required_active_authorities( auths );
+
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                return my->sign_transaction(tx, broadcast);
+            }
+            FC_CAPTURE_AND_RETHROW((control_account_name)(decimals)(smt_creation_fee))
         }
 
 /**

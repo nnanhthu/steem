@@ -335,8 +335,16 @@ class wallet_api
        * @returns the brain key in its normalized form
        */
       string normalize_brain_key(string s) const;
-      condenser_api::legacy_signed_transaction create_token( string creator, string new_account_name, string json_meta, bool broadcast );
 
+      condenser_api::legacy_signed_transaction create_token( string control_account_name,
+                                                           asset_symbol_type symbol,
+                                                           asset smt_creation_fee,
+                                                           bool broadcast );
+
+      condenser_api::legacy_signed_transaction create_token_without_symbol( string control_account_name,
+                                                                          uint8_t decimals,
+                                                                          asset smt_creation_fee,
+                                                                          bool broadcast );
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
        *  will be controlable by this wallet. There is a fee associated with account creation
@@ -1069,6 +1077,8 @@ class wallet_api
          condenser_api::legacy_asset reward_sbd,
          condenser_api::legacy_asset reward_vests,
          bool broadcast );
+
+      asset_symbol_type get_available_smt( uint8_t decimals );
 };
 
 struct plain_keys {
@@ -1122,6 +1132,7 @@ FC_API( steem::wallet::wallet_api,
 
         /// transaction api
         (create_token)
+        (create_token_without_symbol)
         (create_account)
         (create_account_with_keys)
         (create_account_delegated)
@@ -1173,6 +1184,7 @@ FC_API( steem::wallet::wallet_api,
 
         (get_active_witnesses)
         (get_transaction)
+        (get_available_smt)
       )
 
 FC_REFLECT( steem::wallet::memo_data, (from)(to)(nonce)(check)(encrypted) )

@@ -1014,6 +1014,7 @@ DEFINE_API_ARGS( get_trade_history,                      vector< variant >,   ve
 DEFINE_API_ARGS( get_recent_trades,                      vector< variant >,   vector< market_trade > )
 DEFINE_API_ARGS( get_market_history,                     vector< variant >,   vector< market_history::bucket_object > )
 DEFINE_API_ARGS( get_market_history_buckets,             vector< variant >,   flat_set< uint32_t > )
+DEFINE_API_ARGS( get_available_smt,                      vector< variant >,   asset_symbol_type )
 
 #undef DEFINE_API_ARGS
 
@@ -1108,6 +1109,7 @@ public:
       (get_recent_trades)
       (get_market_history)
       (get_market_history_buckets)
+      (get_available_smt)
    )
 
    private:

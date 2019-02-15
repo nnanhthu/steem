@@ -429,4 +429,9 @@ flat_set< uint32_t > remote_node_api::get_market_history_buckets()
    FC_ASSERT( false );
 }
 
+asset_symbol_type remote_node_api::get_available_smt( uint8_t )
+{
+   FC_ASSERT( false );
+}
+
 } }
