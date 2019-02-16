@@ -331,7 +331,13 @@
 
 #define SMT_MAX_VOTABLE_ASSETS 2
 #define SMT_VESTING_WITHDRAW_INTERVAL_SECONDS   (60*60*24*7) /// 1 week per interval
-#define SMT_UPVOTE_LOCKOUT                      (60*60*12)  /// 12 hours
+#define SMT_UPVOTE_LOCKOUT                      (60*60*12)   /// 12 hours
+#define SMT_EMISSION_MIN_INTERVAL_SECONDS       (60*60*6)    /// 6 hours
+#define SMT_EMIT_INDEFINITELY                   (std::numeric_limits<uint32_t>::max())
+#define SMT_MAX_NOMINAL_VOTES_PER_DAY           (1000)
+#define SMT_MAX_VOTES_PER_REGENERATION          ((SMT_MAX_NOMINAL_VOTES_PER_DAY * SMT_VESTING_WITHDRAW_INTERVAL_SECONDS) / 86400)
+#define SMT_DEFAULT_VOTES_PER_REGEN_PERIOD      (50)
+#define SMT_DEFAULT_PERCENT_CURATION_REWARDS    (25 * STEEM_1_PERCENT)
 
 //#endif /// STEEM_ENABLE_SMT
 

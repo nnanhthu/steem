@@ -1077,8 +1077,6 @@ class wallet_api
          condenser_api::legacy_asset reward_sbd,
          condenser_api::legacy_asset reward_vests,
          bool broadcast );
-
-      asset_symbol_type get_available_smt( uint8_t decimals );
 };
 
 struct plain_keys {
@@ -1184,7 +1182,6 @@ FC_API( steem::wallet::wallet_api,
 
         (get_active_witnesses)
         (get_transaction)
-        (get_available_smt)
       )
 
 FC_REFLECT( steem::wallet::memo_data, (from)(to)(nonce)(check)(encrypted) )

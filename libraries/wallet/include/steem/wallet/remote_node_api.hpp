@@ -106,7 +106,6 @@ struct remote_node_api
    vector< condenser_api::market_trade > get_recent_trades( uint32_t );
    vector< market_history::bucket_object > get_market_history( uint32_t, time_point_sec, time_point_sec );
    flat_set< uint32_t > get_market_history_buckets();
-   asset_symbol_type get_available_smt( uint8_t );
 };
 
 } }
@@ -197,5 +196,4 @@ FC_API( steem::wallet::remote_node_api,
         (get_recent_trades)
         (get_market_history)
         (get_market_history_buckets)
-        (get_available_smt)
       )

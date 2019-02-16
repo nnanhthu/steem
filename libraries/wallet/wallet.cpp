@@ -965,10 +965,6 @@ namespace steem {
             return my->_remote_api->get_block(num);
         }
 
-        asset_symbol_type wallet_api::get_available_smt(uint8_t decimals) {
-            return my->_remote_api->get_available_smt(decimals);
-        }
-
         vector <condenser_api::api_operation_object>
         wallet_api::get_ops_in_block(uint32_t block_num, bool only_virtual) {
             return my->_remote_api->get_ops_in_block(block_num, only_virtual);
@@ -1262,7 +1258,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 FC_ASSERT(!is_locked());
                 smt_create_operation op;
                 op.control_account = control_account_name;
-                op.symbol = get_available_smt(decimals);
+                //op.symbol = get_available_smt(decimals);
                 op.precision = decimals;
                 op.smt_creation_fee = smt_creation_fee;
 //                op.get_required_owner_authorities( auths );

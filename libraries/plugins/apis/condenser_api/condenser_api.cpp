@@ -131,7 +131,6 @@ namespace detail
             (get_recent_trades)
             (get_market_history)
             (get_market_history_buckets)
-            (get_available_smt)
          )
 
          void recursively_fetch_content( state& _state, tags::discussion& root, set<string>& referenced_accounts );
@@ -1905,19 +1904,6 @@ namespace detail
       return _market_history_api->get_market_history_buckets( {} ).bucket_sizes;
    }
 
-DEFINE_API_IMPL( condenser_api_impl, get_available_smt )
-{
-CHECK_ARG_SIZE( 1 )
-uint8_t decimals = args[0].as< uint8_t >();
-database_api::get_smt_next_identifier_return gsni = _database_api->get_smt_next_identifier( {} );
-// The list of available nais is not dependent on SMT desired precision (token_decimal_places).
-auto available_nais =  gsni.nais;
-FC_ASSERT( available_nais.size() > 0, "No available nai returned by get_smt_next_identifier." );
-const asset_symbol_type& new_nai = available_nais[0];
-// Note that token's precision is needed now, when creating actual symbol.
-return asset_symbol_type::from_nai( new_nai.to_nai(), decimals );
-}
-
    /**
     *  This call assumes root already stored as part of state, it will
     *  modify root.replies to contain links to the reply posts and then
@@ -2265,7 +2251,6 @@ DEFINE_READ_APIS( condenser_api,
    (get_trade_history)
    (get_recent_trades)
    (get_market_history)
-   (get_available_smt)
 )
 
 } } } // steem::plugins::condenser_api
