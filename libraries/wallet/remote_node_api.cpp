@@ -429,4 +429,9 @@ flat_set< uint32_t > remote_node_api::get_market_history_buckets()
    FC_ASSERT( false );
 }
 
+optional< database_api::get_nai_pool_return > remote_node_api::get_nai_pool()
+{
+   FC_ASSERT( false );
+}
+
 } }

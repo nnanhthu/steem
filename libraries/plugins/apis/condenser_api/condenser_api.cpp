@@ -131,6 +131,7 @@ namespace detail
             (get_recent_trades)
             (get_market_history)
             (get_market_history_buckets)
+            (get_nai_pool)
          )
 
          void recursively_fetch_content( state& _state, tags::discussion& root, set<string>& referenced_accounts );
@@ -294,6 +295,7 @@ namespace detail
                         case operation::tag<pow_operation>::value:
                         case operation::tag<custom_operation>::value:
                         case operation::tag<producer_reward_operation>::value:
+                        case operation::tag<smt_create_operation>::value:
                         default:
                            if( item.second.op.visit( visitor ) )
                            {
@@ -1904,6 +1906,13 @@ namespace detail
       return _market_history_api->get_market_history_buckets( {} ).bucket_sizes;
    }
 
+    DEFINE_API_IMPL( condenser_api_impl, get_nai_pool )
+    {
+        CHECK_ARG_SIZE( 0 )
+
+        return _database_api->get_nai_pool( {} );
+    }
+
    /**
     *  This call assumes root already stored as part of state, it will
     *  modify root.replies to contain links to the reply posts and then
@@ -2251,6 +2260,7 @@ DEFINE_READ_APIS( condenser_api,
    (get_trade_history)
    (get_recent_trades)
    (get_market_history)
+   (get_nai_pool)
 )
 
 } } } // steem::plugins::condenser_api

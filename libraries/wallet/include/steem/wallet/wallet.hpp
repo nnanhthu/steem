@@ -343,7 +343,7 @@ class wallet_api
 
       condenser_api::legacy_signed_transaction create_token_without_symbol( string control_account_name,
                                                                           uint8_t decimals,
-                                                                          asset smt_creation_fee,
+                                                                          //asset smt_creation_fee,
                                                                           bool broadcast );
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
