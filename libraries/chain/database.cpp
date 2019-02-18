@@ -2909,6 +2909,8 @@ void database::initialize_indexes()
    add_core_index< smt_event_token_index                   >(*this);
    add_core_index< account_regular_balance_index           >(*this);
    add_core_index< account_rewards_balance_index           >(*this);
+   add_core_index< nai_pool_index                          >(*this);
+   add_core_index< smt_token_emissions_index               >(*this);
 //#endif
 
    _plugin_index_signal();
@@ -5211,20 +5213,21 @@ void database::apply_hardfork( uint32_t hardfork )
             {
                wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, STEEM_SYMBOL );
             });
+            replenish_nai_pool( *this );
          }
          break;
-      case STEEM_SMT_HARDFORK:
-      {
-//#ifdef STEEM_ENABLE_SMT
-         replenish_nai_pool( *this );
-//#endif
-//         modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
-//         {
-//            gpo.required_actions_partition_percent = 25 * STEEM_1_PERCENT;
-//         });
-
-         break;
-      }
+//      case STEEM_SMT_HARDFORK:
+//      {
+////#ifdef STEEM_ENABLE_SMT
+//         replenish_nai_pool( *this );
+////#endif
+////         modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
+////         {
+////            gpo.required_actions_partition_percent = 25 * STEEM_1_PERCENT;
+////         });
+//
+//         break;
+//      }
       default:
          break;
    }
