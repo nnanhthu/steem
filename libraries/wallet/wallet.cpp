@@ -1256,36 +1256,20 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 bool broadcast) {
             try {
                 FC_ASSERT(!is_locked());
-                /*
-                smt_create_operation op;
-                op.control_account = control_account_name;
-                asset_symbol_type a;
-                op.symbol = a.from_asset_num(320000016);
-                FC_ASSERT(op.symbol.asset_num = 320000016, "Asset not match",("actual", op.symbol.asset_num));
-
-                op.precision = op.symbol.decimals();
-                //op.symbol = get_available_smt(decimals);
-                //op.precision = decimals;
-                op.smt_creation_fee = asset(1, STEEM_SYMBOL);
-                */
 
                 //Get available smt
                 //The list of available nais is not dependent on SMT desired precision (token_decimal_places).
-//                static std::vector< asset_symbol_type >::size_type next_nai = 0;
-//                auto available_nais = my->_remote_api->get_nai_pool()->nai_pool;
-//                FC_ASSERT( available_nais.size() > 0, "No available nai returned by get_nai_pool." );
-//                const asset_symbol_type& new_nai = available_nais[ next_nai++ % available_nais.size() ];
-//                // Note that token's precision is needed now, when creating actual symbol.
-//                asset_symbol_type symbol = asset_symbol_type::from_nai( new_nai.to_nai(), decimals );
+                static std::vector< asset_symbol_type >::size_type next_nai = 0;
+                auto available_nais = my->_remote_api->get_nai_pool()->nai_pool;
+                FC_ASSERT( available_nais.size() > 0, "No available nai returned by get_nai_pool." );
+                const asset_symbol_type& new_nai = available_nais[ next_nai++ % available_nais.size() ];
+                // Note that token's precision is needed now, when creating actual symbol.
+                asset_symbol_type symbol = asset_symbol_type::from_nai( new_nai.to_nai(), decimals );
                 smt_create_operation op;
                 op.control_account = control_account_name;
-                //op.symbol = symbol;
-                asset_symbol_type a;
-                op.symbol = a.from_asset_num(320000016);
-                FC_ASSERT(op.symbol.asset_num = 320000016, "Asset not match",("actual", op.symbol.asset_num));
-
+                op.symbol = symbol;
                 op.precision = op.symbol.decimals();
-                op.smt_creation_fee = asset(1, STEEM_SYMBOL);
+                op.smt_creation_fee = asset(1000, SBD_SYMBOL); //This fee is fixed, set by config
 
 //                op.get_required_owner_authorities( auths );
 //                op.get_required_posting_authorities( auths );
