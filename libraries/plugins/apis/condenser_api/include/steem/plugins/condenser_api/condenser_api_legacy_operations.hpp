@@ -1021,6 +1021,164 @@ namespace steem { namespace plugins { namespace condenser_api {
                 asset_symbol_type symbol;
             };
 
+            struct legacy_smt_setup_operation
+            {
+                legacy_smt_setup_operation() {}
+                legacy_smt_setup_operation( const smt_setup_operation& op ) :
+                        decimal_places( op.decimal_places ),
+                        max_supply( op.max_supply ),
+                        initial_generation_policy( op.initial_generation_policy ),
+                        generation_begin_time(op.generation_begin_time),
+                        generation_end_time(op.generation_end_time),
+                        announced_launch_time(op.announced_launch_time),
+                        launch_expiration_time(op.launch_expiration_time),
+                        extensions( op.extensions ),
+                        control_account( op.control_account ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_setup_operation()const
+                {
+                    smt_setup_operation op;
+                    op.decimal_places = decimal_places;
+                    op.max_supply = max_supply;
+                    op.initial_generation_policy = initial_generation_policy;
+                    op.generation_begin_time = generation_begin_time;
+                    op.generation_end_time = generation_end_time;
+                    op.announced_launch_time = announced_launch_time;
+                    op.launch_expiration_time = launch_expiration_time;
+                    op.extensions = extensions;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                uint8_t                 decimal_places;
+                int64_t                 max_supply;
+
+                smt_generation_policy   initial_generation_policy;
+
+                time_point_sec          generation_begin_time;
+                time_point_sec          generation_end_time;
+                time_point_sec          announced_launch_time;
+                time_point_sec          launch_expiration_time;
+                extensions_type         extensions;
+                account_name_type       control_account;
+                asset_symbol_type       symbol;
+            };
+
+            struct legacy_smt_setup_emissions_operation
+            {
+                legacy_smt_setup_emissions_operation() {}
+                legacy_smt_setup_emissions_operation( const smt_setup_emissions_operation& op ) :
+                        schedule_time(op.schedule_time),
+                        emissions_unit(op.emissions_unit),
+                        interval_seconds(op.interval_seconds),
+                        interval_count(op.interval_count),
+                        lep_time(op.lep_time),
+                        rep_time(op.rep_time),
+                        lep_abs_amount(op.lep_abs_amount),
+                        rep_abs_amount(op.rep_abs_amount),
+                        lep_rel_amount_numerator(op.lep_rel_amount_numerator),
+                        rep_rel_amount_numerator(op.rep_rel_amount_numerator),
+                        rel_amount_denom_bits(op.rel_amount_denom_bits),
+                        extensions( op.extensions ),
+                        control_account( op.control_account ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_setup_emissions_operation()const
+                {
+                    smt_setup_emissions_operation op;
+                    op.schedule_time = schedule_time;
+                    op.emissions_unit = emissions_unit;
+                    op.interval_seconds = interval_seconds;
+                    op.interval_count = interval_count;
+                    op.lep_time = lep_time;
+                    op.rep_time = rep_time;
+                    op.lep_abs_amount = lep_abs_amount;
+                    op.rep_abs_amount = rep_abs_amount;
+                    op.lep_rel_amount_numerator = lep_rel_amount_numerator;
+                    op.rep_rel_amount_numerator = rep_rel_amount_numerator;
+                    op.rel_amount_denom_bits = rel_amount_denom_bits;
+                    op.extensions = extensions;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                time_point_sec      schedule_time;
+                smt_emissions_unit  emissions_unit;
+
+                uint32_t            interval_seconds;
+                uint32_t            interval_count;
+
+                time_point_sec      lep_time;
+                time_point_sec      rep_time;
+
+                asset               lep_abs_amount;
+                asset               rep_abs_amount;
+                uint32_t            lep_rel_amount_numerator;
+                uint32_t            rep_rel_amount_numerator;
+
+                uint8_t             rel_amount_denom_bits;
+                extensions_type   extensions;
+                account_name_type control_account;
+                asset_symbol_type symbol;
+            };
+
+            struct legacy_smt_set_setup_parameters_operation
+            {
+                legacy_smt_set_setup_parameters_operation() {}
+                legacy_smt_set_setup_parameters_operation( const smt_set_setup_parameters_operation& op ) :
+                        setup_parameters(op.setup_parameters),
+                        extensions( op.extensions ),
+                        control_account( op.control_account ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_set_setup_parameters_operation()const
+                {
+                    smt_set_setup_parameters_operation op;
+                    op.setup_parameters = setup_parameters;
+                    op.extensions = extensions;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                flat_set< smt_setup_parameter >  setup_parameters;
+                extensions_type   extensions;
+                account_name_type control_account;
+                asset_symbol_type symbol;
+            };
+
+            struct legacy_smt_set_runtime_parameters_operation
+            {
+                legacy_smt_set_runtime_parameters_operation() {}
+                legacy_smt_set_runtime_parameters_operation( const smt_set_runtime_parameters_operation& op ) :
+                        runtime_parameters(op.runtime_parameters),
+                        extensions( op.extensions ),
+                        control_account( op.control_account ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_set_runtime_parameters_operation()const
+                {
+                    smt_set_runtime_parameters_operation op;
+                    op.runtime_parameters = runtime_parameters;
+                    op.extensions = extensions;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                flat_set< smt_runtime_parameter >   runtime_parameters;
+                extensions_type   extensions;
+                account_name_type control_account;
+                asset_symbol_type symbol;
+            };
+
             typedef fc::static_variant<
 //            legacy_vote_operation,
 //            legacy_comment_operation,
@@ -1080,7 +1238,11 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_return_vesting_delegation_operation,
             //           legacy_comment_benefactor_reward_operation,
             legacy_producer_reward_operation,
-            legacy_smt_create_operation
+            legacy_smt_create_operation,
+            legacy_smt_setup_operation,
+            legacy_smt_setup_emissions_operation,
+            legacy_smt_set_setup_parameters_operation,
+            legacy_smt_set_runtime_parameters_operation
             > legacy_operation;
 
             struct legacy_operation_conversion_visitor
@@ -1311,6 +1473,29 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return true;
                 }
 
+                bool operator()( const smt_setup_operation& op )const
+                {
+                    l_op = legacy_smt_setup_operation( op );
+                    return true;
+                }
+
+                bool operator()( const smt_setup_emissions_operation& op )const
+                {
+                    l_op = legacy_smt_setup_emissions_operation( op );
+                    return true;
+                }
+
+                bool operator()( const smt_set_setup_parameters_operation& op )const
+                {
+                    l_op = legacy_smt_set_setup_parameters_operation( op );
+                    return true;
+                }
+
+                bool operator()( const smt_set_runtime_parameters_operation& op )const
+                {
+                    l_op = legacy_smt_set_runtime_parameters_operation( op );
+                    return true;
+                }
 
                 // Should only be SMT ops
                 template< typename T >
@@ -1483,6 +1668,26 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return operation( smt_create_operation( op ) );
                 }
 
+                operation operator()( const legacy_smt_setup_operation& op )const
+                {
+                    return operation( smt_setup_operation( op ) );
+                }
+
+                operation operator()( const legacy_smt_setup_emissions_operation& op )const
+                {
+                    return operation( smt_setup_emissions_operation( op ) );
+                }
+
+                operation operator()( const legacy_smt_set_setup_parameters_operation& op )const
+                {
+                    return operation( smt_set_setup_parameters_operation( op ) );
+                }
+
+                operation operator()( const legacy_smt_set_runtime_parameters_operation& op )const
+                {
+                    return operation( smt_set_runtime_parameters_operation( op ) );
+                }
+
                 template< typename T >
                 operation operator()( const T& t )const
                 {
@@ -1609,6 +1814,42 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_claim_account_operation, (crea
 FC_REFLECT( steem::plugins::condenser_api::legacy_smt_create_operation,
 (smt_creation_fee)
         (precision)
+        (extensions)
+        (control_account)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_operation,
+(decimal_places)
+        (max_supply)
+        (initial_generation_policy)
+        (generation_begin_time)
+        (generation_end_time)
+        (announced_launch_time)
+        (launch_expiration_time)
+        (extensions)
+        (control_account)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_emissions_operation,
+(schedule_time)
+        (emissions_unit)
+        (interval_seconds)
+        (interval_count)
+        (lep_time)
+        (rep_time)
+        (lep_abs_amount)
+        (rep_abs_amount)
+        (lep_rel_amount_numerator)
+        (rep_rel_amount_numerator)
+        (rel_amount_denom_bits)
+        (extensions)
+        (control_account)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_setup_parameters_operation,
+(setup_parameters)
+        (extensions)
+        (control_account)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_runtime_parameters_operation,
+(runtime_parameters)
         (extensions)
         (control_account)
 (symbol) )

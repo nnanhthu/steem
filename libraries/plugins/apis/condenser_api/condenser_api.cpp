@@ -296,6 +296,10 @@ namespace detail
                         case operation::tag<custom_operation>::value:
                         case operation::tag<producer_reward_operation>::value:
                         case operation::tag<smt_create_operation>::value:
+                        case operation::tag<smt_setup_operation>::value:
+                        case operation::tag<smt_setup_emissions_operation>::value:
+                        case operation::tag<smt_set_setup_parameters_operation>::value:
+                        case operation::tag<smt_set_runtime_parameters_operation>::value:
                         default:
                            if( item.second.op.visit( visitor ) )
                            {
