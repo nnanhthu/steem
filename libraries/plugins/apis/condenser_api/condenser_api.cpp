@@ -132,6 +132,8 @@ namespace detail
             (get_market_history)
             (get_market_history_buckets)
             (get_nai_pool)
+            (get_balance)
+                 (update_balance)
          )
 
          void recursively_fetch_content( state& _state, tags::discussion& root, set<string>& referenced_accounts );
@@ -1917,6 +1919,21 @@ namespace detail
         return _database_api->get_nai_pool( {} );
     }
 
+    DEFINE_API_IMPL( condenser_api_impl, get_balance )
+    {
+         CHECK_ARG_SIZE( 2 )
+
+         return _database_api->get_balance( {args[0].as< account_name_type >(), args[1].as< asset_symbol_type >()} );
+    }
+
+DEFINE_API_IMPL( condenser_api_impl, update_balance )
+{
+CHECK_ARG_SIZE( 2 )
+
+_db.adjust_balance( args[0].as< account_name_type >(), args[1].as< asset >() );
+return true;
+}
+
    /**
     *  This call assumes root already stored as part of state, it will
     *  modify root.replies to contain links to the reply posts and then
@@ -2265,6 +2282,9 @@ DEFINE_READ_APIS( condenser_api,
    (get_recent_trades)
    (get_market_history)
    (get_nai_pool)
+   (get_balance)
+   //Remove later
+(update_balance)
 )
 
 } } } // steem::plugins::condenser_api

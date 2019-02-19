@@ -76,6 +76,7 @@ class database_api_impl
          (find_smt_tokens)
          (list_smt_token_emissions)
          (find_smt_token_emissions)
+         (get_balance)
 //#endif
       )
 
@@ -1586,6 +1587,13 @@ DEFINE_API_IMPL( database_api_impl, find_smt_token_emissions )
    return result;
 }
 
+DEFINE_API_IMPL( database_api_impl, get_balance )
+{
+   get_balance_return result;
+   result.balance = _db.get_balance(args.account, args.symbol);
+   return result;
+}
+
 //#endif
 
 DEFINE_LOCKLESS_APIS( database_api, (get_config)(get_version) )
@@ -1642,6 +1650,7 @@ DEFINE_READ_APIS( database_api,
    (find_smt_tokens)
    (list_smt_token_emissions)
    (find_smt_token_emissions)
+   (get_balance)
 //#endif
 )
 

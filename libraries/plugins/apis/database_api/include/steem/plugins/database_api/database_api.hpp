@@ -148,6 +148,7 @@ class database_api
 
          (list_smt_token_emissions)
          (find_smt_token_emissions)
+         (get_balance)
 //#endif
       )
 

@@ -434,4 +434,13 @@ optional< database_api::get_nai_pool_return > remote_node_api::get_nai_pool()
    FC_ASSERT( false );
 }
 
+optional< database_api::get_balance_return > remote_node_api::get_balance(account_name_type, asset_symbol_type)
+{
+   FC_ASSERT( false );
+}
+
+        bool remote_node_api::update_balance(account_name_type, asset)
+        {
+            FC_ASSERT( false );
+        }
 } }

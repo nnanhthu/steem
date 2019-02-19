@@ -545,6 +545,17 @@ struct find_smt_token_emissions_args
 
 typedef list_smt_token_emissions_return find_smt_token_emissions_return;
 
+struct get_balance_args
+{
+    account_name_type account;
+    asset_symbol_type symbol;
+};
+
+struct get_balance_return
+{
+    asset balance;
+};
+
 //#endif
 
 } } } // steem::database_api
@@ -747,5 +758,11 @@ FC_REFLECT( steem::plugins::database_api::list_smt_token_emissions_return,
 
 FC_REFLECT( steem::plugins::database_api::find_smt_token_emissions_args,
    (asset_symbol) )
+
+FC_REFLECT( steem::plugins::database_api::get_balance_args,
+(account)(symbol) )
+
+FC_REFLECT( steem::plugins::database_api::get_balance_return,
+(balance) )
 
 //#endif

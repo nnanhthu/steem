@@ -345,6 +345,34 @@ class wallet_api
                                                                           uint8_t decimals,
                                                                           //asset smt_creation_fee,
                                                                           bool broadcast );
+
+      condenser_api::legacy_signed_transaction setup_token_params( string control_account_name,
+                                                                          string nai,
+                                                                          uint8_t decimals,
+                                                                          int64_t max_supply,
+                                                                          bool broadcast );
+
+    condenser_api::legacy_signed_transaction transfer_token(
+            string from,
+            string to,
+            share_type amount,
+            string nai,
+            uint8_t decimals,
+            condenser_api::legacy_asset fee,
+            string memo,
+            bool broadcast);
+
+    asset get_balance(
+            string account,
+            string nai,
+            uint8_t decimals
+            );
+    bool update_balance(
+            string account,
+            string nai,
+            uint8_t decimals,
+            share_type amount
+            );
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
        *  will be controlable by this wallet. There is a fee associated with account creation
@@ -1131,6 +1159,10 @@ FC_API( steem::wallet::wallet_api,
         /// transaction api
         (create_token)
         (create_token_without_symbol)
+        (setup_token_params)
+        (transfer_token)
+        (get_balance)
+        (update_balance)
         (create_account)
         (create_account_with_keys)
         (create_account_delegated)

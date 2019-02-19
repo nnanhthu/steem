@@ -1284,6 +1284,171 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             FC_CAPTURE_AND_RETHROW((control_account_name)(decimals))
         }
 
+        smt_generation_unit get_generation_unit( const flat_map< account_name_type, uint16_t >& steem_unit = flat_map< account_name_type, uint16_t >(),
+                const flat_map< account_name_type, uint16_t >& token_unit = flat_map< account_name_type, uint16_t >())
+        {
+            smt_generation_unit ret;
+
+            ret.steem_unit = steem_unit;
+            ret.token_unit = token_unit;
+
+            return ret;
+        }
+
+        smt_cap_commitment get_cap_commitment( share_type amount = 0, uint128_t nonce = 0 )
+        {
+            smt_cap_commitment ret;
+            if( nonce == 0)
+                ret.fillin_nonhidden_value( amount );
+            else
+            {
+                smt_revealed_cap reveal;
+                reveal.amount = amount;
+                reveal.nonce = nonce;
+
+                ret.hash = fc::sha256::hash( reveal );
+                ret.lower_bound = SMT_MIN_HARD_CAP_STEEM_UNITS; // See smt_capped_generation_policy::validate
+                ret.upper_bound = STEEM_MAX_SHARE_SUPPLY/10;    // See smt_capped_generation_policy::validate
+            }
+
+            return ret;
+        }
+
+        smt_capped_generation_policy get_capped_generation_policy
+                (
+                        const smt_generation_unit& pre_soft_cap_unit = smt_generation_unit(),
+                        const smt_generation_unit& post_soft_cap_unit = smt_generation_unit(),
+                        const smt_cap_commitment& min_steem_units_commitment = smt_cap_commitment(),
+                        const smt_cap_commitment& hard_cap_steem_units_commitment = smt_cap_commitment(),
+                        uint16_t soft_cap_percent = 0,
+                        uint32_t min_unit_ratio = 0,
+                        uint32_t max_unit_ratio = 0
+                )
+        {
+            smt_capped_generation_policy ret;
+            ret.pre_soft_cap_unit = pre_soft_cap_unit;
+            ret.post_soft_cap_unit = post_soft_cap_unit;
+
+            ret.min_steem_units_commitment = min_steem_units_commitment;
+            ret.hard_cap_steem_units_commitment = hard_cap_steem_units_commitment;
+
+            ret.soft_cap_percent = soft_cap_percent;
+
+            ret.min_unit_ratio = min_unit_ratio;
+            ret.max_unit_ratio = max_unit_ratio;
+            return ret;
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::setup_token_params(
+                string control_account_name,
+                string nai,
+                uint8_t decimals,
+                int64_t max_supply,
+                bool broadcast) {
+            try {
+                FC_ASSERT(!is_locked());
+
+                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
+                smt_setup_operation op;
+                op.control_account = control_account_name;
+                op.symbol = symbol;
+                op.decimal_places = op.symbol.decimals();
+                op.max_supply = max_supply;
+
+                smt_capped_generation_policy gp = get_capped_generation_policy
+                        (
+                                get_generation_unit( { { control_account_name, 1 } }, { { "test1", 2 } } )/*pre_soft_cap_unit*/,
+                                get_generation_unit()/*post_soft_cap_unit*/,
+                                get_cap_commitment( 1 )/*min_steem_units_commitment*/,
+                                get_cap_commitment( SMT_MIN_HARD_CAP_STEEM_UNITS + 1 )/*hard_cap_steem_units_commitment*/,
+                                STEEM_100_PERCENT/*soft_cap_percent*/,
+                                1/*min_unit_ratio*/,
+                                2/*max_unit_ratio*/
+                        );
+
+                fc::time_point_sec start_time        = fc::variant( "2021-01-01T00:00:00" ).as< fc::time_point_sec >();
+                fc::time_point_sec start_time_plus_1 = start_time + fc::seconds(1);
+
+                op.initial_generation_policy = gp;
+                op.generation_begin_time = start_time;
+                op.generation_end_time = op.announced_launch_time = op.launch_expiration_time = start_time_plus_1;
+
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                condenser_api::legacy_signed_transaction tx_result = my->sign_transaction(tx, broadcast);
+                //Update balance of control_account with max_supply
+                if(max_supply > 0){
+                    update_balance(control_account_name, nai, decimals, max_supply);
+                }
+                return tx_result;
+            }
+            FC_CAPTURE_AND_RETHROW((control_account_name)(nai)(decimals)(max_supply))
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::transfer_token(
+                string from,
+                string to,
+                share_type amount,
+                string nai,
+                uint8_t decimals,
+                condenser_api::legacy_asset fee,
+                string memo,
+                bool broadcast) {
+            try {
+                FC_ASSERT(!is_locked());
+                check_memo(memo, get_account(from));
+                transfer_operation op;
+                op.from = from;
+                op.to = to;
+                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
+                condenser_api::legacy_asset la;
+                la.amount = amount;
+                la.symbol = symbol;
+                op.amount = la.to_asset();
+                op.fee = fee.to_asset();
+
+                op.memo = get_encrypted_memo(from, to, memo);
+
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                return my->sign_transaction(tx, broadcast);
+            }
+            FC_CAPTURE_AND_RETHROW((from)(to)(amount)(fee)(memo)(broadcast))
+        }
+
+        asset wallet_api::get_balance(
+                string account,
+                string nai,
+                uint8_t decimals) {
+            try {
+                FC_ASSERT(!is_locked());
+
+                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
+                auto balance = my->_remote_api->get_balance(account, symbol)->balance;
+                return balance;
+            }
+            FC_CAPTURE_AND_RETHROW((account)(nai)(decimals))
+        }
+
+        bool wallet_api::update_balance(
+                string account,
+                string nai,
+                uint8_t decimals,
+                share_type amount) {
+            try {
+                FC_ASSERT(!is_locked());
+
+                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
+                asset a = asset(amount, symbol);
+                return my->_remote_api->update_balance(account, a);
+            }
+            FC_CAPTURE_AND_RETHROW((account)(nai)(decimals)(amount))
+        }
+
 /**
  * This method is used by faucets to create new accounts for other users which must
  * provide their desired keys. The resulting account may not be controllable by this

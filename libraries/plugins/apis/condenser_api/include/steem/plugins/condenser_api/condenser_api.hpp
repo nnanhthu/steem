@@ -1015,6 +1015,9 @@ DEFINE_API_ARGS( get_recent_trades,                      vector< variant >,   ve
 DEFINE_API_ARGS( get_market_history,                     vector< variant >,   vector< market_history::bucket_object > )
 DEFINE_API_ARGS( get_market_history_buckets,             vector< variant >,   flat_set< uint32_t > )
 DEFINE_API_ARGS( get_nai_pool,                           vector< variant >,   optional< database_api::get_nai_pool_return > )
+DEFINE_API_ARGS( get_balance,                            vector< variant >,   optional< database_api::get_balance_return > )
+//Remove later
+DEFINE_API_ARGS( update_balance,                            vector< variant >,   bool  )
 
 #undef DEFINE_API_ARGS
 
@@ -1110,6 +1113,9 @@ public:
       (get_market_history)
       (get_market_history_buckets)
       (get_nai_pool)
+      (get_balance)
+      //Just for testing, remove later
+           (update_balance)
    )
 
    private:
