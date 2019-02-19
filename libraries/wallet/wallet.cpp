@@ -1377,12 +1377,8 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 tx.operations.push_back(op);
                 tx.validate();
 
-                condenser_api::legacy_signed_transaction tx_result = my->sign_transaction(tx, broadcast);
-                //Update balance of control_account with max_supply
-                if(max_supply > 0){
-                    update_balance(control_account_name, nai, decimals, max_supply);
-                }
-                return tx_result;
+                return my->sign_transaction(tx, broadcast);
+
             }
             FC_CAPTURE_AND_RETHROW((control_account_name)(nai)(decimals)(max_supply))
         }

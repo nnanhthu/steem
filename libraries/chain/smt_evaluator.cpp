@@ -158,6 +158,11 @@ void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
       event_token.announced_launch_time = _token->announced_launch_time;
       event_token.launch_expiration_time = _token->launch_expiration_time;
    });
+   //Update balance of control_account with max_supply
+   if(o.max_supply > 0){
+      asset smt_asset = asset(o.max_supply, o.symbol);
+      _db.adjust_balance(o.control_account, smt_asset);
+   }
 }
 
 void smt_cap_reveal_evaluator::do_apply( const smt_cap_reveal_operation& o )
