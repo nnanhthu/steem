@@ -439,8 +439,8 @@ optional< database_api::get_balance_return > remote_node_api::get_balance(accoun
    FC_ASSERT( false );
 }
 
-        bool remote_node_api::update_balance(account_name_type, asset)
-        {
-            FC_ASSERT( false );
-        }
+//        bool remote_node_api::update_balance(account_name_type, asset)
+//        {
+//            FC_ASSERT( false );
+//        }
 } }

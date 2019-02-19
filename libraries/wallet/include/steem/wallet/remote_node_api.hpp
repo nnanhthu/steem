@@ -108,7 +108,7 @@ struct remote_node_api
    flat_set< uint32_t > get_market_history_buckets();
    optional< database_api::get_nai_pool_return > get_nai_pool();
    optional< database_api::get_balance_return > get_balance(account_name_type, asset_symbol_type);
-    bool update_balance(account_name_type, asset);
+    //bool update_balance(account_name_type, asset);
 };
 
 } }
@@ -201,5 +201,5 @@ FC_API( steem::wallet::remote_node_api,
         (get_market_history_buckets)
         (get_nai_pool)
         (get_balance)
-                (update_balance)
+                //(update_balance)
       )

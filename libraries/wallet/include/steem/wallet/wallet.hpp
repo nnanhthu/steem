@@ -367,12 +367,12 @@ class wallet_api
             string nai,
             uint8_t decimals
             );
-    bool update_balance(
-            string account,
-            string nai,
-            uint8_t decimals,
-            share_type amount
-            );
+//    bool update_balance(
+//            string account,
+//            string nai,
+//            uint8_t decimals,
+//            share_type amount
+//            );
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
        *  will be controlable by this wallet. There is a fee associated with account creation
@@ -1162,7 +1162,7 @@ FC_API( steem::wallet::wallet_api,
         (setup_token_params)
         (transfer_token)
         (get_balance)
-        (update_balance)
+        //(update_balance)
         (create_account)
         (create_account_with_keys)
         (create_account_delegated)

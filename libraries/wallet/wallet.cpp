@@ -1430,20 +1430,20 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             FC_CAPTURE_AND_RETHROW((account)(nai)(decimals))
         }
 
-        bool wallet_api::update_balance(
-                string account,
-                string nai,
-                uint8_t decimals,
-                share_type amount) {
-            try {
-                FC_ASSERT(!is_locked());
-
-                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
-                asset a = asset(amount, symbol);
-                return my->_remote_api->update_balance(account, a);
-            }
-            FC_CAPTURE_AND_RETHROW((account)(nai)(decimals)(amount))
-        }
+//        bool wallet_api::update_balance(
+//                string account,
+//                string nai,
+//                uint8_t decimals,
+//                share_type amount) {
+//            try {
+//                FC_ASSERT(!is_locked());
+//
+//                asset_symbol_type symbol = asset_symbol_type::from_nai_string( nai.c_str(), decimals );
+//                asset a = asset(amount, symbol);
+//                return my->_remote_api->update_balance(account, a);
+//            }
+//            FC_CAPTURE_AND_RETHROW((account)(nai)(decimals)(amount))
+//        }
 
 /**
  * This method is used by faucets to create new accounts for other users which must

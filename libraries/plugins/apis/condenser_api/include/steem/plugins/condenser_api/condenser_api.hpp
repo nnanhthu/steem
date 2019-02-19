@@ -1017,7 +1017,7 @@ DEFINE_API_ARGS( get_market_history_buckets,             vector< variant >,   fl
 DEFINE_API_ARGS( get_nai_pool,                           vector< variant >,   optional< database_api::get_nai_pool_return > )
 DEFINE_API_ARGS( get_balance,                            vector< variant >,   optional< database_api::get_balance_return > )
 //Remove later
-DEFINE_API_ARGS( update_balance,                            vector< variant >,   bool  )
+//DEFINE_API_ARGS( update_balance,                            vector< variant >,   bool  )
 
 #undef DEFINE_API_ARGS
 
@@ -1115,7 +1115,7 @@ public:
       (get_nai_pool)
       (get_balance)
       //Just for testing, remove later
-           (update_balance)
+          // (update_balance)
    )
 
    private:
