@@ -603,7 +603,7 @@ namespace steem {
             const comment_object &_c;
             database &_db;
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
                                                                                                                                     void operator()( const allowed_vote_assets& va) const
    {
       FC_ASSERT( _c.abs_rshares == 0, "Comment must not have been voted on before specifying allowed vote assets." );
@@ -623,7 +623,7 @@ namespace steem {
          }
       });
    }
-#endif
+//#endif
 
             void operator()(const comment_payout_beneficiaries &cpb) const {
                 FC_ASSERT(_c.beneficiaries.size() == 0, "Comment already has beneficiaries specified.");
@@ -2726,7 +2726,7 @@ namespace steem {
             _db.adjust_proxied_witness_votes(acnt, op.reward_vests.amount);
         }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
                                                                                                                                 void claim_reward_balance2_evaluator::do_apply( const claim_reward_balance2_operation& op )
 {
    const account_object* a = nullptr; // Lazily initialized below because it may turn out unnecessary.
@@ -2794,7 +2794,7 @@ namespace steem {
       } // non-SMT token
    } // for( const auto& token : op.reward_tokens )
 }
-#endif
+//#endif
 
         void delegate_vesting_shares_evaluator::do_apply(const delegate_vesting_shares_operation &op) {
 #pragma message( "TODO: Update get_effective_vesting_shares when modifying this operation to support SMTs." )

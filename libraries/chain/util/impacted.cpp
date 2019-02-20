@@ -185,6 +185,31 @@ struct get_impacted_account_visitor
       _impacted.insert( op.new_account_name );
    }
 
+   void operator()( const smt_create_operation& op )
+   {
+      _impacted.insert( op.control_account );
+   }
+
+            void operator()( const smt_setup_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_setup_emissions_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_set_setup_parameters_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_set_runtime_parameters_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
 
    // vops
 
