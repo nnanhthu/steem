@@ -1480,6 +1480,59 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             FC_CAPTURE_AND_RETHROW((creator)(new_account_name)(json_meta)(owner)(active)(memo)(broadcast))
         }
 
+        condenser_api::legacy_signed_transaction wallet_api::create_multisig_account(
+                string creator,
+                string new_account_name,
+                string json_meta,
+                vector<public_key_type> owners,
+                vector<public_key_type> actives,
+                vector<public_key_type> postings,
+                public_key_type memo,
+                bool broadcast) const {
+            try {
+                FC_ASSERT(!is_locked());
+                account_create_operation op;
+                op.creator = creator;
+                op.new_account_name = new_account_name;
+                flat_map< public_key_type, weight_type > ownerKey;
+                for(auto const& owner: owners) {
+                    ownerKey[owner] = 1;
+                }
+                authority ownerAuth;
+                ownerAuth.weight_threshold=1;
+                ownerAuth.key_auths = ownerKey;
+                op.owner = ownerAuth;
+
+                flat_map< public_key_type, weight_type > activeKey;
+                for(auto const& active: actives) {
+                    activeKey[active] = 1;
+                }
+                authority activeAuth;
+                activeAuth.weight_threshold=1;
+                activeAuth.key_auths = activeKey;
+                op.active = activeAuth;
+
+                flat_map< public_key_type, weight_type > postingKey;
+                for(auto const& posting: postings) {
+                    postingKey[posting] = 1;
+                }
+                authority postingAuth;
+                postingAuth.weight_threshold=1;
+                postingAuth.key_auths = postingKey;
+                op.posting = postingAuth;
+                op.memo_key = memo;
+                op.json_metadata = json_meta;
+                op.fee = my->_remote_api->get_chain_properties().account_creation_fee;
+
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                return my->sign_transaction(tx, broadcast);
+            }
+            FC_CAPTURE_AND_RETHROW((creator)(new_account_name)(json_meta)(owners)(actives)(memo)(broadcast))
+        }
+
 /**
  * This method is used by faucets to create new accounts for other users which must
  * provide their desired keys. The resulting account may not be controllable by this

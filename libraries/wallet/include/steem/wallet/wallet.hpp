@@ -411,6 +411,16 @@ class wallet_api
          public_key_type memo,
          bool broadcast )const;
 
+      condenser_api::legacy_signed_transaction create_multisig_account(
+         string creator,
+         string newname,
+         string json_meta,
+         vector<public_key_type> owners,
+         vector<public_key_type> actives,
+         vector<public_key_type> postings,
+         public_key_type memo,
+         bool broadcast )const;
+
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
        *  will be controlable by this wallet. There is a fee associated with account creation
@@ -1165,6 +1175,7 @@ FC_API( steem::wallet::wallet_api,
         //(update_balance)
         (create_account)
         (create_account_with_keys)
+        (create_multisig_account)
         (create_account_delegated)
         (create_account_with_keys_delegated)
         (update_account)
