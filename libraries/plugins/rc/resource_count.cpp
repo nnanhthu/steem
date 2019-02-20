@@ -59,28 +59,28 @@ struct count_operation_visitor
       execution_time_count += _e.account_witness_vote_operation_exec_time;
    }
 
-   void operator()( const comment_operation& op )const
-   {
-      state_bytes_count +=
-           _w.comment_object_base_size
-         + _w.comment_object_permlink_char_size * op.permlink.size()
-         + _w.comment_object_parent_permlink_char_size * op.parent_permlink.size();
-      execution_time_count += _e.comment_operation_exec_time;
-   }
+//   void operator()( const comment_operation& op )const
+//   {
+//      state_bytes_count +=
+//           _w.comment_object_base_size
+//         + _w.comment_object_permlink_char_size * op.permlink.size()
+//         + _w.comment_object_parent_permlink_char_size * op.parent_permlink.size();
+//      execution_time_count += _e.comment_operation_exec_time;
+//   }
 
    void operator()( const comment_payout_beneficiaries& bens )const
    {
       state_bytes_count += _w.comment_object_beneficiaries_member_size * bens.beneficiaries.size();
    }
 
-   void operator()( const comment_options_operation& op )const
-   {
-      for( const comment_options_extension& e : op.extensions )
-      {
-         e.visit( *this );
-      }
-      execution_time_count += _e.comment_options_operation_exec_time;
-   }
+//   void operator()( const comment_options_operation& op )const
+//   {
+//      for( const comment_options_extension& e : op.extensions )
+//      {
+//         e.visit( *this );
+//      }
+//      execution_time_count += _e.comment_options_operation_exec_time;
+//   }
 
    void operator()( const convert_operation& op ) const
    {
@@ -114,25 +114,25 @@ struct count_operation_visitor
       execution_time_count += _e.delegate_vesting_shares_operation_exec_time;
    }
 
-   void operator()( const escrow_transfer_operation& op )const
-   {
-      state_bytes_count += _w.escrow_object_base_size;
-      execution_time_count += _e.escrow_transfer_operation_exec_time;
-   }
-
-   void operator()( const limit_order_create_operation& op )const
-   {
-      state_bytes_count += op.fill_or_kill ? 0 : _w.limit_order_object_base_size;
-      execution_time_count += _e.limit_order_create_operation_exec_time;
-      market_op_count++;
-   }
-
-   void operator()( const limit_order_create2_operation& op )const
-   {
-      state_bytes_count += op.fill_or_kill ? 0 : _w.limit_order_object_base_size;
-      execution_time_count += _e.limit_order_create2_operation_exec_time;
-      market_op_count++;
-   }
+//   void operator()( const escrow_transfer_operation& op )const
+//   {
+//      state_bytes_count += _w.escrow_object_base_size;
+//      execution_time_count += _e.escrow_transfer_operation_exec_time;
+//   }
+//
+//   void operator()( const limit_order_create_operation& op )const
+//   {
+//      state_bytes_count += op.fill_or_kill ? 0 : _w.limit_order_object_base_size;
+//      execution_time_count += _e.limit_order_create_operation_exec_time;
+//      market_op_count++;
+//   }
+//
+//   void operator()( const limit_order_create2_operation& op )const
+//   {
+//      state_bytes_count += op.fill_or_kill ? 0 : _w.limit_order_object_base_size;
+//      execution_time_count += _e.limit_order_create2_operation_exec_time;
+//      market_op_count++;
+//   }
 
    void operator()( const request_account_recovery_operation& op )const
    {
@@ -147,12 +147,12 @@ struct count_operation_visitor
       execution_time_count += _e.set_withdraw_vesting_route_operation_exec_time;
    }
 
-   void operator()( const vote_operation& op )const
-   {
-      FC_TODO( "Change RC state bytes computation to take SMT's into account" )
-      state_bytes_count += _w.comment_vote_object_base_size;
-      execution_time_count += _e.vote_operation_exec_time;
-   }
+//   void operator()( const vote_operation& op )const
+//   {
+//      FC_TODO( "Change RC state bytes computation to take SMT's into account" )
+//      state_bytes_count += _w.comment_vote_object_base_size;
+//      execution_time_count += _e.vote_operation_exec_time;
+//   }
 
    void operator()( const witness_update_operation& op )const
    {
@@ -260,42 +260,42 @@ struct count_operation_visitor
       execution_time_count += exec_time;
    }
 
-   void operator()( const delete_comment_operation& )const
-   {
-      execution_time_count += _e.delete_comment_operation_exec_time;
-   }
-
-   void operator()( const escrow_approve_operation& )const
-   {
-      execution_time_count += _e.escrow_approve_operation_exec_time;
-   }
-
-   void operator()( const escrow_dispute_operation& )const
-   {
-      execution_time_count += _e.escrow_dispute_operation_exec_time;
-   }
-
-   void operator()( const escrow_release_operation& )const
-   {
-      execution_time_count += _e.escrow_release_operation_exec_time;
-   }
+//   void operator()( const delete_comment_operation& )const
+//   {
+//      execution_time_count += _e.delete_comment_operation_exec_time;
+//   }
+//
+//   void operator()( const escrow_approve_operation& )const
+//   {
+//      execution_time_count += _e.escrow_approve_operation_exec_time;
+//   }
+//
+//   void operator()( const escrow_dispute_operation& )const
+//   {
+//      execution_time_count += _e.escrow_dispute_operation_exec_time;
+//   }
+//
+//   void operator()( const escrow_release_operation& )const
+//   {
+//      execution_time_count += _e.escrow_release_operation_exec_time;
+//   }
 
    void operator()( const feed_publish_operation& )const
    {
       execution_time_count += _e.feed_publish_operation_exec_time;
    }
 
-   void operator()( const limit_order_cancel_operation& )const
-   {
-      execution_time_count += _e.limit_order_cancel_operation_exec_time;
-   }
+//   void operator()( const limit_order_cancel_operation& )const
+//   {
+//      execution_time_count += _e.limit_order_cancel_operation_exec_time;
+//   }
 
    void operator()( const witness_set_properties_operation& )const
    {
       execution_time_count += _e.witness_set_properties_operation_exec_time;
    }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    void operator()( const claim_reward_balance2_operation& op )const
    {
       FC_TODO( "Change RC state bytes computation to take SMT's into account" )
@@ -348,7 +348,7 @@ struct count_operation_visitor
    {
       FC_TODO( "Change RC state bytes computation to take SMT's into account" )
    }
-#endif
+//#endif
 
    void operator()( const recover_account_operation& ) const {}
    void operator()( const pow_operation& ) const {}
@@ -359,9 +359,9 @@ struct count_operation_visitor
 
    // Virtual Ops
    void operator()( const fill_convert_request_operation& ) const {}
-   void operator()( const author_reward_operation& ) const {}
-   void operator()( const curation_reward_operation& ) const {}
-   void operator()( const comment_reward_operation& ) const {}
+   //void operator()( const author_reward_operation& ) const {}
+   //void operator()( const curation_reward_operation& ) const {}
+   //void operator()( const comment_reward_operation& ) const {}
    void operator()( const liquidity_reward_operation& ) const {}
    void operator()( const interest_operation& ) const {}
    void operator()( const fill_vesting_withdraw_operation& ) const {}
@@ -369,9 +369,9 @@ struct count_operation_visitor
    void operator()( const shutdown_witness_operation& ) const {}
    void operator()( const fill_transfer_from_savings_operation& ) const {}
    void operator()( const hardfork_operation& ) const {}
-   void operator()( const comment_payout_update_operation& ) const {}
+   //void operator()( const comment_payout_update_operation& ) const {}
    void operator()( const return_vesting_delegation_operation& ) const {}
-   void operator()( const comment_benefactor_reward_operation& ) const {}
+   //void operator()( const comment_benefactor_reward_operation& ) const {}
    void operator()( const producer_reward_operation& ) const {}
    void operator()( const clear_null_account_balance_operation& ) const {}
 

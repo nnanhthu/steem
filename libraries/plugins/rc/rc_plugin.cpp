@@ -615,21 +615,21 @@ struct pre_apply_operation_visitor
       regenerate( op.delegatee );
    }
 
-   void operator()( const author_reward_operation& op )const
-   {
-      regenerate( op.author );
-   }
-
-   void operator()( const curation_reward_operation& op )const
-   {
-      regenerate( op.curator );
-   }
-
-   // Is this one actually necessary?
-   void operator()( const comment_reward_operation& op )const
-   {
-      regenerate( op.author );
-   }
+//   void operator()( const author_reward_operation& op )const
+//   {
+//      regenerate( op.author );
+//   }
+//
+//   void operator()( const curation_reward_operation& op )const
+//   {
+//      regenerate( op.curator );
+//   }
+//
+//   // Is this one actually necessary?
+//   void operator()( const comment_reward_operation& op )const
+//   {
+//      regenerate( op.author );
+//   }
 
    void operator()( const fill_vesting_withdraw_operation& op )const
    {
@@ -642,12 +642,12 @@ struct pre_apply_operation_visitor
       regenerate( op.account );
    }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    void operator()( const claim_reward_balance2_operation& op )const
    {
       regenerate( op.account );
    }
-#endif
+//#endif
 
    void operator()( const hardfork_operation& op )const
    {
@@ -666,10 +666,10 @@ struct pre_apply_operation_visitor
       regenerate( op.account );
    }
 
-   void operator()( const comment_benefactor_reward_operation& op )const
-   {
-      regenerate( op.benefactor );
-   }
+//   void operator()( const comment_benefactor_reward_operation& op )const
+//   {
+//      regenerate( op.benefactor );
+//   }
 
    void operator()( const producer_reward_operation& op )const
    {
@@ -774,21 +774,21 @@ struct post_apply_operation_visitor
       _mod_accounts.emplace_back( op.delegatee );
    }
 
-   void operator()( const author_reward_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.author );
-   }
-
-   void operator()( const curation_reward_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.curator );
-   }
-
-   // Is this one actually necessary?
-   void operator()( const comment_reward_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.author );
-   }
+//   void operator()( const author_reward_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.author );
+//   }
+//
+//   void operator()( const curation_reward_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.curator );
+//   }
+//
+//   // Is this one actually necessary?
+//   void operator()( const comment_reward_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.author );
+//   }
 
    void operator()( const fill_vesting_withdraw_operation& op )const
    {
@@ -801,12 +801,12 @@ struct post_apply_operation_visitor
       _mod_accounts.emplace_back( op.account );
    }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    void operator()( const claim_reward_balance2_operation& op )const
    {
       _mod_accounts.emplace_back( op.account );
    }
-#endif
+//#endif
 
    void operator()( const hardfork_operation& op )const
    {
@@ -840,10 +840,10 @@ struct post_apply_operation_visitor
       _mod_accounts.emplace_back( op.account );
    }
 
-   void operator()( const comment_benefactor_reward_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.benefactor );
-   }
+//   void operator()( const comment_benefactor_reward_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.benefactor );
+//   }
 
    void operator()( const producer_reward_operation& op )const
    {

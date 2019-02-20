@@ -336,6 +336,43 @@ class wallet_api
        */
       string normalize_brain_key(string s) const;
 
+      condenser_api::legacy_signed_transaction create_token( string control_account_name,
+                                                           asset_symbol_type symbol,
+                                                           asset smt_creation_fee,
+                                                           bool broadcast );
+
+      condenser_api::legacy_signed_transaction create_token_without_symbol( string control_account_name,
+                                                                          uint8_t decimals,
+                                                                          //asset smt_creation_fee,
+                                                                          bool broadcast );
+
+      condenser_api::legacy_signed_transaction setup_token_params( string control_account_name,
+                                                                          string nai,
+                                                                          uint8_t decimals,
+                                                                          int64_t max_supply,
+                                                                          bool broadcast );
+
+    condenser_api::legacy_signed_transaction transfer_token(
+            string from,
+            string to,
+            share_type amount,
+            string nai,
+            uint8_t decimals,
+            condenser_api::legacy_asset fee,
+            string memo,
+            bool broadcast);
+
+    asset get_balance(
+            string account,
+            string nai,
+            uint8_t decimals
+            );
+//    bool update_balance(
+//            string account,
+//            string nai,
+//            uint8_t decimals,
+//            share_type amount
+//            );
       /**
        *  This method will genrate new owner, active, and memo keys for the new account which
        *  will be controlable by this wallet. There is a fee associated with account creation
@@ -371,6 +408,16 @@ class wallet_api
          public_key_type owner,
          public_key_type active,
          public_key_type posting,
+         public_key_type memo,
+         bool broadcast )const;
+
+      condenser_api::legacy_signed_transaction create_multisig_account(
+         string creator,
+         string newname,
+         string json_meta,
+         vector<public_key_type> owners,
+         vector<public_key_type> actives,
+         vector<public_key_type> postings,
          public_key_type memo,
          bool broadcast )const;
 
@@ -638,6 +685,7 @@ class wallet_api
        * @param from The account the funds are coming from
        * @param to The account the funds are going to
        * @param amount The funds being transferred. i.e. "100.000 STEEM"
+       * @param fee The fee being paid for transfer transaction. i.e. "1 SBD"
        * @param memo A memo for the transactionm, encrypted with the to account's public memo key
        * @param broadcast true if you wish to broadcast the transaction
        */
@@ -645,6 +693,7 @@ class wallet_api
          string from,
          string to,
          condenser_api::legacy_asset amount,
+         condenser_api::legacy_asset fee,
          string memo,
          bool broadcast = false);
 
@@ -1118,8 +1167,15 @@ FC_API( steem::wallet::wallet_api,
         (get_withdraw_routes)
 
         /// transaction api
+        (create_token)
+        (create_token_without_symbol)
+        (setup_token_params)
+        (transfer_token)
+        (get_balance)
+        //(update_balance)
         (create_account)
         (create_account_with_keys)
+        (create_multisig_account)
         (create_account_delegated)
         (create_account_with_keys_delegated)
         (update_account)
@@ -1134,10 +1190,10 @@ FC_API( steem::wallet::wallet_api,
         (vote_for_witness)
         (follow)
         (transfer)
-        (escrow_transfer)
-        (escrow_approve)
-        (escrow_dispute)
-        (escrow_release)
+//        (escrow_transfer)
+//        (escrow_approve)
+//        (escrow_dispute)
+//        (escrow_release)
         (transfer_to_vesting)
         (withdraw_vesting)
         (set_withdraw_vesting_route)
@@ -1145,10 +1201,10 @@ FC_API( steem::wallet::wallet_api,
         (publish_feed)
         (get_order_book)
         (get_open_orders)
-        (create_order)
-        (cancel_order)
-        (post_comment)
-        (vote)
+//        (create_order)
+//        (cancel_order)
+//        (post_comment)
+//        (vote)
         (set_transaction_expiration)
         (request_account_recovery)
         (recover_account)

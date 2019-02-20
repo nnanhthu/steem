@@ -95,12 +95,12 @@ namespace detail {
       const comment_object& _c;
       const database& _db;
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
       void operator()( const allowed_vote_assets& va) const
       {
-         FC_TODO("To be implemented  suppport for allowed_vote_assets");
+         FC_TODO("To be implemented  support for allowed_vote_assets");
       }
-#endif
+//#endif
 
       void operator()( const comment_payout_beneficiaries& cpb )const
       {
@@ -174,30 +174,30 @@ namespace detail {
       template< typename T >
       void operator()( const T& )const {}
 
-      void operator()( const comment_options_operation& o )const
-      {
-         const auto& comment = _db.get_comment( o.author, o.permlink );
-
-         comment_options_extension_visitor v( comment, _db );
-
-         for( auto& e : o.extensions )
-         {
-            e.visit( v );
-         }
-      }
-
-      void operator()( const comment_operation& o )const
-      {
-         if( o.parent_author != STEEM_ROOT_POST_PARENT )
-         {
-            const auto& parent = _db.find_comment( o.parent_author, o.parent_permlink );
-
-            if( parent != nullptr )
-            STEEM_ASSERT( parent->depth < STEEM_SOFT_MAX_COMMENT_DEPTH,
-               plugin_exception,
-               "Comment is nested ${x} posts deep, maximum depth is ${y}.", ("x",parent->depth)("y",STEEM_SOFT_MAX_COMMENT_DEPTH) );
-         }
-      }
+//      void operator()( const comment_options_operation& o )const
+//      {
+//         const auto& comment = _db.get_comment( o.author, o.permlink );
+//
+//         comment_options_extension_visitor v( comment, _db );
+//
+//         for( auto& e : o.extensions )
+//         {
+//            e.visit( v );
+//         }
+//      }
+//
+//      void operator()( const comment_operation& o )const
+//      {
+//         if( o.parent_author != STEEM_ROOT_POST_PARENT )
+//         {
+//            const auto& parent = _db.find_comment( o.parent_author, o.parent_permlink );
+//
+//            if( parent != nullptr )
+//            STEEM_ASSERT( parent->depth < STEEM_SOFT_MAX_COMMENT_DEPTH,
+//               plugin_exception,
+//               "Comment is nested ${x} posts deep, maximum depth is ${y}.", ("x",parent->depth)("y",STEEM_SOFT_MAX_COMMENT_DEPTH) );
+//         }
+//      }
 
       void operator()( const transfer_operation& o )const
       {

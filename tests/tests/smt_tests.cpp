@@ -14,6 +14,8 @@ FC_TODO(Extend testing scenarios to support multiple NAIs per account)
 #include <steem/chain/steem_objects.hpp>
 #include <steem/chain/smt_objects.hpp>
 
+#include <steem/chain/util/smt_token.hpp>
+
 #include "../db_fixture/database_fixture.hpp"
 
 using namespace steem::chain;
@@ -901,16 +903,16 @@ BOOST_AUTO_TEST_CASE( vesting_smt_creation )
 
       asset_symbol_type liquid_symbol = create_smt("alice", alice_private_key, 6);
       // Use liquid symbol/NAI to confirm smt object was created.
-      auto liquid_object_by_symbol = db->find< smt_token_object, by_symbol >( liquid_symbol );
-      FC_ASSERT( ( liquid_object_by_symbol != nullptr ) );
+      auto liquid_object_by_symbol = util::smt::find_token( *db, liquid_symbol );
+      FC_ASSERT( liquid_object_by_symbol != nullptr );
 
       asset_symbol_type vesting_symbol = liquid_symbol.get_paired_symbol();
       // Use vesting symbol/NAI to confirm smt object was created.
-      auto vesting_object_by_symbol = db->find< smt_token_object, by_symbol >( vesting_symbol );
-      FC_ASSERT( ( vesting_object_by_symbol != nullptr ) );
+      auto vesting_object_by_symbol = util::smt::find_token( *db, vesting_symbol );
+      FC_ASSERT( vesting_object_by_symbol != nullptr );
 
-      // Check that liquid and vesting objecta are the same one.
-      FC_ASSERT( ( liquid_object_by_symbol == vesting_object_by_symbol ) );
+      // Check that liquid and vesting objects are the same one.
+      FC_ASSERT( liquid_object_by_symbol == vesting_object_by_symbol );
    }
    FC_LOG_AND_RETHROW()
 }
@@ -1277,8 +1279,6 @@ BOOST_AUTO_TEST_CASE( setup_apply )
       op.generation_begin_time = start_time;
       op.generation_end_time = op.announced_launch_time = op.launch_expiration_time = start_time_plus_1;
 
-      asset_symbol_type bob_symbol = create_smt( "bob", bob_private_key, 4 );
-
       signed_transaction tx;
 
       //SMT doesn't exist
@@ -1303,20 +1303,6 @@ BOOST_AUTO_TEST_CASE( setup_apply )
       db->push_transaction( tx, 0 );
       tx.operations.clear();
       tx.signatures.clear();
-
-      //Change precision.
-      op.symbol = bob_symbol;
-      op.control_account = "bob";
-      op.decimal_places = 5;
-      tx.operations.push_back( op );
-      tx.set_expiration( db->head_block_time() + STEEM_MAX_TIME_UNTIL_EXPIRATION );
-      sign( tx, bob_private_key );
-      db->push_transaction( tx, 0 );
-
-      const steem::chain::smt_token_object* smt_token = db->find< steem::chain::smt_token_object, by_control_account >( op.control_account );
-      BOOST_REQUIRE( smt_token != nullptr );
-      uint8_t decimals = smt_token->liquid_symbol.decimals();
-      BOOST_REQUIRE( decimals == 5 );
    }
    FC_LOG_AND_RETHROW()
 }
@@ -1448,6 +1434,93 @@ BOOST_AUTO_TEST_CASE( smt_cap_reveal_apply )
       setup_smt_and_reveal_caps("alice", alice_private_key, smts[0], 1, SMT_MIN_HARD_CAP_STEEM_UNITS + 1, 20000, 0, db, *this);
       // Test hidden caps (1234 nonce).
       setup_smt_and_reveal_caps("alice", alice_private_key, smts[1], 10000, SMT_MIN_HARD_CAP_STEEM_UNITS + 1, 20000, 1234, db, *this);
+   }
+   FC_LOG_AND_RETHROW()
+}
+
+/*
+ * SMT legacy tests
+ *
+ * The logic tests in legacy tests *should* be entirely duplicated in smt_operation_tests.cpp
+ * We are keeping these tests around to provide an additional layer re-assurance for the time being
+ */
+FC_TODO( "Remove SMT legacy tests and ensure code coverage is not reduced" );
+
+BOOST_AUTO_TEST_CASE( smt_create_apply )
+{
+   try
+   {
+      ACTORS( (alice)(bob) )
+
+      generate_block();
+
+      set_price_feed( price( ASSET( "1.000 TBD" ), ASSET( "1.000 TESTS" ) ) );
+
+      const dynamic_global_property_object& dgpo = db->get_dynamic_global_properties();
+      asset required_creation_fee = dgpo.smt_creation_fee;
+      unsigned int test_amount = required_creation_fee.amount.value;
+
+      smt_create_operation op;
+      op.control_account = "alice";
+      op.symbol = get_new_smt_symbol( 3, db );
+      op.precision = op.symbol.decimals();
+
+      BOOST_TEST_MESSAGE( " -- SMT create with insufficient SBD balance" );
+      // Fund with STEEM, and set fee with SBD.
+      FUND( "alice", test_amount );
+      // Declare fee in SBD/TBD though alice has none.
+      op.smt_creation_fee = asset( test_amount, SBD_SYMBOL );
+      // Throw due to insufficient balance of SBD/TBD.
+      FAIL_WITH_OP(op, alice_private_key, fc::assert_exception);
+
+      BOOST_TEST_MESSAGE( " -- SMT create with insufficient STEEM balance" );
+      // Now fund with SBD, and set fee with STEEM.
+      convert( "alice", asset( test_amount, STEEM_SYMBOL ) );
+      // Declare fee in STEEM though alice has none.
+      op.smt_creation_fee = asset( test_amount, STEEM_SYMBOL );
+      // Throw due to insufficient balance of STEEM.
+      FAIL_WITH_OP(op, alice_private_key, fc::assert_exception);
+
+      BOOST_TEST_MESSAGE( " -- SMT create with available funds" );
+      // Push valid operation.
+      op.smt_creation_fee = asset( test_amount, SBD_SYMBOL );
+      PUSH_OP( op, alice_private_key );
+
+      BOOST_TEST_MESSAGE( " -- SMT cannot be created twice even with different precision" );
+      create_conflicting_smt(op.symbol, "alice", alice_private_key);
+
+      BOOST_TEST_MESSAGE( " -- Another user cannot create an SMT twice even with different precision" );
+      // Check that another user/account can't be used to create duplicating SMT even with different precision.
+      create_conflicting_smt(op.symbol, "bob", bob_private_key);
+
+      BOOST_TEST_MESSAGE( " -- Check that an SMT cannot be created with decimals greater than STEEM_MAX_DECIMALS" );
+      // Check that invalid SMT can't be created
+      create_invalid_smt("alice", alice_private_key);
+
+      BOOST_TEST_MESSAGE( " -- Check that an SMT cannot be created with a creation fee lower than required" );
+      // Check fee set too low.
+      asset fee_too_low = required_creation_fee;
+      unsigned int too_low_fee_amount = required_creation_fee.amount.value-1;
+      fee_too_low.amount -= 1;
+
+      SMT_SYMBOL( bob, 0, db );
+      op.control_account = "bob";
+      op.symbol = bob_symbol;
+      op.precision = op.symbol.decimals();
+
+      BOOST_TEST_MESSAGE( " -- Check that we cannot create an SMT with an insufficent STEEM creation fee" );
+      // Check too low fee in STEEM.
+      FUND( "bob", too_low_fee_amount );
+      op.smt_creation_fee = asset( too_low_fee_amount, STEEM_SYMBOL );
+      FAIL_WITH_OP(op, bob_private_key, fc::assert_exception);
+
+      BOOST_TEST_MESSAGE( " -- Check that we cannot create an SMT with an insufficent SBD creation fee" );
+      // Check too low fee in SBD.
+      convert( "bob", asset( too_low_fee_amount, STEEM_SYMBOL ) );
+      op.smt_creation_fee = asset( too_low_fee_amount, SBD_SYMBOL );
+      FAIL_WITH_OP(op, bob_private_key, fc::assert_exception);
+
+      validate_database();
    }
    FC_LOG_AND_RETHROW()
 }

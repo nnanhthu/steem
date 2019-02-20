@@ -7,42 +7,42 @@
 
 namespace steem { namespace protocol {
 
-   struct author_reward_operation : public virtual_operation {
-      author_reward_operation(){}
-      author_reward_operation( const account_name_type& a, const string& p, const asset& s, const asset& st, const asset& v )
-         :author(a), permlink(p), sbd_payout(s), steem_payout(st), vesting_payout(v){}
-
-      account_name_type author;
-      string            permlink;
-      asset             sbd_payout;
-      asset             steem_payout;
-      asset             vesting_payout;
-   };
-
-
-   struct curation_reward_operation : public virtual_operation
-   {
-      curation_reward_operation(){}
-      curation_reward_operation( const string& c, const asset& r, const string& a, const string& p )
-         :curator(c), reward(r), comment_author(a), comment_permlink(p) {}
-
-      account_name_type curator;
-      asset             reward;
-      account_name_type comment_author;
-      string            comment_permlink;
-   };
-
-
-   struct comment_reward_operation : public virtual_operation
-   {
-      comment_reward_operation(){}
-      comment_reward_operation( const account_name_type& a, const string& pl, const asset& p )
-         :author(a), permlink(pl), payout(p){}
-
-      account_name_type author;
-      string            permlink;
-      asset             payout;
-   };
+//   struct author_reward_operation : public virtual_operation {
+//      author_reward_operation(){}
+//      author_reward_operation( const account_name_type& a, const string& p, const asset& s, const asset& st, const asset& v )
+//         :author(a), permlink(p), sbd_payout(s), steem_payout(st), vesting_payout(v){}
+//
+//      account_name_type author;
+//      string            permlink;
+//      asset             sbd_payout;
+//      asset             steem_payout;
+//      asset             vesting_payout;
+//   };
+//
+//
+//   struct curation_reward_operation : public virtual_operation
+//   {
+//      curation_reward_operation(){}
+//      curation_reward_operation( const string& c, const asset& r, const string& a, const string& p )
+//         :curator(c), reward(r), comment_author(a), comment_permlink(p) {}
+//
+//      account_name_type curator;
+//      asset             reward;
+//      account_name_type comment_author;
+//      string            comment_permlink;
+//   };
+//
+//
+//   struct comment_reward_operation : public virtual_operation
+//   {
+//      comment_reward_operation(){}
+//      comment_reward_operation( const account_name_type& a, const string& pl, const asset& p )
+//         :author(a), permlink(pl), payout(p){}
+//
+//      account_name_type author;
+//      string            permlink;
+//      asset             payout;
+//   };
 
 
    struct liquidity_reward_operation : public virtual_operation
@@ -136,14 +136,14 @@ namespace steem { namespace protocol {
       uint32_t         hardfork_id = 0;
    };
 
-   struct comment_payout_update_operation : public virtual_operation
-   {
-      comment_payout_update_operation() {}
-      comment_payout_update_operation( const account_name_type& a, const string& p ) : author( a ), permlink( p ) {}
-
-      account_name_type author;
-      string            permlink;
-   };
+//   struct comment_payout_update_operation : public virtual_operation
+//   {
+//      comment_payout_update_operation() {}
+//      comment_payout_update_operation( const account_name_type& a, const string& p ) : author( a ), permlink( p ) {}
+//
+//      account_name_type author;
+//      string            permlink;
+//   };
 
    struct return_vesting_delegation_operation : public virtual_operation
    {
@@ -154,19 +154,19 @@ namespace steem { namespace protocol {
       asset             vesting_shares;
    };
 
-   struct comment_benefactor_reward_operation : public virtual_operation
-   {
-      comment_benefactor_reward_operation() {}
-      comment_benefactor_reward_operation( const account_name_type& b, const account_name_type& a, const string& p, const asset& s, const asset& st, const asset& v )
-         : benefactor( b ), author( a ), permlink( p ), sbd_payout( s ), steem_payout( st ), vesting_payout( v ) {}
-
-      account_name_type benefactor;
-      account_name_type author;
-      string            permlink;
-      asset             sbd_payout;
-      asset             steem_payout;
-      asset             vesting_payout;
-   };
+//   struct comment_benefactor_reward_operation : public virtual_operation
+//   {
+//      comment_benefactor_reward_operation() {}
+//      comment_benefactor_reward_operation( const account_name_type& b, const account_name_type& a, const string& p, const asset& s, const asset& st, const asset& v )
+//         : benefactor( b ), author( a ), permlink( p ), sbd_payout( s ), steem_payout( st ), vesting_payout( v ) {}
+//
+//      account_name_type benefactor;
+//      account_name_type author;
+//      string            permlink;
+//      asset             sbd_payout;
+//      asset             steem_payout;
+//      asset             vesting_payout;
+//   };
 
    struct producer_reward_operation : public virtual_operation
    {
@@ -185,9 +185,9 @@ namespace steem { namespace protocol {
 
 } } //steem::protocol
 
-FC_REFLECT( steem::protocol::author_reward_operation, (author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
-FC_REFLECT( steem::protocol::curation_reward_operation, (curator)(reward)(comment_author)(comment_permlink) )
-FC_REFLECT( steem::protocol::comment_reward_operation, (author)(permlink)(payout) )
+//FC_REFLECT( steem::protocol::author_reward_operation, (author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
+//FC_REFLECT( steem::protocol::curation_reward_operation, (curator)(reward)(comment_author)(comment_permlink) )
+//FC_REFLECT( steem::protocol::comment_reward_operation, (author)(permlink)(payout) )
 FC_REFLECT( steem::protocol::fill_convert_request_operation, (owner)(requestid)(amount_in)(amount_out) )
 FC_REFLECT( steem::protocol::liquidity_reward_operation, (owner)(payout) )
 FC_REFLECT( steem::protocol::interest_operation, (owner)(interest) )
@@ -196,8 +196,8 @@ FC_REFLECT( steem::protocol::shutdown_witness_operation, (owner) )
 FC_REFLECT( steem::protocol::fill_order_operation, (current_owner)(current_orderid)(current_pays)(open_owner)(open_orderid)(open_pays) )
 FC_REFLECT( steem::protocol::fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo) )
 FC_REFLECT( steem::protocol::hardfork_operation, (hardfork_id) )
-FC_REFLECT( steem::protocol::comment_payout_update_operation, (author)(permlink) )
+//FC_REFLECT( steem::protocol::comment_payout_update_operation, (author)(permlink) )
 FC_REFLECT( steem::protocol::return_vesting_delegation_operation, (account)(vesting_shares) )
-FC_REFLECT( steem::protocol::comment_benefactor_reward_operation, (benefactor)(author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
+//FC_REFLECT( steem::protocol::comment_benefactor_reward_operation, (benefactor)(author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
 FC_REFLECT( steem::protocol::producer_reward_operation, (producer)(vesting_shares) )
 FC_REFLECT( steem::protocol::clear_null_account_balance_operation, (total_cleared) )

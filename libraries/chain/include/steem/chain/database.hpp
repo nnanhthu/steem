@@ -113,6 +113,12 @@ namespace steem { namespace chain {
          };
 
          /**
+          * Get fee from operation
+          * @param op
+          * @param result
+          */
+         void operation_get_impacted_fee(const operation &op, asset &result);
+         /**
           * @brief Open a database, creating a new one if necessary
           *
           * Opens a database in the specified directory. If no initialized database is found the database
@@ -389,9 +395,9 @@ namespace steem { namespace chain {
          void process_conversions();
          void process_savings_withdraws();
          void process_subsidized_accounts();
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          void process_smt_objects();
-#endif
+//#endif
          void account_recovery_processing();
          void expire_escrow_ratification();
          void process_decline_voting_rights();
@@ -482,17 +488,12 @@ namespace steem { namespace chain {
          bool disable_low_mem_warning = true;
 #endif
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          ///Smart Media Tokens related methods
          ///@{
          void validate_smt_invariants()const;
-         /**
-          * @return a list of available NAIs.
-         */
-         vector< asset_symbol_type > get_smt_next_identifier();
-
          ///@}
-#endif
+//#endif
 
    protected:
          //Mark pop_undo() as protected -- we do not want outside calling pop_undo(); it should call pop_block() instead
@@ -519,6 +520,7 @@ namespace steem { namespace chain {
 
          void update_global_dynamic_data( const signed_block& b );
          void update_signing_witness(const witness_object& signing_witness, const signed_block& new_block);
+         void process_fee_witness(const witness_object& signing_witness, vector<signed_transaction> transactions);
          void update_last_irreversible_block();
          void migrate_irreversible_state();
          void clear_expired_transactions();
@@ -531,11 +533,11 @@ namespace steem { namespace chain {
          void apply_hardfork( uint32_t hardfork );
 
          ///@}
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          template< typename smt_balance_object_type, class balance_operator_type >
          void adjust_smt_balance( const account_name_type& name, const asset& delta, bool check_account,
                                   balance_operator_type balance_operator );
-#endif
+//#endif
          void modify_balance( const account_object& a, const asset& delta, bool check_balance );
          void modify_reward_balance( const account_object& a, const asset& value_delta, const asset& share_delta, bool check_balance );
 
@@ -577,8 +579,6 @@ namespace steem { namespace chain {
          uint32_t                      _next_flush_block = 0;
 
          uint32_t                      _last_free_gb_printed = 0;
-         /// For Initial value see appropriate comment where get_smt_next_identifier is implemented.
-         uint32_t                      _next_available_nai = SMT_MIN_NON_RESERVED_NAI;
 
          uint16_t                      _shared_file_full_threshold = 0;
          uint16_t                      _shared_file_scale_rate = 0;

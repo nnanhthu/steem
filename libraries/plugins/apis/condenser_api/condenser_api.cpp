@@ -131,6 +131,9 @@ namespace detail
             (get_recent_trades)
             (get_market_history)
             (get_market_history_buckets)
+            (get_nai_pool)
+            (get_balance)
+                 //(update_balance)
          )
 
          void recursively_fetch_content( state& _state, tags::discussion& root, set<string>& referenced_accounts );
@@ -258,16 +261,16 @@ namespace detail
                         case operation::tag<interest_operation>::value:
                         case operation::tag<transfer_operation>::value:
                         case operation::tag<liquidity_reward_operation>::value:
-                        case operation::tag<author_reward_operation>::value:
-                        case operation::tag<curation_reward_operation>::value:
-                        case operation::tag<comment_benefactor_reward_operation>::value:
+//                        case operation::tag<author_reward_operation>::value:
+//                        case operation::tag<curation_reward_operation>::value:
+//                        case operation::tag<comment_benefactor_reward_operation>::value:
                         case operation::tag<transfer_to_savings_operation>::value:
                         case operation::tag<transfer_from_savings_operation>::value:
                         case operation::tag<cancel_transfer_from_savings_operation>::value:
-                        case operation::tag<escrow_transfer_operation>::value:
-                        case operation::tag<escrow_approve_operation>::value:
-                        case operation::tag<escrow_dispute_operation>::value:
-                        case operation::tag<escrow_release_operation>::value:
+//                        case operation::tag<escrow_transfer_operation>::value:
+//                        case operation::tag<escrow_approve_operation>::value:
+//                        case operation::tag<escrow_dispute_operation>::value:
+//                        case operation::tag<escrow_release_operation>::value:
                         case operation::tag<fill_convert_request_operation>::value:
                         case operation::tag<fill_order_operation>::value:
                         case operation::tag<claim_reward_balance_operation>::value:
@@ -276,14 +279,14 @@ namespace detail
                               eacnt.transfer_history.emplace( item.first, api_operation_object( item.second, visitor.l_op ) );
                            }
                            break;
-                        case operation::tag<comment_operation>::value:
+//                        case operation::tag<comment_operation>::value:
                         //   eacnt.post_history[item.first] =  item.second;
-                           break;
-                        case operation::tag<limit_order_create_operation>::value:
-                        case operation::tag<limit_order_cancel_operation>::value:
+//                           break;
+//                        case operation::tag<limit_order_create_operation>::value:
+//                        case operation::tag<limit_order_cancel_operation>::value:
                         //   eacnt.market_history[item.first] =  item.second;
-                           break;
-                        case operation::tag<vote_operation>::value:
+//                           break;
+//                        case operation::tag<vote_operation>::value:
                         case operation::tag<account_witness_vote_operation>::value:
                         case operation::tag<account_witness_proxy_operation>::value:
                         //   eacnt.vote_history[item.first] =  item.second;
@@ -294,6 +297,11 @@ namespace detail
                         case operation::tag<pow_operation>::value:
                         case operation::tag<custom_operation>::value:
                         case operation::tag<producer_reward_operation>::value:
+                        case operation::tag<smt_create_operation>::value:
+                        case operation::tag<smt_setup_operation>::value:
+                        case operation::tag<smt_setup_emissions_operation>::value:
+                        case operation::tag<smt_set_setup_parameters_operation>::value:
+                        case operation::tag<smt_set_runtime_parameters_operation>::value:
                         default:
                            if( item.second.op.visit( visitor ) )
                            {
@@ -1904,6 +1912,28 @@ namespace detail
       return _market_history_api->get_market_history_buckets( {} ).bucket_sizes;
    }
 
+    DEFINE_API_IMPL( condenser_api_impl, get_nai_pool )
+    {
+        CHECK_ARG_SIZE( 0 )
+
+        return _database_api->get_nai_pool( {} );
+    }
+
+    DEFINE_API_IMPL( condenser_api_impl, get_balance )
+    {
+         CHECK_ARG_SIZE( 2 )
+
+         return _database_api->get_balance( {args[0].as< account_name_type >(), args[1].as< asset_symbol_type >()} );
+    }
+
+//DEFINE_API_IMPL( condenser_api_impl, update_balance )
+//{
+//CHECK_ARG_SIZE( 2 )
+//
+//_db.adjust_balance( args[0].as< account_name_type >(), args[1].as< asset >() );
+//return true;
+//}
+
    /**
     *  This call assumes root already stored as part of state, it will
     *  modify root.replies to contain links to the reply posts and then
@@ -2251,6 +2281,10 @@ DEFINE_READ_APIS( condenser_api,
    (get_trade_history)
    (get_recent_trades)
    (get_market_history)
+   (get_nai_pool)
+   (get_balance)
+   //Remove later
+//(update_balance)
 )
 
 } } } // steem::plugins::condenser_api

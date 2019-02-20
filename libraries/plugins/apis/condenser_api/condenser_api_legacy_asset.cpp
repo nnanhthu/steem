@@ -60,7 +60,10 @@ uint32_t string_to_asset_num( const char* p, uint8_t decimals )
          break;
       }
       default:
-         FC_ASSERT( false, "Cannot parse asset symbol" );
+         //FC_ASSERT( false, "Cannot parse asset symbol" );
+         //asset_num = std::stoi(*p);
+         std::string str(p);
+         asset_num = std::stoll(str, nullptr, 10);
    }
 
    // \s*\0
@@ -74,7 +77,8 @@ uint32_t string_to_asset_num( const char* p, uint8_t decimals )
          case '\0':
             break;
          default:
-            FC_ASSERT( false, "Cannot parse asset symbol" );
+            //FC_ASSERT( false, "Cannot parse asset symbol" );
+            break;
       }
       break;
    }
@@ -93,14 +97,15 @@ std::string asset_num_to_string( uint32_t asset_num )
          return "TBD";
 #else
       case STEEM_ASSET_NUM_STEEM:
-         return "STEEM";
+         return "BOWC";
       case STEEM_ASSET_NUM_SBD:
-         return "SBD";
+         return "BEOS";
 #endif
       case STEEM_ASSET_NUM_VESTS:
          return "VESTS";
       default:
-         return "UNKN"; // SMTs will return this symbol if returned as a legacy asset
+         //return "UNKN"; // SMTs will return this symbol if returned as a legacy asset
+         return std::to_string(asset_num);
    }
 }
 

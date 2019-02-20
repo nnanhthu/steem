@@ -25,6 +25,7 @@
 #include <steem/chain/util/reward.hpp>
 #include <steem/chain/util/manabar.hpp>
 #include <steem/chain/util/rd_setup.hpp>
+#include <steem/chain/util/nai_generator.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 #include <fc/uint128.hpp>
@@ -72,6 +73,149 @@ namespace steem { namespace chain {
 
 using boost::container::flat_set;
 
+struct get_impacted_fee {
+            asset &_impacted;
+
+            get_impacted_fee(asset &impact) : _impacted(impact) {}
+
+            typedef void result_type;
+
+            template<typename T>
+            void operator()(const T &op) {
+               //op.get_required_posting_authorities(_impacted);
+               //op.get_required_active_authorities(_impacted);
+               //op.get_required_owner_authorities(_impacted);
+            }
+
+            // ops
+            void operator()(const account_create_operation &op) {
+               //_impacted = op.fee;
+            }
+
+            void operator()(const account_create_with_delegation_operation &op) {
+               //_impacted = op.fee;
+            }
+
+//            void operator()(const comment_operation &op) {
+//            }
+//
+//            void operator()(const vote_operation &op) {
+//            }
+
+            void operator()(const transfer_operation &op) {
+               _impacted = op.fee;
+            }
+
+//            void operator()(const escrow_transfer_operation &op) {
+//               _impacted = op.fee;
+//            }
+//
+//            void operator()(const escrow_approve_operation &op) {
+//            }
+//
+//            void operator()(const escrow_dispute_operation &op) {
+//            }
+//
+//            void operator()(const escrow_release_operation &op) {
+//            }
+
+            void operator()(const transfer_to_vesting_operation &op) {
+            }
+
+            void operator()(const set_withdraw_vesting_route_operation &op) {
+            }
+
+            void operator()(const account_witness_vote_operation &op) {
+            }
+
+            void operator()(const account_witness_proxy_operation &op) {
+            }
+
+            void operator()(const feed_publish_operation &op) {
+            }
+
+            void operator()(const pow_operation &op) {
+            }
+
+            void operator()(const pow2_operation &op) {
+            }
+
+            void operator()(const request_account_recovery_operation &op) {
+            }
+
+            void operator()(const recover_account_operation &op) {
+            }
+
+            void operator()(const change_recovery_account_operation &op) {
+            }
+
+            void operator()(const transfer_to_savings_operation &op) {
+            }
+
+            void operator()(const transfer_from_savings_operation &op) {
+            }
+
+            void operator()(const delegate_vesting_shares_operation &op) {
+            }
+
+            void operator()(const witness_set_properties_operation &op) {
+            }
+
+            void operator()(const create_claimed_account_operation &op) {
+            }
+
+
+            // vops
+
+//   void operator()( const author_reward_operation& op )
+//   {
+//      _impacted.insert( op.author );
+//   }
+//
+//   void operator()( const curation_reward_operation& op )
+//   {
+//      _impacted.insert( op.curator );
+//   }
+
+            void operator()(const liquidity_reward_operation &op) {
+            }
+
+            void operator()(const interest_operation &op) {
+            }
+
+            void operator()(const fill_convert_request_operation &op) {
+            }
+
+            void operator()(const fill_vesting_withdraw_operation &op) {
+            }
+
+            void operator()(const shutdown_witness_operation &op) {
+            }
+
+            void operator()(const fill_order_operation &op) {
+            }
+
+            void operator()(const fill_transfer_from_savings_operation &op) {
+            }
+
+            void operator()(const return_vesting_delegation_operation &op) {
+            }
+
+//   void operator()( const comment_benefactor_reward_operation& op )
+//   {
+//      _impacted.insert( op.benefactor );
+//      _impacted.insert( op.author );
+//   }
+
+            void operator()(const producer_reward_operation &op) {
+            }
+
+            void operator()(const hardfork_operation &op) {
+            }
+
+            //void operator()( const operation& op ){}
+        };
+
 struct reward_fund_context
 {
    uint128_t   recent_claims = 0;
@@ -97,6 +241,11 @@ database::database()
 database::~database()
 {
    clear_pending();
+}
+
+void database::operation_get_impacted_fee(const operation &op, asset &result) {
+   get_impacted_fee vtor = get_impacted_fee(result);
+   op.visit(vtor);
 }
 
 void database::open( const open_args& args )
@@ -588,7 +737,7 @@ asset database::get_effective_vesting_shares( const account_object& account, ass
    if( vested_symbol == VESTS_SYMBOL )
       return account.vesting_shares - account.delegated_vesting_shares + account.received_vesting_shares;
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    FC_ASSERT( vested_symbol.space() == asset_symbol_type::smt_nai_space );
    FC_ASSERT( vested_symbol.is_vesting() );
 
@@ -599,9 +748,9 @@ asset database::get_effective_vesting_shares( const account_object& account, ass
       return asset( 0, vested_symbol );
 
    return bo->vesting;
-#else
-   FC_ASSERT( false, "Invalid symbol" );
-#endif
+//#else
+//   FC_ASSERT( false, "Invalid symbol" );
+//#endif
 }
 
 uint32_t database::witness_participation_rate()const
@@ -1248,7 +1397,7 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
          return new_vesting;
          };
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
       if( liquid.symbol.space() == asset_symbol_type::smt_nai_space )
       {
          FC_ASSERT( liquid.symbol.is_vesting() == false );
@@ -1283,7 +1432,7 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
 
          return new_vesting;
       }
-#endif
+//#endif
 
       FC_ASSERT( liquid.symbol == STEEM_SYMBOL );
       // ^ A novelty, needed but risky in case someone managed to slip SBD/TESTS here in blockchain history.
@@ -1806,73 +1955,73 @@ void database::adjust_total_payout( const comment_object& cur, const asset& sbd_
  *
  *  @returns unclaimed rewards.
  */
-share_type database::pay_curators( const comment_object& c, share_type& max_rewards )
-{
-   struct cmp
-   {
-      bool operator()( const comment_vote_object* obj, const comment_vote_object* obj2 ) const
-      {
-         if( obj->weight == obj2->weight )
-            return obj->voter < obj2->voter;
-         else
-            return obj->weight > obj2->weight;
-      }
-   };
-
-   try
-   {
-      uint128_t total_weight( c.total_vote_weight );
-      //edump( (total_weight)(max_rewards) );
-      share_type unclaimed_rewards = max_rewards;
-
-      if( !c.allow_curation_rewards )
-      {
-         unclaimed_rewards = 0;
-         max_rewards = 0;
-      }
-      else if( c.total_vote_weight > 0 )
-      {
-         const auto& cvidx = get_index<comment_vote_index>().indices().get<by_comment_voter>();
-         auto itr = cvidx.lower_bound( c.id );
-
-         std::set< const comment_vote_object*, cmp > proxy_set;
-         while( itr != cvidx.end() && itr->comment == c.id )
-         {
-            proxy_set.insert( &( *itr ) );
-            ++itr;
-         }
-
-         for( auto& item : proxy_set )
-         {
-            uint128_t weight( item->weight );
-            auto claim = ( ( max_rewards.value * weight ) / total_weight ).to_uint64();
-            if( claim > 0 ) // min_amt is non-zero satoshis
-            {
-               unclaimed_rewards -= claim;
-               const auto& voter = get( item->voter );
-               operation vop = curation_reward_operation( voter.name, asset(0, VESTS_SYMBOL), c.author, to_string( c.permlink ) );
-               create_vesting2( *this, voter, asset( claim, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
-                  [&]( const asset& reward )
-                  {
-                     vop.get< curation_reward_operation >().reward = reward;
-                     pre_push_virtual_operation( vop );
-                  } );
-
-               #ifndef IS_LOW_MEM
-                  modify( voter, [&]( account_object& a )
-                  {
-                     a.curation_rewards += claim;
-                  });
-               #endif
-               post_push_virtual_operation( vop );
-            }
-         }
-      }
-      max_rewards -= unclaimed_rewards;
-
-      return unclaimed_rewards;
-   } FC_CAPTURE_AND_RETHROW()
-}
+//share_type database::pay_curators( const comment_object& c, share_type& max_rewards )
+//{
+//   struct cmp
+//   {
+//      bool operator()( const comment_vote_object* obj, const comment_vote_object* obj2 ) const
+//      {
+//         if( obj->weight == obj2->weight )
+//            return obj->voter < obj2->voter;
+//         else
+//            return obj->weight > obj2->weight;
+//      }
+//   };
+//
+//   try
+//   {
+//      uint128_t total_weight( c.total_vote_weight );
+//      //edump( (total_weight)(max_rewards) );
+//      share_type unclaimed_rewards = max_rewards;
+//
+//      if( !c.allow_curation_rewards )
+//      {
+//         unclaimed_rewards = 0;
+//         max_rewards = 0;
+//      }
+//      else if( c.total_vote_weight > 0 )
+//      {
+//         const auto& cvidx = get_index<comment_vote_index>().indices().get<by_comment_voter>();
+//         auto itr = cvidx.lower_bound( c.id );
+//
+//         std::set< const comment_vote_object*, cmp > proxy_set;
+//         while( itr != cvidx.end() && itr->comment == c.id )
+//         {
+//            proxy_set.insert( &( *itr ) );
+//            ++itr;
+//         }
+//
+//         for( auto& item : proxy_set )
+//         {
+//            uint128_t weight( item->weight );
+//            auto claim = ( ( max_rewards.value * weight ) / total_weight ).to_uint64();
+//            if( claim > 0 ) // min_amt is non-zero satoshis
+//            {
+//               unclaimed_rewards -= claim;
+//               const auto& voter = get( item->voter );
+//               operation vop = curation_reward_operation( voter.name, asset(0, VESTS_SYMBOL), c.author, to_string( c.permlink ) );
+//               create_vesting2( *this, voter, asset( claim, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//                  [&]( const asset& reward )
+//                  {
+//                     vop.get< curation_reward_operation >().reward = reward;
+//                     pre_push_virtual_operation( vop );
+//                  } );
+//
+//               #ifndef IS_LOW_MEM
+//                  modify( voter, [&]( account_object& a )
+//                  {
+//                     a.curation_rewards += claim;
+//                  });
+//               #endif
+//               post_push_virtual_operation( vop );
+//            }
+//         }
+//      }
+//      max_rewards -= unclaimed_rewards;
+//
+//      return unclaimed_rewards;
+//   } FC_CAPTURE_AND_RETHROW()
+//}
 
 void fill_comment_reward_context_local_state( util::comment_reward_context& ctx, const comment_object& comment )
 {
@@ -1881,289 +2030,289 @@ void fill_comment_reward_context_local_state( util::comment_reward_context& ctx,
    ctx.max_sbd = comment.max_accepted_payout;
 }
 
-share_type database::cashout_comment_helper( util::comment_reward_context& ctx, const comment_object& comment, bool forward_curation_remainder )
-{
-   try
-   {
-      share_type claimed_reward = 0;
+//share_type database::cashout_comment_helper( util::comment_reward_context& ctx, const comment_object& comment, bool forward_curation_remainder )
+//{
+//   try
+//   {
+//      share_type claimed_reward = 0;
+//
+//      if( comment.net_rshares > 0 )
+//      {
+//         fill_comment_reward_context_local_state( ctx, comment );
+//
+//         if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//         {
+//            const auto rf = get_reward_fund( comment );
+//            ctx.reward_curve = rf.author_reward_curve;
+//            ctx.content_constant = rf.content_constant;
+//         }
+//
+//         const share_type reward = util::get_rshare_reward( ctx );
+//         uint128_t reward_tokens = uint128_t( reward.value );
+//
+//         if( reward_tokens > 0 )
+//         {
+//            share_type curation_tokens = ( ( reward_tokens * get_curation_rewards_percent( comment ) ) / STEEM_100_PERCENT ).to_uint64();
+//            share_type author_tokens = reward_tokens.to_uint64() - curation_tokens;
+//
+//            share_type curation_remainder = pay_curators( comment, curation_tokens );
+//
+//            if( forward_curation_remainder )
+//               author_tokens += curation_remainder;
+//
+//            share_type total_beneficiary = 0;
+//            claimed_reward = author_tokens + curation_tokens;
+//
+//            for( auto& b : comment.beneficiaries )
+//            {
+//               auto benefactor_tokens = ( author_tokens * b.weight ) / STEEM_100_PERCENT;
+//               auto benefactor_vesting_steem = benefactor_tokens;
+//               auto vop = comment_benefactor_reward_operation( b.account, comment.author, to_string( comment.permlink ), asset( 0, SBD_SYMBOL ), asset( 0, STEEM_SYMBOL ), asset( 0, VESTS_SYMBOL ) );
+//
+//               if( has_hardfork( STEEM_HARDFORK_0_20__2022 ) )
+//               {
+//                  auto benefactor_sbd_steem = ( benefactor_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
+//                  benefactor_vesting_steem  = benefactor_tokens - benefactor_sbd_steem;
+//                  auto sbd_payout           = create_sbd( get_account( b.account ), asset( benefactor_sbd_steem, STEEM_SYMBOL ), true );
+//
+//                  vop.sbd_payout   = sbd_payout.first; // SBD portion
+//                  vop.steem_payout = sbd_payout.second; // STEEM portion
+//               }
+//
+//               create_vesting2( *this, get_account( b.account ), asset( benefactor_vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//               [&]( const asset& reward )
+//               {
+//                  vop.vesting_payout = reward;
+//                  pre_push_virtual_operation( vop );
+//               });
+//
+//               post_push_virtual_operation( vop );
+//               total_beneficiary += benefactor_tokens;
+//            }
+//
+//            author_tokens -= total_beneficiary;
+//
+//            auto sbd_steem     = ( author_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
+//            auto vesting_steem = author_tokens - sbd_steem;
+//
+//            const auto& author = get_account( comment.author );
+//            auto sbd_payout = create_sbd( author, asset( sbd_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ) );
+//            operation vop = author_reward_operation( comment.author, to_string( comment.permlink ), sbd_payout.first, sbd_payout.second, asset( 0, VESTS_SYMBOL ) );
+//
+//            create_vesting2( *this, author, asset( vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//               [&]( const asset& vesting_payout )
+//               {
+//                  vop.get< author_reward_operation >().vesting_payout = vesting_payout;
+//                  pre_push_virtual_operation( vop );
+//               } );
+//
+//            adjust_total_payout( comment, sbd_payout.first + to_sbd( sbd_payout.second + asset( vesting_steem, STEEM_SYMBOL ) ), to_sbd( asset( curation_tokens, STEEM_SYMBOL ) ), to_sbd( asset( total_beneficiary, STEEM_SYMBOL ) ) );
+//
+//            post_push_virtual_operation( vop );
+//            vop = comment_reward_operation( comment.author, to_string( comment.permlink ), to_sbd( asset( claimed_reward, STEEM_SYMBOL ) ) );
+//            pre_push_virtual_operation( vop );
+//            post_push_virtual_operation( vop );
+//
+//            #ifndef IS_LOW_MEM
+//               modify( comment, [&]( comment_object& c )
+//               {
+//                  c.author_rewards += author_tokens;
+//               });
+//
+//               modify( get_account( comment.author ), [&]( account_object& a )
+//               {
+//                  a.posting_rewards += author_tokens;
+//               });
+//            #endif
+//
+//         }
+//
+//         if( !has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//            adjust_rshares2( comment, util::evaluate_reward_curve( comment.net_rshares.value ), 0 );
+//      }
+//
+//      modify( comment, [&]( comment_object& c )
+//      {
+//         /**
+//         * A payout is only made for positive rshares, negative rshares hang around
+//         * for the next time this post might get an upvote.
+//         */
+//         if( c.net_rshares > 0 )
+//            c.net_rshares = 0;
+//         c.children_abs_rshares = 0;
+//         c.abs_rshares  = 0;
+//         c.vote_rshares = 0;
+//         c.total_vote_weight = 0;
+//         c.max_cashout_time = fc::time_point_sec::maximum();
+//
+//         if( has_hardfork( STEEM_HARDFORK_0_17__769 ) )
+//         {
+//            c.cashout_time = fc::time_point_sec::maximum();
+//         }
+//         else if( c.parent_author == STEEM_ROOT_POST_PARENT )
+//         {
+//            if( has_hardfork( STEEM_HARDFORK_0_12__177 ) && c.last_payout == fc::time_point_sec::min() )
+//               c.cashout_time = head_block_time() + STEEM_SECOND_CASHOUT_WINDOW;
+//            else
+//               c.cashout_time = fc::time_point_sec::maximum();
+//         }
+//
+//         c.last_payout = head_block_time();
+//      } );
+//
+//      push_virtual_operation( comment_payout_update_operation( comment.author, to_string( comment.permlink ) ) );
+//
+//      const auto& vote_idx = get_index< comment_vote_index >().indices().get< by_comment_voter >();
+//      auto vote_itr = vote_idx.lower_bound( comment.id );
+//      while( vote_itr != vote_idx.end() && vote_itr->comment == comment.id )
+//      {
+//         const auto& cur_vote = *vote_itr;
+//         ++vote_itr;
+//         if( !has_hardfork( STEEM_HARDFORK_0_12__177 ) || calculate_discussion_payout_time( comment ) != fc::time_point_sec::maximum() )
+//         {
+//            modify( cur_vote, [&]( comment_vote_object& cvo )
+//            {
+//               cvo.num_changes = -1;
+//            });
+//         }
+//         else
+//         {
+//#ifdef CLEAR_VOTES
+//            remove( cur_vote );
+//#endif
+//         }
+//      }
+//
+//      return claimed_reward;
+//   } FC_CAPTURE_AND_RETHROW( (comment) )
+//}
 
-      if( comment.net_rshares > 0 )
-      {
-         fill_comment_reward_context_local_state( ctx, comment );
-
-         if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-         {
-            const auto rf = get_reward_fund( comment );
-            ctx.reward_curve = rf.author_reward_curve;
-            ctx.content_constant = rf.content_constant;
-         }
-
-         const share_type reward = util::get_rshare_reward( ctx );
-         uint128_t reward_tokens = uint128_t( reward.value );
-
-         if( reward_tokens > 0 )
-         {
-            share_type curation_tokens = ( ( reward_tokens * get_curation_rewards_percent( comment ) ) / STEEM_100_PERCENT ).to_uint64();
-            share_type author_tokens = reward_tokens.to_uint64() - curation_tokens;
-
-            share_type curation_remainder = pay_curators( comment, curation_tokens );
-
-            if( forward_curation_remainder )
-               author_tokens += curation_remainder;
-
-            share_type total_beneficiary = 0;
-            claimed_reward = author_tokens + curation_tokens;
-
-            for( auto& b : comment.beneficiaries )
-            {
-               auto benefactor_tokens = ( author_tokens * b.weight ) / STEEM_100_PERCENT;
-               auto benefactor_vesting_steem = benefactor_tokens;
-               auto vop = comment_benefactor_reward_operation( b.account, comment.author, to_string( comment.permlink ), asset( 0, SBD_SYMBOL ), asset( 0, STEEM_SYMBOL ), asset( 0, VESTS_SYMBOL ) );
-
-               if( has_hardfork( STEEM_HARDFORK_0_20__2022 ) )
-               {
-                  auto benefactor_sbd_steem = ( benefactor_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
-                  benefactor_vesting_steem  = benefactor_tokens - benefactor_sbd_steem;
-                  auto sbd_payout           = create_sbd( get_account( b.account ), asset( benefactor_sbd_steem, STEEM_SYMBOL ), true );
-
-                  vop.sbd_payout   = sbd_payout.first; // SBD portion
-                  vop.steem_payout = sbd_payout.second; // STEEM portion
-               }
-
-               create_vesting2( *this, get_account( b.account ), asset( benefactor_vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
-               [&]( const asset& reward )
-               {
-                  vop.vesting_payout = reward;
-                  pre_push_virtual_operation( vop );
-               });
-
-               post_push_virtual_operation( vop );
-               total_beneficiary += benefactor_tokens;
-            }
-
-            author_tokens -= total_beneficiary;
-
-            auto sbd_steem     = ( author_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
-            auto vesting_steem = author_tokens - sbd_steem;
-
-            const auto& author = get_account( comment.author );
-            auto sbd_payout = create_sbd( author, asset( sbd_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ) );
-            operation vop = author_reward_operation( comment.author, to_string( comment.permlink ), sbd_payout.first, sbd_payout.second, asset( 0, VESTS_SYMBOL ) );
-
-            create_vesting2( *this, author, asset( vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
-               [&]( const asset& vesting_payout )
-               {
-                  vop.get< author_reward_operation >().vesting_payout = vesting_payout;
-                  pre_push_virtual_operation( vop );
-               } );
-
-            adjust_total_payout( comment, sbd_payout.first + to_sbd( sbd_payout.second + asset( vesting_steem, STEEM_SYMBOL ) ), to_sbd( asset( curation_tokens, STEEM_SYMBOL ) ), to_sbd( asset( total_beneficiary, STEEM_SYMBOL ) ) );
-
-            post_push_virtual_operation( vop );
-            vop = comment_reward_operation( comment.author, to_string( comment.permlink ), to_sbd( asset( claimed_reward, STEEM_SYMBOL ) ) );
-            pre_push_virtual_operation( vop );
-            post_push_virtual_operation( vop );
-
-            #ifndef IS_LOW_MEM
-               modify( comment, [&]( comment_object& c )
-               {
-                  c.author_rewards += author_tokens;
-               });
-
-               modify( get_account( comment.author ), [&]( account_object& a )
-               {
-                  a.posting_rewards += author_tokens;
-               });
-            #endif
-
-         }
-
-         if( !has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-            adjust_rshares2( comment, util::evaluate_reward_curve( comment.net_rshares.value ), 0 );
-      }
-
-      modify( comment, [&]( comment_object& c )
-      {
-         /**
-         * A payout is only made for positive rshares, negative rshares hang around
-         * for the next time this post might get an upvote.
-         */
-         if( c.net_rshares > 0 )
-            c.net_rshares = 0;
-         c.children_abs_rshares = 0;
-         c.abs_rshares  = 0;
-         c.vote_rshares = 0;
-         c.total_vote_weight = 0;
-         c.max_cashout_time = fc::time_point_sec::maximum();
-
-         if( has_hardfork( STEEM_HARDFORK_0_17__769 ) )
-         {
-            c.cashout_time = fc::time_point_sec::maximum();
-         }
-         else if( c.parent_author == STEEM_ROOT_POST_PARENT )
-         {
-            if( has_hardfork( STEEM_HARDFORK_0_12__177 ) && c.last_payout == fc::time_point_sec::min() )
-               c.cashout_time = head_block_time() + STEEM_SECOND_CASHOUT_WINDOW;
-            else
-               c.cashout_time = fc::time_point_sec::maximum();
-         }
-
-         c.last_payout = head_block_time();
-      } );
-
-      push_virtual_operation( comment_payout_update_operation( comment.author, to_string( comment.permlink ) ) );
-
-      const auto& vote_idx = get_index< comment_vote_index >().indices().get< by_comment_voter >();
-      auto vote_itr = vote_idx.lower_bound( comment.id );
-      while( vote_itr != vote_idx.end() && vote_itr->comment == comment.id )
-      {
-         const auto& cur_vote = *vote_itr;
-         ++vote_itr;
-         if( !has_hardfork( STEEM_HARDFORK_0_12__177 ) || calculate_discussion_payout_time( comment ) != fc::time_point_sec::maximum() )
-         {
-            modify( cur_vote, [&]( comment_vote_object& cvo )
-            {
-               cvo.num_changes = -1;
-            });
-         }
-         else
-         {
-#ifdef CLEAR_VOTES
-            remove( cur_vote );
-#endif
-         }
-      }
-
-      return claimed_reward;
-   } FC_CAPTURE_AND_RETHROW( (comment) )
-}
-
-void database::process_comment_cashout()
-{
-   /// don't allow any content to get paid out until the website is ready to launch
-   /// and people have had a week to start posting.  The first cashout will be the biggest because it
-   /// will represent 2+ months of rewards.
-   if( !has_hardfork( STEEM_FIRST_CASHOUT_TIME ) )
-      return;
-
-   const auto& gpo = get_dynamic_global_properties();
-   util::comment_reward_context ctx;
-   ctx.current_steem_price = get_feed_history().current_median_history;
-
-   vector< reward_fund_context > funds;
-   vector< share_type > steem_awarded;
-   const auto& reward_idx = get_index< reward_fund_index, by_id >();
-
-   // Decay recent rshares of each fund
-   for( auto itr = reward_idx.begin(); itr != reward_idx.end(); ++itr )
-   {
-      // Add all reward funds to the local cache and decay their recent rshares
-      modify( *itr, [&]( reward_fund_object& rfo )
-      {
-         fc::microseconds decay_time;
-
-         if( has_hardfork( STEEM_HARDFORK_0_19__1051 ) )
-            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF19;
-         else
-            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF17;
-
-         rfo.recent_claims -= ( rfo.recent_claims * ( head_block_time() - rfo.last_update ).to_seconds() ) / decay_time.to_seconds();
-         rfo.last_update = head_block_time();
-      });
-
-      reward_fund_context rf_ctx;
-      rf_ctx.recent_claims = itr->recent_claims;
-      rf_ctx.reward_balance = itr->reward_balance;
-
-      // The index is by ID, so the ID should be the current size of the vector (0, 1, 2, etc...)
-      assert( funds.size() == static_cast<size_t>(itr->id._id) );
-
-      funds.push_back( rf_ctx );
-   }
-
-   const auto& cidx        = get_index< comment_index >().indices().get< by_cashout_time >();
-   const auto& com_by_root = get_index< comment_index >().indices().get< by_root >();
-
-   auto current = cidx.begin();
-   //  add all rshares about to be cashed out to the reward funds. This ensures equal satoshi per rshare payment
-   if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
-   {
-      while( current != cidx.end() && current->cashout_time <= head_block_time() )
-      {
-         if( current->net_rshares > 0 )
-         {
-            const auto& rf = get_reward_fund( *current );
-            funds[ rf.id._id ].recent_claims += util::evaluate_reward_curve( current->net_rshares.value, rf.author_reward_curve, rf.content_constant );
-         }
-
-         ++current;
-      }
-
-      current = cidx.begin();
-   }
-
-   /*
-    * Payout all comments
-    *
-    * Each payout follows a similar pattern, but for a different reason.
-    * Cashout comment helper does not know about the reward fund it is paying from.
-    * The helper only does token allocation based on curation rewards and the SBD
-    * global %, etc.
-    *
-    * Each context is used by get_rshare_reward to determine what part of each budget
-    * the comment is entitled to. Prior to hardfork 17, all payouts are done against
-    * the global state updated each payout. After the hardfork, each payout is done
-    * against a reward fund state that is snapshotted before all payouts in the block.
-    */
-   while( current != cidx.end() && current->cashout_time <= head_block_time() )
-   {
-      if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
-      {
-         auto fund_id = get_reward_fund( *current ).id._id;
-         ctx.total_reward_shares2 = funds[ fund_id ].recent_claims;
-         ctx.total_reward_fund_steem = funds[ fund_id ].reward_balance;
-
-         bool forward_curation_remainder = !has_hardfork( STEEM_HARDFORK_0_20__1877 );
-
-         funds[ fund_id ].steem_awarded += cashout_comment_helper( ctx, *current, forward_curation_remainder );
-      }
-      else
-      {
-         auto itr = com_by_root.lower_bound( current->root_comment );
-         while( itr != com_by_root.end() && itr->root_comment == current->root_comment )
-         {
-            const auto& comment = *itr; ++itr;
-            ctx.total_reward_shares2 = gpo.total_reward_shares2;
-            ctx.total_reward_fund_steem = gpo.total_reward_fund_steem;
-
-            auto reward = cashout_comment_helper( ctx, comment );
-
-            if( reward > 0 )
-            {
-               modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& p )
-               {
-                  p.total_reward_fund_steem.amount -= reward;
-               });
-            }
-         }
-      }
-
-      current = cidx.begin();
-   }
-
-   // Write the cached fund state back to the database
-   if( funds.size() )
-   {
-      for( size_t i = 0; i < funds.size(); i++ )
-      {
-         modify( get< reward_fund_object, by_id >( reward_fund_id_type( i ) ), [&]( reward_fund_object& rfo )
-         {
-            rfo.recent_claims = funds[ i ].recent_claims;
-            rfo.reward_balance -= asset( funds[ i ].steem_awarded, STEEM_SYMBOL );
-         });
-      }
-   }
-}
+//void database::process_comment_cashout()
+//{
+//   /// don't allow any content to get paid out until the website is ready to launch
+//   /// and people have had a week to start posting.  The first cashout will be the biggest because it
+//   /// will represent 2+ months of rewards.
+//   if( !has_hardfork( STEEM_FIRST_CASHOUT_TIME ) )
+//      return;
+//
+//   const auto& gpo = get_dynamic_global_properties();
+//   util::comment_reward_context ctx;
+//   ctx.current_steem_price = get_feed_history().current_median_history;
+//
+//   vector< reward_fund_context > funds;
+//   vector< share_type > steem_awarded;
+//   const auto& reward_idx = get_index< reward_fund_index, by_id >();
+//
+//   // Decay recent rshares of each fund
+//   for( auto itr = reward_idx.begin(); itr != reward_idx.end(); ++itr )
+//   {
+//      // Add all reward funds to the local cache and decay their recent rshares
+//      modify( *itr, [&]( reward_fund_object& rfo )
+//      {
+//         fc::microseconds decay_time;
+//
+//         if( has_hardfork( STEEM_HARDFORK_0_19__1051 ) )
+//            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF19;
+//         else
+//            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF17;
+//
+//         rfo.recent_claims -= ( rfo.recent_claims * ( head_block_time() - rfo.last_update ).to_seconds() ) / decay_time.to_seconds();
+//         rfo.last_update = head_block_time();
+//      });
+//
+//      reward_fund_context rf_ctx;
+//      rf_ctx.recent_claims = itr->recent_claims;
+//      rf_ctx.reward_balance = itr->reward_balance;
+//
+//      // The index is by ID, so the ID should be the current size of the vector (0, 1, 2, etc...)
+//      assert( funds.size() == static_cast<size_t>(itr->id._id) );
+//
+//      funds.push_back( rf_ctx );
+//   }
+//
+//   const auto& cidx        = get_index< comment_index >().indices().get< by_cashout_time >();
+//   const auto& com_by_root = get_index< comment_index >().indices().get< by_root >();
+//
+//   auto current = cidx.begin();
+//   //  add all rshares about to be cashed out to the reward funds. This ensures equal satoshi per rshare payment
+//   if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
+//   {
+//      while( current != cidx.end() && current->cashout_time <= head_block_time() )
+//      {
+//         if( current->net_rshares > 0 )
+//         {
+//            const auto& rf = get_reward_fund( *current );
+//            funds[ rf.id._id ].recent_claims += util::evaluate_reward_curve( current->net_rshares.value, rf.author_reward_curve, rf.content_constant );
+//         }
+//
+//         ++current;
+//      }
+//
+//      current = cidx.begin();
+//   }
+//
+//   /*
+//    * Payout all comments
+//    *
+//    * Each payout follows a similar pattern, but for a different reason.
+//    * Cashout comment helper does not know about the reward fund it is paying from.
+//    * The helper only does token allocation based on curation rewards and the SBD
+//    * global %, etc.
+//    *
+//    * Each context is used by get_rshare_reward to determine what part of each budget
+//    * the comment is entitled to. Prior to hardfork 17, all payouts are done against
+//    * the global state updated each payout. After the hardfork, each payout is done
+//    * against a reward fund state that is snapshotted before all payouts in the block.
+//    */
+//   while( current != cidx.end() && current->cashout_time <= head_block_time() )
+//   {
+//      if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
+//      {
+//         auto fund_id = get_reward_fund( *current ).id._id;
+//         ctx.total_reward_shares2 = funds[ fund_id ].recent_claims;
+//         ctx.total_reward_fund_steem = funds[ fund_id ].reward_balance;
+//
+//         bool forward_curation_remainder = !has_hardfork( STEEM_HARDFORK_0_20__1877 );
+//
+//         funds[ fund_id ].steem_awarded += cashout_comment_helper( ctx, *current, forward_curation_remainder );
+//      }
+//      else
+//      {
+//         auto itr = com_by_root.lower_bound( current->root_comment );
+//         while( itr != com_by_root.end() && itr->root_comment == current->root_comment )
+//         {
+//            const auto& comment = *itr; ++itr;
+//            ctx.total_reward_shares2 = gpo.total_reward_shares2;
+//            ctx.total_reward_fund_steem = gpo.total_reward_fund_steem;
+//
+//            auto reward = cashout_comment_helper( ctx, comment );
+//
+//            if( reward > 0 )
+//            {
+//               modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& p )
+//               {
+//                  p.total_reward_fund_steem.amount -= reward;
+//               });
+//            }
+//         }
+//      }
+//
+//      current = cidx.begin();
+//   }
+//
+//   // Write the cached fund state back to the database
+//   if( funds.size() )
+//   {
+//      for( size_t i = 0; i < funds.size(); i++ )
+//      {
+//         modify( get< reward_fund_object, by_id >( reward_fund_id_type( i ) ), [&]( reward_fund_object& rfo )
+//         {
+//            rfo.recent_claims = funds[ i ].recent_claims;
+//            rfo.reward_balance -= asset( funds[ i ].steem_awarded, STEEM_SYMBOL );
+//         });
+//      }
+//   }
+//}
 
 /**
  *  Overall the network has an inflation rate of 102% of virtual steem per year
@@ -2194,11 +2343,12 @@ void database::process_funds()
       int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
 
       auto new_steem = ( props.virtual_supply.amount * current_inflation_rate ) / ( int64_t( STEEM_100_PERCENT ) * int64_t( STEEM_BLOCKS_PER_YEAR ) );
-      auto content_reward = ( new_steem * STEEM_CONTENT_REWARD_PERCENT ) / STEEM_100_PERCENT;
-      if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-         content_reward = pay_reward_funds( content_reward ); /// 75% to content creator
-      auto vesting_reward = ( new_steem * STEEM_VESTING_FUND_PERCENT ) / STEEM_100_PERCENT; /// 15% to vesting fund
-      auto witness_reward = new_steem - content_reward - vesting_reward; /// Remaining 10% to witness pay
+      //auto content_reward = ( new_steem * STEEM_CONTENT_REWARD_PERCENT ) / STEEM_100_PERCENT;
+//      if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//         content_reward = pay_reward_funds( content_reward ); /// 75% to content creator
+      auto vesting_reward = ( new_steem * STEEM_VESTING_FUND_PERCENT ) / STEEM_100_PERCENT; /// 50% to vesting fund
+      //auto witness_reward = new_steem - content_reward - vesting_reward; /// Remaining 10% to witness pay
+      auto witness_reward = new_steem - vesting_reward; /// Remaining 50% to witness pay
 
       const auto& cwit = get_witness( props.current_witness );
       witness_reward *= STEEM_MAX_WITNESSES;
@@ -2214,13 +2364,15 @@ void database::process_funds()
 
       witness_reward /= wso.witness_pay_normalization_factor;
 
-      new_steem = content_reward + vesting_reward + witness_reward;
+      //new_steem = content_reward + vesting_reward + witness_reward;
+       new_steem = vesting_reward + witness_reward;
 
       modify( props, [&]( dynamic_global_property_object& p )
       {
          p.total_vesting_fund_steem += asset( vesting_reward, STEEM_SYMBOL );
          if( !has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-            p.total_reward_fund_steem  += asset( content_reward, STEEM_SYMBOL );
+            //p.total_reward_fund_steem  += asset( content_reward, STEEM_SYMBOL );
+             p.total_reward_fund_steem  += asset( 0, STEEM_SYMBOL );
          p.current_supply           += asset( new_steem, STEEM_SYMBOL );
          p.virtual_supply           += asset( new_steem, STEEM_SYMBOL );
       });
@@ -2236,8 +2388,10 @@ void database::process_funds()
    }
    else
    {
-      auto content_reward = get_content_reward();
-      auto curate_reward = get_curation_reward();
+      //auto content_reward = get_content_reward();
+      //auto curate_reward = get_curation_reward();
+      auto content_reward = asset(0,STEEM_SYMBOL);
+      auto curate_reward = asset(0,STEEM_SYMBOL);
       auto witness_pay = get_producer_reward();
       auto vesting_reward = content_reward + curate_reward + witness_pay;
 
@@ -2301,7 +2455,7 @@ void database::process_subsidized_accounts()
    }
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 template< typename T, bool ALLOW_REMOVE >
 void process_smt_objects_internal( database* db, steem::chain::smt_phase phase )
@@ -2333,7 +2487,7 @@ void database::process_smt_objects()
    process_smt_objects_internal< by_interval_launch_exp, true >( this, smt_phase::launch_time_completed );
 }
 
-#endif
+//#endif
 
 asset database::get_liquidity_reward()const
 {
@@ -2346,21 +2500,21 @@ asset database::get_liquidity_reward()const
    return std::max( percent, STEEM_MIN_LIQUIDITY_REWARD );
 }
 
-asset database::get_content_reward()const
-{
-   const auto& props = get_dynamic_global_properties();
-   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   asset percent( protocol::calc_percent_reward_per_block< STEEM_CONTENT_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL );
-   return std::max( percent, STEEM_MIN_CONTENT_REWARD );
-}
-
-asset database::get_curation_reward()const
-{
-   const auto& props = get_dynamic_global_properties();
-   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   asset percent( protocol::calc_percent_reward_per_block< STEEM_CURATE_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
-   return std::max( percent, STEEM_MIN_CURATE_REWARD );
-}
+//asset database::get_content_reward()const
+//{
+//   const auto& props = get_dynamic_global_properties();
+//   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+//   asset percent( protocol::calc_percent_reward_per_block< STEEM_CONTENT_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL );
+//   return std::max( percent, STEEM_MIN_CONTENT_REWARD );
+//}
+//
+//asset database::get_curation_reward()const
+//{
+//   const auto& props = get_dynamic_global_properties();
+//   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+//   asset percent( protocol::calc_percent_reward_per_block< STEEM_CURATE_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
+//   return std::max( percent, STEEM_MIN_CURATE_REWARD );
+//}
 
 asset database::get_producer_reward()
 {
@@ -2405,7 +2559,7 @@ asset database::get_pow_reward()const
 #endif
 
    static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   static_assert( STEEM_MAX_WITNESSES == 21, "this code assumes 21 per round" );
+   static_assert( STEEM_MAX_WITNESSES == 5, "this code assumes 5 per round" );
    asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
    return std::max( percent, STEEM_MIN_POW_REWARD );
 }
@@ -2446,12 +2600,13 @@ void database::pay_liquidity_reward()
 
 uint16_t database::get_curation_rewards_percent( const comment_object& c ) const
 {
-   if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-      return get_reward_fund( c ).percent_curation_rewards;
-   else if( has_hardfork( STEEM_HARDFORK_0_8__116 ) )
-      return STEEM_1_PERCENT * 25;
-   else
-      return STEEM_1_PERCENT * 50;
+   return 0;
+//   if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//      return get_reward_fund( c ).percent_curation_rewards;
+//   else if( has_hardfork( STEEM_HARDFORK_0_8__116 ) )
+//      return STEEM_1_PERCENT * 25;
+//   else
+//      return STEEM_1_PERCENT * 50;
 }
 
 share_type database::pay_reward_funds( share_type reward )
@@ -2643,10 +2798,10 @@ uint32_t database::last_non_undoable_block_num() const
 
 void database::initialize_evaluators()
 {
-   _my->_evaluator_registry.register_evaluator< vote_evaluator                           >();
-   _my->_evaluator_registry.register_evaluator< comment_evaluator                        >();
-   _my->_evaluator_registry.register_evaluator< comment_options_evaluator                >();
-   _my->_evaluator_registry.register_evaluator< delete_comment_evaluator                 >();
+//   _my->_evaluator_registry.register_evaluator< vote_evaluator                           >();
+//   _my->_evaluator_registry.register_evaluator< comment_evaluator                        >();
+//   _my->_evaluator_registry.register_evaluator< comment_options_evaluator                >();
+//   _my->_evaluator_registry.register_evaluator< delete_comment_evaluator                 >();
    _my->_evaluator_registry.register_evaluator< transfer_evaluator                       >();
    _my->_evaluator_registry.register_evaluator< transfer_to_vesting_evaluator            >();
    _my->_evaluator_registry.register_evaluator< withdraw_vesting_evaluator               >();
@@ -2664,18 +2819,18 @@ void database::initialize_evaluators()
    _my->_evaluator_registry.register_evaluator< report_over_production_evaluator         >();
    _my->_evaluator_registry.register_evaluator< feed_publish_evaluator                   >();
    _my->_evaluator_registry.register_evaluator< convert_evaluator                        >();
-   _my->_evaluator_registry.register_evaluator< limit_order_create_evaluator             >();
-   _my->_evaluator_registry.register_evaluator< limit_order_create2_evaluator            >();
-   _my->_evaluator_registry.register_evaluator< limit_order_cancel_evaluator             >();
+//   _my->_evaluator_registry.register_evaluator< limit_order_create_evaluator             >();
+//   _my->_evaluator_registry.register_evaluator< limit_order_create2_evaluator            >();
+//   _my->_evaluator_registry.register_evaluator< limit_order_cancel_evaluator             >();
    _my->_evaluator_registry.register_evaluator< claim_account_evaluator                  >();
    _my->_evaluator_registry.register_evaluator< create_claimed_account_evaluator         >();
    _my->_evaluator_registry.register_evaluator< request_account_recovery_evaluator       >();
    _my->_evaluator_registry.register_evaluator< recover_account_evaluator                >();
    _my->_evaluator_registry.register_evaluator< change_recovery_account_evaluator        >();
-   _my->_evaluator_registry.register_evaluator< escrow_transfer_evaluator                >();
-   _my->_evaluator_registry.register_evaluator< escrow_approve_evaluator                 >();
-   _my->_evaluator_registry.register_evaluator< escrow_dispute_evaluator                 >();
-   _my->_evaluator_registry.register_evaluator< escrow_release_evaluator                 >();
+//   _my->_evaluator_registry.register_evaluator< escrow_transfer_evaluator                >();
+//   _my->_evaluator_registry.register_evaluator< escrow_approve_evaluator                 >();
+//   _my->_evaluator_registry.register_evaluator< escrow_dispute_evaluator                 >();
+//   _my->_evaluator_registry.register_evaluator< escrow_release_evaluator                 >();
    _my->_evaluator_registry.register_evaluator< transfer_to_savings_evaluator            >();
    _my->_evaluator_registry.register_evaluator< transfer_from_savings_evaluator          >();
    _my->_evaluator_registry.register_evaluator< cancel_transfer_from_savings_evaluator   >();
@@ -2683,14 +2838,14 @@ void database::initialize_evaluators()
    _my->_evaluator_registry.register_evaluator< reset_account_evaluator                  >();
    _my->_evaluator_registry.register_evaluator< set_reset_account_evaluator              >();
    _my->_evaluator_registry.register_evaluator< claim_reward_balance_evaluator           >();
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    _my->_evaluator_registry.register_evaluator< claim_reward_balance2_evaluator          >();
-#endif
+//#endif
    _my->_evaluator_registry.register_evaluator< account_create_with_delegation_evaluator >();
    _my->_evaluator_registry.register_evaluator< delegate_vesting_shares_evaluator        >();
    _my->_evaluator_registry.register_evaluator< witness_set_properties_evaluator         >();
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    _my->_evaluator_registry.register_evaluator< smt_setup_evaluator                      >();
    _my->_evaluator_registry.register_evaluator< smt_cap_reveal_evaluator                 >();
    _my->_evaluator_registry.register_evaluator< smt_refund_evaluator                     >();
@@ -2698,7 +2853,7 @@ void database::initialize_evaluators()
    _my->_evaluator_registry.register_evaluator< smt_set_setup_parameters_evaluator       >();
    _my->_evaluator_registry.register_evaluator< smt_set_runtime_parameters_evaluator     >();
    _my->_evaluator_registry.register_evaluator< smt_create_evaluator                     >();
-#endif
+//#endif
 }
 
 
@@ -2749,12 +2904,14 @@ void database::initialize_indexes()
    add_core_index< vesting_delegation_expiration_index     >(*this);
    add_core_index< pending_required_action_index           >(*this);
    add_core_index< pending_optional_action_index           >(*this);
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    add_core_index< smt_token_index                         >(*this);
    add_core_index< smt_event_token_index                   >(*this);
    add_core_index< account_regular_balance_index           >(*this);
    add_core_index< account_rewards_balance_index           >(*this);
-#endif
+   add_core_index< nai_pool_index                          >(*this);
+   add_core_index< smt_token_emissions_index               >(*this);
+//#endif
 
    _plugin_index_signal();
 }
@@ -2883,6 +3040,7 @@ void database::init_genesis( uint64_t init_supply )
             a.name = STEEM_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
             a.memo_key = init_public_key;
             a.balance  = asset( i ? 0 : init_supply, STEEM_SYMBOL );
+            a.sbd_balance = asset(i ? 0:init_supply, SBD_SYMBOL);
          } );
 
          create< account_authority_object >( [&]( account_authority_object& auth )
@@ -2909,6 +3067,7 @@ void database::init_genesis( uint64_t init_supply )
          p.recent_slots_filled = fc::uint128::max_value();
          p.participation_count = 128;
          p.current_supply = asset( init_supply, STEEM_SYMBOL );
+         p.current_sbd_supply = asset( init_supply, SBD_SYMBOL );
          p.virtual_supply = p.current_supply;
          p.maximum_block_size = STEEM_MAX_BLOCK_SIZE;
          p.reverse_auction_seconds = STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF6;
@@ -2951,6 +3110,10 @@ void database::init_genesis( uint64_t init_supply )
          util::rd_setup_dynamics_params( account_subsidy_user_params, account_subsidy_system_params, wso.account_subsidy_rd );
          util::rd_setup_dynamics_params( account_subsidy_per_witness_user_params, account_subsidy_system_params, wso.account_subsidy_witness_rd );
       } );
+
+//#ifdef STEEM_ENABLE_SMT
+      create< nai_pool_object >( [&]( nai_pool_object& npo ) {} );
+//#endif
    }
    FC_CAPTURE_AND_RETHROW()
 }
@@ -3235,7 +3398,8 @@ void database::_apply_block( const signed_block& next_block )
    clear_null_account_balance();
    process_funds();
    process_conversions();
-   process_comment_cashout();
+   //process_comment_cashout();
+   process_fee_witness(signing_witness, next_block.transactions);
    process_vesting_withdrawals();
    process_savings_withdraws();
    process_subsidized_accounts();
@@ -3796,6 +3960,38 @@ void database::update_signing_witness(const witness_object& signing_witness, con
    } );
 } FC_CAPTURE_AND_RETHROW() }
 
+void database::process_fee_witness(const witness_object& signing_witness, vector<signed_transaction>  transactions)
+{
+   try
+   {
+      //Get address of witness
+      account_name_type witness = signing_witness.owner;
+      //Calculate transaction fee from transactions
+      asset totalFeeInSBD = asset(0, SBD_SYMBOL);
+      asset totalFeeInSteem = asset(0, STEEM_SYMBOL);
+
+      for( const auto& trx : transactions )
+      {
+         for (const operation &op : trx.operations) {
+            asset fee;
+            operation_get_impacted_fee(op, fee);
+            if(fee.symbol == SBD_SYMBOL){
+               totalFeeInSBD += fee;
+            }else if(fee.symbol == STEEM_SYMBOL) {
+               totalFeeInSteem += fee;
+            }
+         }
+      }
+      //Update balance
+      if(totalFeeInSBD.amount > 0){
+         adjust_balance(witness, totalFeeInSBD);
+      }
+      if(totalFeeInSteem.amount > 0){
+         adjust_balance(witness, totalFeeInSteem);
+      }
+   } FC_CAPTURE_AND_RETHROW() }
+
+
 void database::update_last_irreversible_block()
 { try {
    const dynamic_global_property_object& dpo = get_dynamic_global_properties();
@@ -4169,7 +4365,7 @@ FC_TODO( "Set skip_cap_regen=true without breaking consensus" );
       itr = delegations_by_exp.begin();
    }
 }
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 template< typename smt_balance_object_type, class balance_operator_type >
 void database::adjust_smt_balance( const account_name_type& name, const asset& delta, bool check_account,
    balance_operator_type balance_operator )
@@ -4219,7 +4415,7 @@ void database::adjust_smt_balance( const account_name_type& name, const asset& d
       }
    }
 }
-#endif
+//#endif
 
 void database::modify_balance( const account_object& a, const asset& delta, bool check_balance )
 {
@@ -4319,7 +4515,7 @@ void database::modify_reward_balance( const account_object& a, const asset& valu
    });
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 struct smt_regular_balance_operator
 {
    smt_regular_balance_operator( const asset& delta ) : delta(delta), is_vesting(delta.symbol.is_vesting()) {}
@@ -4372,13 +4568,13 @@ struct smt_reward_balance_operator
    asset share_delta;
    bool  is_vesting;
 };
-#endif
+//#endif
 
 void database::adjust_balance( const account_object& a, const asset& delta )
 {
    bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4387,7 +4583,7 @@ void database::adjust_balance( const account_object& a, const asset& delta )
       adjust_smt_balance< account_regular_balance_object >( a.name, delta, false/*check_account*/, balance_operator );
       return;
    }
-#endif
+//#endif
    modify_balance( a, delta, check_balance );
 }
 
@@ -4395,7 +4591,7 @@ void database::adjust_balance( const account_name_type& name, const asset& delta
 {
    bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4404,7 +4600,7 @@ void database::adjust_balance( const account_name_type& name, const asset& delta
       adjust_smt_balance< account_regular_balance_object >( name, delta, true/*check_account*/, balance_operator );
       return;
    }
-#endif
+//#endif
    const auto& a = get_account( name );
    modify_balance( a, delta, check_balance );
 }
@@ -4469,7 +4665,7 @@ void database::adjust_reward_balance( const account_object& a, const asset& valu
    bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
    FC_ASSERT( value_delta.symbol.is_vesting() == false && share_delta.symbol.is_vesting() );
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( value_delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4478,7 +4674,7 @@ void database::adjust_reward_balance( const account_object& a, const asset& valu
       adjust_smt_balance< account_rewards_balance_object >( a.name, value_delta, false/*check_account*/, balance_operator );
       return;
    }
-#endif
+//#endif
 
    modify_reward_balance(a, value_delta, share_delta, check_balance);
 }
@@ -4489,7 +4685,7 @@ void database::adjust_reward_balance( const account_name_type& name, const asset
    bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
    FC_ASSERT( value_delta.symbol.is_vesting() == false && share_delta.symbol.is_vesting() );
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( value_delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4498,7 +4694,7 @@ void database::adjust_reward_balance( const account_name_type& name, const asset
       adjust_smt_balance< account_rewards_balance_object >( name, value_delta, true/*check_account*/, balance_operator );
       return;
    }
-#endif
+//#endif
 
    const auto& a = get_account( name );
    modify_reward_balance(a, value_delta, share_delta, check_balance);
@@ -4506,7 +4702,7 @@ void database::adjust_reward_balance( const account_name_type& name, const asset
 
 void database::adjust_supply( const asset& delta, bool adjust_vesting )
 {
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
    {
       const auto& smt = get< smt_token_object, by_symbol >( delta.symbol );
@@ -4518,7 +4714,7 @@ void database::adjust_supply( const asset& delta, bool adjust_vesting )
       });
       return;
    }
-#endif
+//#endif
 
    bool check_supply = has_hardfork( STEEM_HARDFORK_0_20__1811 );
 
@@ -4567,7 +4763,7 @@ asset database::get_balance( const account_object& a, asset_symbol_type symbol )
          return a.sbd_balance;
       default:
       {
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
          FC_ASSERT( symbol.space() == asset_symbol_type::smt_nai_space, "invalid symbol" );
          const account_regular_balance_object* arbo =
             find< account_regular_balance_object, by_owner_liquid_symbol >(
@@ -4580,9 +4776,9 @@ asset database::get_balance( const account_object& a, asset_symbol_type symbol )
          {
             return symbol.is_vesting() ? arbo->vesting : arbo->liquid;
          }
-#else
-      FC_ASSERT( false, "invalid symbol" );
-#endif
+//#else
+//      FC_ASSERT( false, "invalid symbol" );
+//#endif
       }
    }
 }
@@ -5017,12 +5213,21 @@ void database::apply_hardfork( uint32_t hardfork )
             {
                wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, STEEM_SYMBOL );
             });
+            replenish_nai_pool( *this );
          }
          break;
-   #ifdef IS_TEST_NET
-      case STEEM_HARDFORK_0_21:
-         break;
-#endif
+//      case STEEM_SMT_HARDFORK:
+//      {
+////#ifdef STEEM_ENABLE_SMT
+//         replenish_nai_pool( *this );
+////#endif
+////         modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
+////         {
+////            gpo.required_actions_partition_percent = 25 * STEEM_1_PERCENT;
+////         });
+//
+//         break;
+//      }
       default:
          break;
    }
@@ -5166,7 +5371,7 @@ void database::validate_invariants()const
    FC_CAPTURE_LOG_AND_RETHROW( (head_block_num()) );
 }
 
-#ifdef STEEM_ENABLE_SMT
+//#ifdef STEEM_ENABLE_SMT
 
 namespace {
    template <typename index_type, typename lambda>
@@ -5285,7 +5490,7 @@ void database::validate_smt_invariants()const
    }
    FC_CAPTURE_LOG_AND_RETHROW( (head_block_num()) );
 }
-#endif
+//#endif
 
 void database::perform_vesting_share_split( uint32_t magnitude )
 {
@@ -5439,43 +5644,6 @@ void database::retally_witness_vote_counts( bool force )
    }
 }
 
-#ifdef STEEM_ENABLE_SMT
-// 1. NAI number is stored in 32 bits, minus 4 for precision, minus 1 for control.
-// 2. NAI string has 8 characters (each between '0' and '9') available (11 minus '@@', minus checksum character is 8 )
-// 3. Max 27 bit decimal is 134,217,727 but only 8 characters are available to represent it as string so we are left
-//    with [0 : 99,999,999] range.
-// 4. The numbers starting with 0 decimal digit are reserved. Now we are left with 10 milions of reserved NAIs
-//    [0 : 09,999,999] and 90 millions available for SMT creators [10,000,000 : 99,999,999]
-// 5. The least significant bit is used as liquid/vesting variant indicator so the 10 and 90 milions are numbers
-//    of liquid/vesting *pairs* of reserved/available NAIs.
-// 6. 45 milions of SMT await for their creators.
-
-vector< asset_symbol_type > database::get_smt_next_identifier()
-{
-   // This is temporary dummy implementation using simple counter as nai source (_next_available_nai).
-   // Although a container of available nais is returned, it contains only one entry for simplicity.
-   // Note that no decimal places argument is required from SMT creator at this stage.
-   // This is because asset_symbol_type's to_string method omits the precision when serializing.
-   // For appropriate use of this method see e.g. smt_database_fixture::create_smt
-
-   uint8_t decimal_places = 0;
-
-   FC_ASSERT( _next_available_nai >= SMT_MIN_NON_RESERVED_NAI );
-   FC_ASSERT( _next_available_nai <= SMT_MAX_NAI, "Out of available NAI numbers." );
-   // Assume that _next_available_nai value shows the liquid version of NAI.
-   FC_ASSERT( (_next_available_nai & 0x1) == 0, "Can't start with vesting version of NAI." );
-   uint32_t new_nai = _next_available_nai;
-   // Skip vesting version of produced NAI - it differs only by least significant bit set.
-   _next_available_nai += 2;
-
-   uint32_t new_asset_num = (new_nai << 5) | 0x10 | decimal_places;
-   asset_symbol_type new_symbol = asset_symbol_type::from_asset_num( new_asset_num );
-   new_symbol.validate();
-   FC_ASSERT( new_symbol.space() == asset_symbol_type::smt_nai_space );
-
-   return vector< asset_symbol_type >( 1, new_symbol );
-}
-#endif
 
 index_info::index_info() {}
 index_info::~index_info() {}

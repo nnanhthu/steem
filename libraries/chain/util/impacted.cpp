@@ -37,18 +37,18 @@ struct get_impacted_account_visitor
       _impacted.insert( op.creator );
    }
 
-   void operator()( const comment_operation& op )
-   {
-      _impacted.insert( op.author );
-      if( op.parent_author.size() )
-         _impacted.insert( op.parent_author );
-   }
-
-   void operator()( const vote_operation& op )
-   {
-      _impacted.insert( op.voter );
-      _impacted.insert( op.author );
-   }
+//   void operator()( const comment_operation& op )
+//   {
+//      _impacted.insert( op.author );
+//      if( op.parent_author.size() )
+//         _impacted.insert( op.parent_author );
+//   }
+//
+//   void operator()( const vote_operation& op )
+//   {
+//      _impacted.insert( op.voter );
+//      _impacted.insert( op.author );
+//   }
 
    void operator()( const transfer_operation& op )
    {
@@ -56,33 +56,33 @@ struct get_impacted_account_visitor
       _impacted.insert( op.to );
    }
 
-   void operator()( const escrow_transfer_operation& op )
-   {
-      _impacted.insert( op.from );
-      _impacted.insert( op.to );
-      _impacted.insert( op.agent );
-   }
-
-   void operator()( const escrow_approve_operation& op )
-   {
-      _impacted.insert( op.from );
-      _impacted.insert( op.to );
-      _impacted.insert( op.agent );
-   }
-
-   void operator()( const escrow_dispute_operation& op )
-   {
-      _impacted.insert( op.from );
-      _impacted.insert( op.to );
-      _impacted.insert( op.agent );
-   }
-
-   void operator()( const escrow_release_operation& op )
-   {
-      _impacted.insert( op.from );
-      _impacted.insert( op.to );
-      _impacted.insert( op.agent );
-   }
+//   void operator()( const escrow_transfer_operation& op )
+//   {
+//      _impacted.insert( op.from );
+//      _impacted.insert( op.to );
+//      _impacted.insert( op.agent );
+//   }
+//
+//   void operator()( const escrow_approve_operation& op )
+//   {
+//      _impacted.insert( op.from );
+//      _impacted.insert( op.to );
+//      _impacted.insert( op.agent );
+//   }
+//
+//   void operator()( const escrow_dispute_operation& op )
+//   {
+//      _impacted.insert( op.from );
+//      _impacted.insert( op.to );
+//      _impacted.insert( op.agent );
+//   }
+//
+//   void operator()( const escrow_release_operation& op )
+//   {
+//      _impacted.insert( op.from );
+//      _impacted.insert( op.to );
+//      _impacted.insert( op.agent );
+//   }
 
    void operator()( const transfer_to_vesting_operation& op )
    {
@@ -185,18 +185,43 @@ struct get_impacted_account_visitor
       _impacted.insert( op.new_account_name );
    }
 
+   void operator()( const smt_create_operation& op )
+   {
+      _impacted.insert( op.control_account );
+   }
+
+            void operator()( const smt_setup_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_setup_emissions_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_set_setup_parameters_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
+            void operator()( const smt_set_runtime_parameters_operation& op )
+            {
+               _impacted.insert( op.control_account );
+            }
+
 
    // vops
 
-   void operator()( const author_reward_operation& op )
-   {
-      _impacted.insert( op.author );
-   }
-
-   void operator()( const curation_reward_operation& op )
-   {
-      _impacted.insert( op.curator );
-   }
+//   void operator()( const author_reward_operation& op )
+//   {
+//      _impacted.insert( op.author );
+//   }
+//
+//   void operator()( const curation_reward_operation& op )
+//   {
+//      _impacted.insert( op.curator );
+//   }
 
    void operator()( const liquidity_reward_operation& op )
    {
@@ -241,11 +266,11 @@ struct get_impacted_account_visitor
       _impacted.insert( op.account );
    }
 
-   void operator()( const comment_benefactor_reward_operation& op )
-   {
-      _impacted.insert( op.benefactor );
-      _impacted.insert( op.author );
-   }
+//   void operator()( const comment_benefactor_reward_operation& op )
+//   {
+//      _impacted.insert( op.benefactor );
+//      _impacted.insert( op.author );
+//   }
 
    void operator()( const producer_reward_operation& op )
    {
