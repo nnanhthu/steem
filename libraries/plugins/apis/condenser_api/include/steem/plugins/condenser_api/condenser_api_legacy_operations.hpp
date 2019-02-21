@@ -1077,8 +1077,8 @@ namespace steem { namespace plugins { namespace condenser_api {
                         interval_count(op.interval_count),
                         lep_time(op.lep_time),
                         rep_time(op.rep_time),
-                        lep_abs_amount(op.lep_abs_amount),
-                        rep_abs_amount(op.rep_abs_amount),
+                        lep_abs_amount( legacy_asset::from_asset( op.lep_abs_amount ) ),
+                        rep_abs_amount( legacy_asset::from_asset( op.rep_abs_amount ) ),
                         lep_rel_amount_numerator(op.lep_rel_amount_numerator),
                         rep_rel_amount_numerator(op.rep_rel_amount_numerator),
                         rel_amount_denom_bits(op.rel_amount_denom_bits),
@@ -1116,8 +1116,8 @@ namespace steem { namespace plugins { namespace condenser_api {
                 time_point_sec      lep_time;
                 time_point_sec      rep_time;
 
-                asset               lep_abs_amount;
-                asset               rep_abs_amount;
+                legacy_asset        lep_abs_amount;
+                legacy_asset        rep_abs_amount;
                 uint32_t            lep_rel_amount_numerator;
                 uint32_t            rep_rel_amount_numerator;
 
@@ -1177,6 +1177,93 @@ namespace steem { namespace plugins { namespace condenser_api {
                 extensions_type   extensions;
                 account_name_type control_account;
                 asset_symbol_type symbol;
+            };
+
+            struct legacy_smt_cap_reveal_operation
+            {
+                legacy_smt_cap_reveal_operation() {}
+                legacy_smt_cap_reveal_operation( const smt_cap_reveal_operation& op ) :
+                        cap(op.cap),
+                        extensions( op.extensions ),
+                        control_account( op.control_account ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_cap_reveal_operation()const
+                {
+                    smt_cap_reveal_operation op;
+                    op.cap = cap;
+                    op.extensions = extensions;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                smt_revealed_cap   cap;
+                extensions_type   extensions;
+                account_name_type control_account;
+                asset_symbol_type symbol;
+            };
+
+            struct legacy_smt_refund_operation
+            {
+                legacy_smt_refund_operation() {}
+                legacy_smt_refund_operation( const smt_refund_operation& op ) :
+                        contributor(op.contributor),
+                        contribution_id(op.contribution_id),
+                        amount( legacy_asset::from_asset( op.amount ) ),
+                        extensions( op.extensions ),
+                        executor( op.executor ),
+                        symbol( op.symbol )
+                {}
+
+                operator smt_refund_operation()const
+                {
+                    smt_refund_operation op;
+                    op.contributor = contributor;
+                    op.contribution_id = contribution_id;
+                    op.amount = amount;
+                    op.extensions = extensions;
+                    op.executor = executor;
+                    op.symbol = symbol;
+                    return op;
+                }
+
+                account_name_type       contributor;
+                contribution_id_type    contribution_id;
+                legacy_asset                   amount;
+                extensions_type   extensions;
+                account_name_type executor;
+                asset_symbol_type symbol;
+            };
+
+            struct legacy_smt_contribute_operation
+            {
+                legacy_smt_contribute_operation() {}
+                legacy_smt_contribute_operation( const smt_contribute_operation& op ) :
+                        contributor(op.contributor),
+                        symbol( op.symbol ),
+                        contribution_id( op.contribution_id ),
+                        contribution( legacy_asset::from_asset( op.contribution ) ),
+                        extensions( op.extensions )
+                {}
+
+                operator smt_contribute_operation()const
+                {
+                    smt_contribute_operation op;
+                    op.contributor = contributor;
+                    op.symbol = symbol;
+                    op.contribution_id = contribution_id;
+                    op.contribution = contribution;
+                    op.extensions = extensions;
+                    return op;
+                }
+
+                account_name_type  contributor;
+                asset_symbol_type  symbol;
+                uint32_t           contribution_id;
+                legacy_asset       contribution;
+                extensions_type    extensions;
             };
 
             typedef fc::static_variant<
@@ -1242,7 +1329,10 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_smt_setup_operation,
             legacy_smt_setup_emissions_operation,
             legacy_smt_set_setup_parameters_operation,
-            legacy_smt_set_runtime_parameters_operation
+            legacy_smt_set_runtime_parameters_operation,
+            legacy_smt_cap_reveal_operation,
+            legacy_smt_refund_operation,
+            legacy_smt_contribute_operation
             > legacy_operation;
 
             struct legacy_operation_conversion_visitor
@@ -1497,6 +1587,24 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return true;
                 }
 
+                bool operator()( const smt_cap_reveal_operation& op )const
+                {
+                    l_op = legacy_smt_cap_reveal_operation( op );
+                    return true;
+                }
+
+                bool operator()( const smt_refund_operation& op )const
+                {
+                    l_op = legacy_smt_refund_operation( op );
+                    return true;
+                }
+
+                bool operator()( const smt_contribute_operation& op )const
+                {
+                    l_op = legacy_smt_contribute_operation( op );
+                    return true;
+                }
+
                 // Should only be SMT ops
                 template< typename T >
                 bool operator()( const T& )const { return false; }
@@ -1688,6 +1796,21 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return operation( smt_set_runtime_parameters_operation( op ) );
                 }
 
+                operation operator()( const legacy_smt_cap_reveal_operation& op )const
+                {
+                    return operation( smt_cap_reveal_operation( op ) );
+                }
+
+                operation operator()( const legacy_smt_refund_operation& op )const
+                {
+                    return operation( smt_refund_operation( op ) );
+                }
+
+                operation operator()( const legacy_smt_contribute_operation& op )const
+                {
+                    return operation( smt_contribute_operation( op ) );
+                }
+
                 template< typename T >
                 operation operator()( const T& t )const
                 {
@@ -1853,5 +1976,23 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_runtime_parameters_ope
         (extensions)
         (control_account)
 (symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_cap_reveal_operation,
+(cap)
+        (extensions)
+        (control_account)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_refund_operation,
+(contributor)
+        (contribution_id)
+        (amount)
+        (extensions)
+        (executor)
+(symbol) )
+FC_REFLECT( steem::plugins::condenser_api::legacy_smt_contribute_operation,
+(contributor)
+        (symbol)
+        (contribution_id)
+        (contribution)
+(extensions) )
 
 FC_REFLECT_TYPENAME( steem::plugins::condenser_api::legacy_operation )
