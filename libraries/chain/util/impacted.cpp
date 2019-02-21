@@ -210,6 +210,11 @@ struct get_impacted_account_visitor
                _impacted.insert( op.control_account );
             }
 
+            void operator()( const smt_contribute_operation& op )
+            {
+               _impacted.insert( op.contributor );
+            }
+
 
    // vops
 

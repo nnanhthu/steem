@@ -164,6 +164,9 @@ struct get_impacted_fee {
             void operator()(const create_claimed_account_operation &op) {
             }
 
+            void operator()(const smt_contribute_operation &op) {
+            }
+
 
             // vops
 
@@ -2853,6 +2856,7 @@ void database::initialize_evaluators()
    _my->_evaluator_registry.register_evaluator< smt_set_setup_parameters_evaluator       >();
    _my->_evaluator_registry.register_evaluator< smt_set_runtime_parameters_evaluator     >();
    _my->_evaluator_registry.register_evaluator< smt_create_evaluator                     >();
+   _my->_evaluator_registry.register_evaluator< smt_contribute_evaluator                 >();
 //#endif
 }
 
@@ -2911,6 +2915,8 @@ void database::initialize_indexes()
    add_core_index< account_rewards_balance_index           >(*this);
    add_core_index< nai_pool_index                          >(*this);
    add_core_index< smt_token_emissions_index               >(*this);
+   add_core_index< smt_contribution_index                  >(*this);
+   add_core_index< smt_ico_index                           >(*this);
 //#endif
 
    _plugin_index_signal();

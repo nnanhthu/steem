@@ -302,6 +302,7 @@ namespace detail
                         case operation::tag<smt_setup_emissions_operation>::value:
                         case operation::tag<smt_set_setup_parameters_operation>::value:
                         case operation::tag<smt_set_runtime_parameters_operation>::value:
+                        case operation::tag<smt_contribute_operation>::value:
                         default:
                            if( item.second.op.visit( visitor ) )
                            {

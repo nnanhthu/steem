@@ -138,6 +138,7 @@ struct operation_exec_info
    int64_t smt_set_setup_parameters_operation_exec_time        = 0;
    int64_t smt_set_runtime_parameters_operation_exec_time      = 0;
    int64_t smt_create_operation_exec_time                      = 0;
+   int64_t smt_contribute_operation_exec_time                  = 0;
 //#endif
 };
 
@@ -218,5 +219,6 @@ FC_REFLECT( steem::plugins::rc::operation_exec_info,
    ( smt_set_setup_parameters_operation_exec_time )
    ( smt_set_runtime_parameters_operation_exec_time )
    ( smt_create_operation_exec_time )
+   ( smt_contribute_operation_exec_time )
 //#endif
    )

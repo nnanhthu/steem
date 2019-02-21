@@ -72,6 +72,8 @@ class database_api_impl
          (verify_signatures)
 //#ifdef STEEM_ENABLE_SMT
          (get_nai_pool)
+         (list_smt_contributions)
+         (find_smt_contributions)
          (list_smt_tokens)
          (find_smt_tokens)
          (list_smt_token_emissions)
@@ -1461,6 +1463,59 @@ DEFINE_API_IMPL( database_api_impl, get_nai_pool )
    return result;
 }
 
+DEFINE_API_IMPL( database_api_impl, list_smt_contributions )
+{
+   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+
+   list_smt_contributions_return result;
+   result.contributions.reserve( args.limit );
+
+   switch( args.order )
+   {
+      case( by_symbol_contributor ):
+      {
+         auto key = args.start.get_array();
+         FC_ASSERT( key.size() == 0 || key.size() == 3, "The parameter 'start' must be an empty array or consist of asset_symbol_type, contributor and contribution_id" );
+
+         boost::tuple< asset_symbol_type, account_name_type, uint32_t > start;
+         if ( key.size() == 0 )
+            start = boost::make_tuple( asset_symbol_type(), account_name_type(), 0 );
+         else
+            start = boost::make_tuple( key[ 0 ].as< asset_symbol_type >(), key[ 1 ].as< account_name_type >(), key[ 3 ].as< uint32_t >() );
+
+         iterate_results< chain::smt_contribution_index, chain::by_symbol_contributor >(
+            start,
+            result.contributions,
+            args.limit,
+            &database_api_impl::on_push_default< chain::smt_contribution_object > );
+         break;
+      }
+      default:
+         FC_ASSERT( false, "Unknown or unsupported sort order" );
+   }
+
+   return result;
+}
+
+DEFINE_API_IMPL( database_api_impl, find_smt_contributions )
+{
+   find_smt_contributions_return result;
+
+   const auto& idx = _db.get_index< chain::smt_contribution_index, chain::by_symbol_contributor >();
+
+   for( auto& symbol_contributor : args.symbol_contributors )
+   {
+      auto itr = idx.lower_bound( boost::make_tuple( symbol_contributor.first, symbol_contributor.second, 0 ) );
+      while( itr != idx.end() && itr->symbol == symbol_contributor.first && itr->contributor == symbol_contributor.second && result.contributions.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+      {
+         result.contributions.push_back( *itr );
+         ++itr;
+      }
+   }
+
+   return result;
+}
+
 DEFINE_API_IMPL( database_api_impl, list_smt_tokens )
 {
    FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
@@ -1483,7 +1538,7 @@ DEFINE_API_IMPL( database_api_impl, list_smt_tokens )
             start,
             result.tokens,
             args.limit,
-            &database_api_impl::on_push_default< chain::smt_token_object > );
+            [&]( const smt_token_object& t ) { return api_smt_token_object( t, _db ); } );
 
          break;
       }
@@ -1507,7 +1562,7 @@ DEFINE_API_IMPL( database_api_impl, list_smt_tokens )
             start,
             result.tokens,
             args.limit,
-            &database_api_impl::on_push_default< chain::smt_token_object > );
+            [&]( const smt_token_object& t ) { return api_smt_token_object( t, _db ); } );
 
          break;
       }
@@ -1530,7 +1585,7 @@ DEFINE_API_IMPL( database_api_impl, find_smt_tokens )
       const auto token = chain::util::smt::find_token( _db, symbol, args.ignore_precision );
       if( token != nullptr )
       {
-         result.tokens.push_back( *token );
+         result.tokens.push_back( api_smt_token_object( *token, _db ) );
       }
    }
 
@@ -1646,6 +1701,8 @@ DEFINE_READ_APIS( database_api,
    (verify_signatures)
 //#ifdef STEEM_ENABLE_SMT
    (get_nai_pool)
+   (list_smt_contributions)
+   (find_smt_contributions)
    (list_smt_tokens)
    (find_smt_tokens)
    (list_smt_token_emissions)
