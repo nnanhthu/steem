@@ -1713,7 +1713,7 @@ BOOST_AUTO_TEST_CASE( witness_update_apply )
       op.url = "foo.bar";
       op.fee = ASSET( "1.000 TESTS" );
       op.block_signing_key = signing_key.get_public_key();
-      op.props.account_creation_fee = legacy_steem_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, STEEM_SYMBOL) );
+      op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, SBD_SYMBOL) );
       op.props.maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT + 100;
 
       signed_transaction tx;
@@ -6754,7 +6754,7 @@ BOOST_AUTO_TEST_CASE( witness_set_properties_validate )
       op.url = "foo.bar";
       op.fee = ASSET( "1.000 TESTS" );
       op.block_signing_key = signing_key.get_public_key();
-      op.props.account_creation_fee = legacy_steem_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, STEEM_SYMBOL) );
+      op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, SBD_SYMBOL) );
       op.props.maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT + 100;
 
       signed_transaction tx;
@@ -6928,7 +6928,7 @@ BOOST_AUTO_TEST_CASE( witness_set_properties_apply )
       op.url = "foo.bar";
       op.fee = ASSET( "1.000 TESTS" );
       op.block_signing_key = signing_key.get_public_key();
-      op.props.account_creation_fee = legacy_steem_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, STEEM_SYMBOL) );
+      op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset(STEEM_MIN_ACCOUNT_CREATION_FEE + 10, SBD_SYMBOL) );
       op.props.maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT + 100;
 
       signed_transaction tx;

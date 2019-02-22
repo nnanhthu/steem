@@ -324,7 +324,7 @@ namespace steem {
 
             if (_db.has_hardfork(STEEM_HARDFORK_0_20__2651) || _db.is_producing()) {
                 FC_TODO("Move to validate() after HF20");
-                FC_ASSERT(o.fee <= asset(STEEM_MAX_ACCOUNT_CREATION_FEE, STEEM_SYMBOL),
+                FC_ASSERT(o.fee <= asset(STEEM_MAX_ACCOUNT_CREATION_FEE, SBD_SYMBOL),
                           "Account creation fee cannot be too large");
             }
 
@@ -336,9 +336,9 @@ namespace steem {
             } else if (!_db.has_hardfork(STEEM_HARDFORK_0_20__1761) && _db.has_hardfork(STEEM_HARDFORK_0_19__987)) {
                 FC_ASSERT(o.fee >=
                           asset(wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER,
-                                STEEM_SYMBOL), "Insufficient Fee: ${f} required, ${p} provided.",
+                                SBD_SYMBOL), "Insufficient Fee: ${f} required, ${p} provided.",
                           ("f", wso.median_props.account_creation_fee *
-                                asset(STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, STEEM_SYMBOL))
+                                asset(STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, SBD_SYMBOL))
                                   ("p", o.fee));
             } else if (_db.has_hardfork(STEEM_HARDFORK_0_1)) {
                 FC_ASSERT(o.fee >= wso.median_props.account_creation_fee,
@@ -382,7 +382,7 @@ namespace steem {
                 auth.last_owner_update = fc::time_point_sec::min();
             });
 
-            if (!_db.has_hardfork(STEEM_HARDFORK_0_20__1762) && o.fee.amount > 0) {
+            if (!_db.has_hardfork(STEEM_HARDFORK_0_20__1762) && o.fee.amount > 0 && o.fee.symbol == STEEM_SYMBOL) {
                 _db.create_vesting(new_account, o.fee);
             }
         }
@@ -393,7 +393,7 @@ namespace steem {
 
             if (_db.has_hardfork(STEEM_HARDFORK_0_20__2651) || _db.is_producing()) {
                 FC_TODO("Move to validate() after HF20");
-                FC_ASSERT(o.fee <= asset(STEEM_MAX_ACCOUNT_CREATION_FEE, STEEM_SYMBOL),
+                FC_ASSERT(o.fee <= asset(STEEM_MAX_ACCOUNT_CREATION_FEE, SBD_SYMBOL),
                           "Account creation fee cannot be too large");
             }
 
@@ -414,9 +414,9 @@ namespace steem {
 
             auto target_delegation =
                     asset(wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER *
-                          STEEM_CREATE_ACCOUNT_DELEGATION_RATIO, STEEM_SYMBOL) * props.get_vesting_share_price();
+                          STEEM_CREATE_ACCOUNT_DELEGATION_RATIO, SBD_SYMBOL) * props.get_vesting_share_price();
 
-            auto current_delegation = asset(o.fee.amount * STEEM_CREATE_ACCOUNT_DELEGATION_RATIO, STEEM_SYMBOL) *
+            auto current_delegation = asset(o.fee.amount * STEEM_CREATE_ACCOUNT_DELEGATION_RATIO, SBD_SYMBOL) *
                                       props.get_vesting_share_price() + o.delegation;
 
             FC_ASSERT(current_delegation >= target_delegation, "Inssufficient Delegation ${f} required, ${p} provided.",
@@ -485,7 +485,7 @@ namespace steem {
                 });
             }
 
-            if (!_db.has_hardfork(STEEM_HARDFORK_0_20__1762) && o.fee.amount > 0) {
+            if (!_db.has_hardfork(STEEM_HARDFORK_0_20__1762) && o.fee.amount > 0 && o.fee.symbol == STEEM_SYMBOL) {
                 _db.create_vesting(new_account, o.fee);
             }
         }
@@ -2853,15 +2853,17 @@ namespace steem {
             const auto &gpo = _db.get_dynamic_global_properties();
 
             // HF 20 increase fee meaning by 30x, reduce these thresholds to compensate.
+            //convert account_creation_fee to steem, then calculate
+            asset account_creation_fee_in_steem = _db.to_steem(wso.median_props.account_creation_fee);
             auto min_delegation = _db.has_hardfork(STEEM_HARDFORK_0_20__1761) ?
-                                  asset(wso.median_props.account_creation_fee.amount / 3, STEEM_SYMBOL) *
+                                  asset(account_creation_fee_in_steem.amount / 3, STEEM_SYMBOL) *
                                   gpo.get_vesting_share_price() :
-                                  asset(wso.median_props.account_creation_fee.amount * 10, STEEM_SYMBOL) *
+                                  asset(account_creation_fee_in_steem.amount * 10, STEEM_SYMBOL) *
                                   gpo.get_vesting_share_price();
             auto min_update = _db.has_hardfork(STEEM_HARDFORK_0_20__1761) ?
-                              asset(wso.median_props.account_creation_fee.amount / 30, STEEM_SYMBOL) *
+                              asset(account_creation_fee_in_steem.amount / 30, STEEM_SYMBOL) *
                               gpo.get_vesting_share_price() :
-                              wso.median_props.account_creation_fee * gpo.get_vesting_share_price();
+                              account_creation_fee_in_steem * gpo.get_vesting_share_price();
 
             // If delegation doesn't exist, create it
             if (delegation == nullptr) {

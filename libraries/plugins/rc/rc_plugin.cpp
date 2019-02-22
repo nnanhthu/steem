@@ -96,6 +96,12 @@ void create_rc_account( database& db, uint32_t now, const account_object& accoun
          return;
    }
 
+   if(max_rc_creation_adjustment.symbol == SBD_SYMBOL)
+   {
+      //Convert from sbd to steem
+      max_rc_creation_adjustment = db.to_steem(max_rc_creation_adjustment);
+   }
+
    if( max_rc_creation_adjustment.symbol == STEEM_SYMBOL )
    {
       const dynamic_global_property_object& gpo = db.get_dynamic_global_properties();

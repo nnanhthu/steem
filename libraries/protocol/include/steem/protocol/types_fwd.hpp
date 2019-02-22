@@ -11,8 +11,8 @@ template< typename Storage = fc::uint128 >
 class fixed_string_impl;
 
 class asset_symbol_type;
-class legacy_steem_asset_symbol_type;
-struct legacy_steem_asset;
+class legacy_sbd_asset_symbol_type;
+struct legacy_sbd_asset;
 } } // steem::protocol
 
 namespace fc { namespace raw {
@@ -28,9 +28,9 @@ template< typename Stream >
 inline void unpack( Stream& s, steem::protocol::asset_symbol_type& sym, uint32_t depth = 0 );
 
 template< typename Stream >
-inline void pack( Stream& s, const steem::protocol::legacy_steem_asset_symbol_type& sym );
+inline void pack( Stream& s, const steem::protocol::legacy_sbd_asset_symbol_type& sym );
 template< typename Stream >
-inline void unpack( Stream& s, steem::protocol::legacy_steem_asset_symbol_type& sym, uint32_t depth = 0 );
+inline void unpack( Stream& s, steem::protocol::legacy_sbd_asset_symbol_type& sym, uint32_t depth = 0 );
 
 } // raw
 
@@ -41,7 +41,7 @@ inline void from_variant( const variant& v, steem::protocol::fixed_string_impl< 
 
 inline void to_variant( const steem::protocol::asset_symbol_type& sym, fc::variant& v );
 
-inline void from_variant( const fc::variant& v, steem::protocol::legacy_steem_asset& leg );
-inline void to_variant( const steem::protocol::legacy_steem_asset& leg, fc::variant& v );
+inline void from_variant( const fc::variant& v, steem::protocol::legacy_sbd_asset& leg );
+inline void to_variant( const steem::protocol::legacy_sbd_asset& leg, fc::variant& v );
 
 } // fc

@@ -5216,14 +5216,14 @@ void database::apply_hardfork( uint32_t hardfork )
                {
                   modify( get< witness_object, by_name >( witness ), [&]( witness_object& w )
                   {
-                     w.props.account_creation_fee = asset( w.props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, STEEM_SYMBOL );
+                     w.props.account_creation_fee = asset( w.props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, SBD_SYMBOL );
                   });
                }
             }
 
             modify( wso, [&]( witness_schedule_object& wso )
             {
-               wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, STEEM_SYMBOL );
+               wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, SBD_SYMBOL );
             });
             replenish_nai_pool( *this );
          }

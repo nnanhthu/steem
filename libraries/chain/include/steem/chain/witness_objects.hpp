@@ -34,7 +34,7 @@ namespace steem { namespace chain {
        *  ability to vote and make transactions.
        */
       asset             account_creation_fee =
-         asset( STEEM_MIN_ACCOUNT_CREATION_FEE, STEEM_SYMBOL );
+         asset( STEEM_MIN_ACCOUNT_CREATION_FEE, SBD_SYMBOL );
 
       /**
        *  This witnesses vote for the maximum_block_size which is used by the network

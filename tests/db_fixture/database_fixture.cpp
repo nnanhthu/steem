@@ -81,7 +81,7 @@ clean_database_fixture::clean_database_fixture()
    open_database();
 
    generate_block();
-//   db->set_hardfork( STEEM_BLOCKCHAIN_VERSION.minor_v() );
+   //db->set_hardfork( STEEM_BLOCKCHAIN_VERSION.minor_v() );
    generate_block();
 
    vest( "initminer", 10000 );
@@ -296,7 +296,7 @@ const account_object& database_fixture::account_create(
       account_create_operation op;
       op.new_account_name = name;
       op.creator = creator;
-      op.fee = asset( actual_fee, STEEM_SYMBOL );
+      op.fee = asset( actual_fee, SBD_SYMBOL );
       op.owner = authority( 1, key, 1 );
       op.active = authority( 1, key, 1 );
       op.posting = authority( 1, post_key, 1 );
