@@ -48,8 +48,9 @@
 #define STEEM_BLOCKCHAIN_VERSION              ( version(0, 20, 8) )
 
 #define STEEM_INIT_PUBLIC_KEY_STR             "BEO6GkXgEKTYc7gNv1GWJ5ZseyESHQnN7nr3rxdo5sBjzWQcdMyKy"
-#define BLOCKCHAIN_NAME "BEOWULFBC"
-#define STEEM_CHAIN_ID (fc::sha256::hash(BLOCKCHAIN_NAME))
+#define BLOCKCHAIN_NAME                       "BEOWULFBC"
+//#define STEEM_CHAIN_ID                        (fc::sha256::hash(BLOCKCHAIN_NAME))
+#define STEEM_CHAIN_ID                        fc::sha256("89c36da9bfecc0e7c8e7349d05845d7892f82055fa3a85affeff37f3792a2a60")
 #define STEEM_ADDRESS_PREFIX                  "BEO"
 
 #define STEEM_GENESIS_TIME                    (fc::time_point_sec(1458835200))
