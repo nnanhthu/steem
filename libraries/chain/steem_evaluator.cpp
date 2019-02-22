@@ -149,6 +149,8 @@ namespace steem {
                     w.created = _db.head_block_time();
                     copy_legacy_chain_properties<false>(w.props, o.props);
                 });
+                //Pay fee to become super node
+                _db.adjust_balance(o.owner, -o.fee);
             }
         }
 
@@ -360,9 +362,9 @@ namespace steem {
 
             _db.adjust_balance(creator, -o.fee);
 
-            if (_db.has_hardfork(STEEM_HARDFORK_0_20__1762)) {
-                _db.adjust_balance(_db.get<account_object, by_name>(STEEM_NULL_ACCOUNT), o.fee);
-            }
+//            if (_db.has_hardfork(STEEM_HARDFORK_0_20__1762)) {
+//                _db.adjust_balance(_db.get<account_object, by_name>(STEEM_NULL_ACCOUNT), o.fee);
+//            }
 
             const auto &new_account = _db.create<account_object>([&](account_object &acc) {
                 initialize_account_object(acc, o.new_account_name, o.memo_key, props, false /*mined*/, o.creator,
@@ -452,9 +454,9 @@ namespace steem {
                 c.delegated_vesting_shares += o.delegation;
             });
 
-            if (_db.has_hardfork(STEEM_HARDFORK_0_20__1762)) {
-                _db.adjust_balance(_db.get<account_object, by_name>(STEEM_NULL_ACCOUNT), o.fee);
-            }
+//            if (_db.has_hardfork(STEEM_HARDFORK_0_20__1762)) {
+//                _db.adjust_balance(_db.get<account_object, by_name>(STEEM_NULL_ACCOUNT), o.fee);
+//            }
 
             const auto &new_account = _db.create<account_object>([&](account_object &acc) {
                 initialize_account_object(acc, o.new_account_name, o.memo_key, props, false /*mined*/, o.creator,
@@ -2421,7 +2423,7 @@ namespace steem {
                                   ("f", wso.median_props.account_creation_fee));
             }
 
-            _db.adjust_balance(_db.get_account(STEEM_NULL_ACCOUNT), o.fee);
+            //_db.adjust_balance(_db.get_account(STEEM_NULL_ACCOUNT), o.fee);
 
             _db.modify(creator, [&](account_object &a) {
                 a.balance -= o.fee;

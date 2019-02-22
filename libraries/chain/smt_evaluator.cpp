@@ -92,7 +92,7 @@ void smt_create_evaluator::do_apply( const smt_create_operation& o )
       "Account does not have sufficient funds for specified fee of ${of}", ("of", o.smt_creation_fee) );
 
    _db.adjust_balance( o.control_account , -o.smt_creation_fee );
-   _db.adjust_balance( STEEM_NULL_ACCOUNT,  o.smt_creation_fee );
+   //_db.adjust_balance( STEEM_NULL_ACCOUNT,  o.smt_creation_fee );
 
    // Create SMT object common to both liquid and vesting variants of SMT.
    _db.create< smt_token_object >( [&]( smt_token_object& token )
