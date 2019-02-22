@@ -1363,7 +1363,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 
                 smt_capped_generation_policy gp = get_capped_generation_policy
                         (
-                                get_generation_unit( { { control_account_name, 1 } }, { { "test1", 2 } } )/*pre_soft_cap_unit*/,
+                                get_generation_unit( { { control_account_name, 1 } }, { { control_account_name, 1 },{ "$from", 1 } } )/*pre_soft_cap_unit, including steem_unit and token_unit*/,
                                 get_generation_unit()/*post_soft_cap_unit*/,
                                 get_cap_commitment( 1 )/*min_steem_units_commitment*/,
                                 get_cap_commitment( SMT_MIN_HARD_CAP_STEEM_UNITS + 1 )/*hard_cap_steem_units_commitment*/,
@@ -1372,7 +1372,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                                 2/*max_unit_ratio*/
                         );
 
-                fc::time_point_sec start_time        = fc::variant( "2021-01-01T00:00:00" ).as< fc::time_point_sec >();
+                fc::time_point_sec start_time        = fc::variant( "2099-01-01T00:00:00" ).as< fc::time_point_sec >();
                 fc::time_point_sec start_time_plus_1 = start_time + fc::seconds(1);
 
                 op.initial_generation_policy = gp;
@@ -1505,7 +1505,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                     ownerKey[owner] = 1;
                 }
                 authority ownerAuth;
-                ownerAuth.weight_threshold=1;
+                ownerAuth.weight_threshold=owners.size();
                 ownerAuth.key_auths = ownerKey;
                 op.owner = ownerAuth;
 
@@ -1514,7 +1514,8 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                     activeKey[active] = 1;
                 }
                 authority activeAuth;
-                activeAuth.weight_threshold=1;
+                //Weight_threshold: the minimum number of signatures need to be correct to sign transaction
+                activeAuth.weight_threshold=actives.size();
                 activeAuth.key_auths = activeKey;
                 op.active = activeAuth;
 
@@ -1523,7 +1524,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                     postingKey[posting] = 1;
                 }
                 authority postingAuth;
-                postingAuth.weight_threshold=1;
+                postingAuth.weight_threshold=postings.size();
                 postingAuth.key_auths = postingKey;
                 op.posting = postingAuth;
                 op.memo_key = memo;
