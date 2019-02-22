@@ -286,6 +286,7 @@ FC_REFLECT_DERIVED(
    steem::protocol::smt_create_operation,
    (steem::protocol::smt_base_operation),
    (smt_creation_fee)
+   (precision)
    (extensions)
 )
 

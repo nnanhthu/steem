@@ -1271,6 +1271,12 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 op.precision = op.symbol.decimals();
                 op.smt_creation_fee = asset(1000, SBD_SYMBOL); //This fee is fixed, set by config
 
+                flat_set<account_name_type> activeAuth;
+                activeAuth.insert(control_account_name);
+                flat_set<account_name_type> actualAuth;
+                op.get_required_active_authorities(actualAuth);
+                FC_ASSERT(activeAuth == actualAuth,"Mismatch between activeAuth ${a} and ${b}",("a", activeAuth)("b", actualAuth));
+
 //                op.get_required_owner_authorities( auths );
 //                op.get_required_posting_authorities( auths );
 //                op.get_required_active_authorities( auths );
