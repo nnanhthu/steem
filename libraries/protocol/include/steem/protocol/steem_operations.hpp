@@ -496,7 +496,7 @@ namespace steem { namespace protocol {
       string            url;
       public_key_type   block_signing_key;
       legacy_chain_properties  props;
-      asset             fee; ///< the fee paid to register a new witness, should be 10x current block production pay
+      asset             fee = asset (0, SBD_SYMBOL); ///< the fee paid to register a new witness, should be 10x current block production pay
 
       void validate()const;
       void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
@@ -1054,6 +1054,19 @@ namespace steem { namespace protocol {
       void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( delegator ); }
       void validate() const;
    };
+
+   /**
+   *  This operation instructs the blockchain to start a conversion from STEEM to SBD,
+   *  The conversion is done immediately
+   */
+   struct convert_to_sbd_operation : public base_operation
+   {
+       account_name_type owner;
+       asset             amount;
+
+       void  validate()const;
+       void  get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(owner); }
+   };
 } } // steem::protocol
 
 
@@ -1157,3 +1170,4 @@ FC_REFLECT( steem::protocol::claim_reward_balance_operation, (account)(reward_st
 FC_REFLECT( steem::protocol::claim_reward_balance2_operation, (account)(extensions)(reward_tokens) )
 //#endif
 FC_REFLECT( steem::protocol::delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
+FC_REFLECT( steem::protocol::convert_to_sbd_operation, (owner)(amount) )

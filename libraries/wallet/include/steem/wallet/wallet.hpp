@@ -889,6 +889,11 @@ class wallet_api
          condenser_api::legacy_asset amount,
          bool broadcast = false );
 
+       condenser_api::legacy_signed_transaction convert_to_sbd(
+               string from,
+               condenser_api::legacy_asset amount,
+               bool broadcast = false );
+
       /**
        * A witness can public a price feed for the STEEM:SBD market. The median price feed is used
        * to process conversion requests from SBD to STEEM.
@@ -1198,6 +1203,7 @@ FC_API( steem::wallet::wallet_api,
         (withdraw_vesting)
         (set_withdraw_vesting_route)
         (convert_sbd)
+        (convert_to_sbd)
         (publish_feed)
         (get_order_book)
         (get_open_orders)

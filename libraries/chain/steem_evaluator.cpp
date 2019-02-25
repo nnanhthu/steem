@@ -131,7 +131,14 @@ namespace steem {
                           "Max block size cannot be more than 2MiB");
             }
             //Add constraint: Node must have at least STEEM_MIN_WITNESS_FUND vested coins to become a witness
-            FC_ASSERT( acc.vesting_shares >= asset(STEEM_MIN_WITNESS_FUND, VESTS_SYMBOL), "Account does not have sufficient funds to be a witness." );
+            //Change STEEM_MIN_WITNESS_FUND from 3000000 STEEM to VESTS
+            const auto& cprops = _db.get_dynamic_global_properties();
+            price vesting_share_price = cprops.get_vesting_share_price();
+            // Calculate new vesting from provided liquid using share price.
+            asset liquid = asset(STEEM_MIN_WITNESS_FUND, STEEM_SYMBOL);
+            asset new_vesting = liquid * vesting_share_price;
+            //FC_ASSERT( acc.vesting_shares >= new_vesting, "Account does not have sufficient funds to be a witness." );
+            FC_ASSERT( acc.vesting_shares >= new_vesting, "Account does not have sufficient funds to be a witness." );
 
             const auto &by_witness_name_idx = _db.get_index<witness_index>().indices().get<by_name>();
             auto wit_itr = by_witness_name_idx.find(o.owner);
@@ -317,7 +324,7 @@ namespace steem {
 
             const auto &props = _db.get_dynamic_global_properties();
 
-            FC_ASSERT(creator.balance >= o.fee, "Insufficient balance to create account.",
+            FC_ASSERT(creator.sbd_balance >= o.fee, "Insufficient balance to create account.",
                       ("creator.balance", creator.balance)("required", o.fee));
 
             const witness_schedule_object &wso = _db.get_witness_schedule_object();
@@ -2978,5 +2985,18 @@ namespace steem {
             }
         }
 
+        void convert_to_sbd_evaluator::do_apply(const convert_to_sbd_operation &o) {
+            FC_ASSERT(_db.get_balance(o.owner, o.amount.symbol) >= o.amount,
+                      "Account does not have sufficient balance for conversion.");
+
+            _db.adjust_balance(o.owner, -o.amount);
+
+            const auto &fhistory = _db.get_feed_history();
+            FC_ASSERT(!fhistory.current_median_history.is_null(), "Cannot convert to SBD because there is no price feed.");
+
+            //convert to sbd and adjust sbd balance of owner
+            asset amount_in_sbd = util::to_sbd( fhistory.current_median_history, o.amount );
+            _db.adjust_balance(o.owner, amount_in_sbd);
+        }
     }
 } // steem::chain

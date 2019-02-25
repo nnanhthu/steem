@@ -1476,6 +1476,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 op.memo_key = memo;
                 op.json_metadata = json_meta;
                 op.fee = my->_remote_api->get_chain_properties().account_creation_fee;
+                ilog("Creation fee: ${a}",("a", op.fee));
 
                 signed_transaction tx;
                 tx.operations.push_back(op);
@@ -2514,6 +2515,22 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 
         vector <condenser_api::api_limit_order_object> wallet_api::get_open_orders(string owner) {
             return my->_remote_api->get_open_orders(owner);
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::convert_to_sbd(
+                string from,
+                condenser_api::legacy_asset amount,
+                bool broadcast) {
+            FC_ASSERT(!is_locked());
+            convert_to_sbd_operation op;
+            op.owner = from;
+            op.amount = amount.to_asset();
+
+            signed_transaction tx;
+            tx.operations.push_back(op);
+            tx.validate();
+
+            return my->sign_transaction(tx, broadcast);
         }
 
 //condenser_api::legacy_signed_transaction wallet_api::create_order(

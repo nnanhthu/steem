@@ -139,6 +139,7 @@ struct operation_exec_info
    int64_t smt_set_runtime_parameters_operation_exec_time      = 0;
    int64_t smt_create_operation_exec_time                      = 0;
 //#endif
+   int64_t convert_to_sbd_operation_exec_time                  =  15700;
 };
 
 } } }
@@ -219,4 +220,5 @@ FC_REFLECT( steem::plugins::rc::operation_exec_info,
    ( smt_set_runtime_parameters_operation_exec_time )
    ( smt_create_operation_exec_time )
 //#endif
+   ( convert_to_sbd_operation_exec_time )
    )

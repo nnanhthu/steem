@@ -703,4 +703,12 @@ namespace steem { namespace protocol {
       FC_ASSERT( vesting_shares >= asset( 0, VESTS_SYMBOL ), "Delegation cannot be negative" );
    }
 
+   void convert_to_sbd_operation::validate()const
+   {
+      validate_account_name( owner );
+      /// only convert from STEEM TO SBD, to convert from SBD to STEEM, using convert_operation.
+      FC_ASSERT( is_asset_type( amount, STEEM_SYMBOL ), "Can only convert WBF to WD" );
+      FC_ASSERT( amount.amount > 0, "Must convert some WBF" );
+   }
+
 } } // steem::protocol

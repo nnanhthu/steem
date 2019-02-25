@@ -78,6 +78,8 @@ namespace steem { namespace protocol {
             smt_set_runtime_parameters_operation,
             smt_create_operation,
 //#endif
+            //new operation, used to convert steem to sbd
+            convert_to_sbd_operation,
             /// virtual operations below this point
             fill_convert_request_operation,
 //            author_reward_operation,

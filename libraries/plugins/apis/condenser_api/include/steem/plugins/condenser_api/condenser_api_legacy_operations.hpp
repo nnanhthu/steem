@@ -1179,6 +1179,26 @@ namespace steem { namespace plugins { namespace condenser_api {
                 asset_symbol_type symbol;
             };
 
+            struct legacy_convert_to_sbd_operation
+            {
+                legacy_convert_to_sbd_operation() {}
+                legacy_convert_to_sbd_operation( const convert_to_sbd_operation& op ) :
+                        owner( op.owner ),
+                        amount( legacy_asset::from_asset( op.amount ) )
+                {}
+
+                operator convert_to_sbd_operation()const
+                {
+                    convert_to_sbd_operation op;
+                    op.owner = owner;
+                    op.amount = amount;
+                    return op;
+                }
+
+                account_name_type owner;
+                legacy_asset      amount;
+            };
+
             typedef fc::static_variant<
 //            legacy_vote_operation,
 //            legacy_comment_operation,
@@ -1242,7 +1262,8 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_smt_setup_operation,
             legacy_smt_setup_emissions_operation,
             legacy_smt_set_setup_parameters_operation,
-            legacy_smt_set_runtime_parameters_operation
+            legacy_smt_set_runtime_parameters_operation,
+            legacy_convert_to_sbd_operation
             > legacy_operation;
 
             struct legacy_operation_conversion_visitor
@@ -1497,6 +1518,12 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return true;
                 }
 
+                bool operator()( const convert_to_sbd_operation& op )const
+                {
+                    l_op = legacy_convert_to_sbd_operation( op );
+                    return true;
+                }
+
                 // Should only be SMT ops
                 template< typename T >
                 bool operator()( const T& )const { return false; }
@@ -1688,6 +1715,11 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return operation( smt_set_runtime_parameters_operation( op ) );
                 }
 
+                operation operator()( const legacy_convert_to_sbd_operation& op )const
+                {
+                    return operation( convert_to_sbd_operation( op ) );
+                }
+
                 template< typename T >
                 operation operator()( const T& t )const
                 {
@@ -1853,5 +1885,7 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_runtime_parameters_ope
         (extensions)
         (control_account)
 (symbol) )
+
+FC_REFLECT( steem::plugins::condenser_api::legacy_convert_to_sbd_operation, (owner)(amount) )
 
 FC_REFLECT_TYPENAME( steem::plugins::condenser_api::legacy_operation )
