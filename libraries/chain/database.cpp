@@ -2571,7 +2571,7 @@ asset database::get_pow_reward()const
 #endif
 
    static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   static_assert( STEEM_MAX_WITNESSES == 5, "this code assumes 5 per round" );
+   static_assert( STEEM_MAX_WITNESSES == 21, "this code assumes 21 per round" );
    asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
    return std::max( percent, STEEM_MIN_POW_REWARD );
 }
@@ -3013,7 +3013,19 @@ void database::init_genesis( uint64_t init_supply )
       // Create blockchain accounts
       public_key_type      init_public_key(STEEM_INIT_PUBLIC_KEY);
 
-      create< account_object >( [&]( account_object& a )
+//      std::string init_pubkey[STEEM_NUM_INIT_MINERS];
+//
+//      init_pubkey[0] = STEEM_INIT_PUBLIC_KEY_STR;
+//      init_pubkey[1] = "BEO8eNn2BJnSceLPBkvQa5PgQimghaR3METb2ZDuwb8hQsRhYCjfr"; //alice
+//      init_pubkey[2] = "BEO85diL8F5DKxiY6ehyWDjnHi6YGccZrXSdndMgahq3W4HPTS3S4"; //jayce
+
+
+//      public_key_type   init_public_key[STEEM_NUM_INIT_MINERS];
+//      for( int i = 0; i < STEEM_NUM_INIT_MINERS; ++i ){
+//          init_public_key[i] = steem::protocol::public_key_type(init_pubkey[i]);
+//      }
+
+           create< account_object >( [&]( account_object& a )
       {
          a.name = STEEM_MINER_ACCOUNT;
       } );

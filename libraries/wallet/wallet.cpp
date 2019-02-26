@@ -1269,7 +1269,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 op.control_account = control_account_name;
                 op.symbol = symbol;
                 op.precision = op.symbol.decimals();
-                op.smt_creation_fee = asset(1000, SBD_SYMBOL); //This fee is fixed, set by config
+                op.smt_creation_fee = asset(20000, SBD_SYMBOL); //This fee is fixed, set by config
 
                 flat_set<account_name_type> activeAuth;
                 activeAuth.insert(control_account_name);

@@ -49,8 +49,8 @@
 
 #define STEEM_INIT_PUBLIC_KEY_STR             "BEO6GkXgEKTYc7gNv1GWJ5ZseyESHQnN7nr3rxdo5sBjzWQcdMyKy"
 #define BLOCKCHAIN_NAME                       "BEOWULFBC"
-//#define STEEM_CHAIN_ID                        (fc::sha256::hash(BLOCKCHAIN_NAME))
-#define STEEM_CHAIN_ID                        fc::sha256("89c36da9bfecc0e7c8e7349d05845d7892f82055fa3a85affeff37f3792a2a60")
+#define STEEM_CHAIN_ID                        (fc::sha256::hash(BLOCKCHAIN_NAME))
+//#define STEEM_CHAIN_ID                        fc::sha256("89c36da9bfecc0e7c8e7349d05845d7892f82055fa3a85affeff37f3792a2a60")
 #define STEEM_ADDRESS_PREFIX                  "BEO"
 
 #define STEEM_GENESIS_TIME                    (fc::time_point_sec(1458835200))
@@ -91,18 +91,18 @@
 #define STEEM_START_MINER_VOTING_BLOCK        (STEEM_BLOCKS_PER_DAY * 30)
 
 #define STEEM_INIT_MINER_NAME                 "initminer"
-#define STEEM_NUM_INIT_MINERS                 1
+#define STEEM_NUM_INIT_MINERS                 3
 #define STEEM_INIT_TIME                       (fc::time_point_sec());
 
-#define STEEM_MAX_WITNESSES                   5
+#define STEEM_MAX_WITNESSES                   21
 
-#define STEEM_MAX_VOTED_WITNESSES_HF0         3
+#define STEEM_MAX_VOTED_WITNESSES_HF0         19
 #define STEEM_MAX_MINER_WITNESSES_HF0         1
 #define STEEM_MAX_RUNNER_WITNESSES_HF0        1
 
-#define STEEM_MAX_VOTED_WITNESSES_HF17        4
+#define STEEM_MAX_VOTED_WITNESSES_HF17        8
 #define STEEM_MAX_MINER_WITNESSES_HF17        0
-#define STEEM_MAX_RUNNER_WITNESSES_HF17       1
+#define STEEM_MAX_RUNNER_WITNESSES_HF17       13
 
 #define STEEM_HARDFORK_REQUIRED_WITNESSES     1 // 17 of the 21 dpos witnesses (20 elected and 1 virtual time) required for hardfork. This guarantees 75% participation on all subsequent rounds.
 #define STEEM_MAX_TIME_UNTIL_EXPIRATION       (60*60) // seconds,  aka: 1 hour
@@ -253,7 +253,7 @@
 #define STEEM_FEED_HISTORY_WINDOW_PRE_HF_16   (24*7) /// 7 days * 24 hours per day
 #define STEEM_FEED_HISTORY_WINDOW             (12*7) // 3.5 days
 #define STEEM_MAX_FEED_AGE_SECONDS            (60*60*24*7) // 7 days
-#define STEEM_MIN_FEEDS                       (STEEM_MAX_WITNESSES/3) /// protects the network from conversions before price has been established
+#define STEEM_MIN_FEEDS                       (STEEM_MAX_WITNESSES/7) /// protects the network from conversions before price has been established
 #define STEEM_CONVERSION_DELAY_PRE_HF_16      (fc::days(7))
 #define STEEM_CONVERSION_DELAY                (fc::hours(STEEM_FEED_HISTORY_WINDOW)) //3.5 day conversion
 
