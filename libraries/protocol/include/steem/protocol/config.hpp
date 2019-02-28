@@ -266,7 +266,7 @@
 
 #define STEEM_BLOCKCHAIN_PRECISION_DIGITS     3
 #define STEEM_MAX_INSTANCE_ID                 (uint64_t(-1)>>16)
-#define STEEM_MIN_WITNESS_FUND                1000000//3000000000
+#define STEEM_MIN_WITNESS_FUND                int64_t(10000000000000ll)//3000000000
 /** NOTE: making this a power of 2 (say 2^15) would greatly accelerate fee calcs */
 #define STEEM_MAX_AUTHORITY_MEMBERSHIP        40
 #define STEEM_MAX_ASSET_WHITELIST_AUTHORITIES 10
