@@ -2353,14 +2353,20 @@ void database::process_funds()
 
       // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
       int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
-
-      auto new_steem = ( props.virtual_supply.amount * current_inflation_rate ) / ( int64_t( STEEM_100_PERCENT ) * int64_t( STEEM_BLOCKS_PER_YEAR ) );
+      //ilog("Virtual supply, inflation: ${a}, ${b}",("a", props.virtual_supply.amount)("b", current_inflation_rate));
+      //ilog("Percent, steem block per year: ${a}, ${b}",("a", STEEM_100_PERCENT)("b", STEEM_BLOCKS_PER_YEAR));
+      auto new_steem_per_year = (props.virtual_supply.amount / int64_t( STEEM_100_PERCENT ))* int64_t(current_inflation_rate);
+      //ilog("Steem per year: ${a}",("a", new_steem_per_year));
+      auto new_steem = new_steem_per_year / int64_t( STEEM_BLOCKS_PER_YEAR );
+      //ilog("New steem"" ${a}",("a", new_steem));
       //auto content_reward = ( new_steem * STEEM_CONTENT_REWARD_PERCENT ) / STEEM_100_PERCENT;
 //      if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
 //         content_reward = pay_reward_funds( content_reward ); /// 75% to content creator
       auto vesting_reward = ( new_steem * STEEM_VESTING_FUND_PERCENT ) / STEEM_100_PERCENT; /// 50% to vesting fund
       //auto witness_reward = new_steem - content_reward - vesting_reward; /// Remaining 10% to witness pay
+
       auto witness_reward = new_steem - vesting_reward; /// Remaining 50% to witness pay
+
 
       const auto& cwit = get_witness( props.current_witness );
       witness_reward *= STEEM_MAX_WITNESSES;
@@ -2390,6 +2396,7 @@ void database::process_funds()
       });
 
       operation vop = producer_reward_operation( cwit.owner, asset( 0, VESTS_SYMBOL ) );
+      ilog("Witness reward in process_funds: ${a}",("a", witness_reward));
       create_vesting2( *this, get_account( cwit.owner ), asset( witness_reward, STEEM_SYMBOL ), false,
          [&]( const asset& vesting_shares )
          {
@@ -2541,6 +2548,7 @@ asset database::get_producer_reward()
    {
       // const auto& witness_obj = get_witness( props.current_witness );
       operation vop = producer_reward_operation( witness_account.name, asset( 0, VESTS_SYMBOL ) );
+      ilog("get_producer_reward when create_vesting2: ${a}",("a", pay));
       create_vesting2( *this, witness_account, pay, false,
          [&]( const asset& vesting_shares )
          {

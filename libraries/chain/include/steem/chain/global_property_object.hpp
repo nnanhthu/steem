@@ -123,7 +123,7 @@ namespace steem { namespace chain {
          uint16_t sbd_stop_percent = 0;
          uint16_t sbd_start_percent = 0;
 //#ifdef STEEM_ENABLE_SMT
-         asset smt_creation_fee = asset( 20000, SBD_SYMBOL );
+         asset smt_creation_fee = asset( SMT_TOKEN_CREATION_FEE, SBD_SYMBOL );
 //#endif
    };
 
