@@ -2579,7 +2579,7 @@ asset database::get_pow_reward()const
 #endif
 
    static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   static_assert( STEEM_MAX_WITNESSES == 21, "this code assumes 21 per round" );
+   static_assert( STEEM_MAX_WITNESSES == 5, "this code assumes 5 per round" );
    asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
    return std::max( percent, STEEM_MIN_POW_REWARD );
 }
