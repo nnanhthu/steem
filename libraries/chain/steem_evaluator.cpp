@@ -1071,10 +1071,10 @@ namespace steem {
 
         void transfer_evaluator::do_apply( const transfer_operation& o )
         {
-            if(_db.is_producing() )
-            {
-                FC_ASSERT( o.fee <= asset( STEEM_MAX_TRANSFER_FEE, o.fee.symbol ), "Transfer fee cannot be too large" );
-            }
+//            if(_db.is_producing() )
+//            {
+//                FC_ASSERT( o.fee <= asset( STEEM_MAX_TRANSFER_FEE, o.fee.symbol ), "Transfer fee cannot be too large" );
+//            }
 
             FC_ASSERT( o.fee >= asset (STEEM_MIN_TRANSFER_FEE, o.fee.symbol), "Insufficient fee. paid: ${p} fee: ${f}",
                        ("p", o.fee)

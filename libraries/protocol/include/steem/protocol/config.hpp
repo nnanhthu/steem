@@ -37,8 +37,8 @@
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 1
 
 #define STEEM_MIN_TRANSFER_FEE                  1
-#define STEEM_MAX_TRANSFER_FEE                  int64_t(10)
-#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000 ) * int64_t( 1000 ))
+//#define STEEM_MAX_TRANSFER_FEE                  int64_t(10)
+#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000000 ) * int64_t( 100000000 ))
 
 /// Allows to limit number of total produced blocks.
 #define TESTNET_BLOCK_LIMIT                   (3000000)
@@ -75,7 +75,8 @@
 #define STEEM_INIT_SUPPLY                     int64_t(1000000000000ll)
 
 #define STEEM_MIN_TRANSFER_FEE           1
-#define STEEM_MAX_TRANSFER_FEE           int64_t(10)
+//#define STEEM_MAX_TRANSFER_FEE           int64_t(10)
+
 #endif
 
 #define VESTS_SYMBOL  (steem::protocol::asset_symbol_type::from_asset_num( STEEM_ASSET_NUM_VESTS ) )

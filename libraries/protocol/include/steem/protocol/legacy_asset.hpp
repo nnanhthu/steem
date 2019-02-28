@@ -31,7 +31,7 @@ struct legacy_sbd_asset
       {
          if( force_canon )
          {
-            FC_ASSERT( symbol.is_canon(), "Must use canonical WD symbol serialization" );
+            FC_ASSERT( symbol.is_canon(), "Must use canonical W symbol serialization" );
          }
          return asset( amount, SBD_SYMBOL );
       }

@@ -99,7 +99,7 @@ std::string asset_num_to_string( uint32_t asset_num )
       case STEEM_ASSET_NUM_STEEM:
          return "BWF";
       case STEEM_ASSET_NUM_SBD:
-         return "WD";
+         return "W";
 #endif
       case STEEM_ASSET_NUM_VESTS:
          return "VESTS";
