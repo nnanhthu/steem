@@ -273,7 +273,7 @@ void database::open( const open_args& args )
       if( !find< dynamic_global_property_object >() )
          with_write_lock( [&]()
          {
-            init_genesis( args.initial_supply );
+            init_genesis( args.initial_supply, args.initial_sbd_supply );
          });
 
       _benchmark_dumper.set_enabled( args.benchmark_is_enabled );
@@ -3003,7 +3003,7 @@ void database::init_schema()
    return;*/
 }
 
-void database::init_genesis( uint64_t init_supply )
+void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
 {
    try
    {
@@ -3073,7 +3073,7 @@ void database::init_genesis( uint64_t init_supply )
             a.name = STEEM_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
             a.memo_key = init_public_key;
             a.balance  = asset( i ? 0 : init_supply, STEEM_SYMBOL );
-            a.sbd_balance = asset(i ? 0:init_supply, SBD_SYMBOL);
+            a.sbd_balance = asset(i ? 0:init_sbd_supply, SBD_SYMBOL);
          } );
 
          create< account_authority_object >( [&]( account_authority_object& auth )
@@ -3100,7 +3100,7 @@ void database::init_genesis( uint64_t init_supply )
          p.recent_slots_filled = fc::uint128::max_value();
          p.participation_count = 128;
          p.current_supply = asset( init_supply, STEEM_SYMBOL );
-         p.current_sbd_supply = asset( init_supply, SBD_SYMBOL );
+         p.current_sbd_supply = asset( init_sbd_supply, SBD_SYMBOL );
          p.virtual_supply = p.current_supply;
          p.maximum_block_size = STEEM_MAX_BLOCK_SIZE;
          p.reverse_auction_seconds = STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF6;
