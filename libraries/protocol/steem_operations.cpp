@@ -523,11 +523,12 @@ namespace steem { namespace protocol {
 
    void convert_operation::validate()const
    {
+      FC_ASSERT( ENABLE_CONVERSION_FROM_SBD == true, "Conversion of W to BWF is not allowed" );
       validate_account_name( owner );
       /// only allow conversion from SBD to STEEM, allowing the opposite can enable traders to abuse
       /// market fluxuations through converting large quantities without moving the price.
-      FC_ASSERT( is_asset_type( amount, SBD_SYMBOL ), "Can only convert SBD to STEEM" );
-      FC_ASSERT( amount.amount > 0, "Must convert some SBD" );
+      FC_ASSERT( is_asset_type( amount, SBD_SYMBOL ), "Can only convert W to BWF" );
+      FC_ASSERT( amount.amount > 0, "Must convert some W" );
    }
 
    void report_over_production_operation::validate()const
@@ -705,6 +706,7 @@ namespace steem { namespace protocol {
 
    void convert_to_sbd_operation::validate()const
    {
+      FC_ASSERT( ENABLE_CONVERSION_TO_SBD == true, "Conversion of WBF to W is not allowed" );
       validate_account_name( owner );
       /// only convert from STEEM TO SBD, to convert from SBD to STEEM, using convert_operation.
       FC_ASSERT( is_asset_type( amount, STEEM_SYMBOL ), "Can only convert WBF to W" );

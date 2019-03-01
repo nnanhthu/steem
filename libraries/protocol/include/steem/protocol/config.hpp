@@ -345,3 +345,5 @@
 
 //#endif /// STEEM_ENABLE_SMT
 
+#define ENABLE_CONVERSION_TO_SBD                 false
+#define ENABLE_CONVERSION_FROM_SBD               false
