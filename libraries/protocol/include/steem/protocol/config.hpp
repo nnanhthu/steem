@@ -72,7 +72,7 @@
 #define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
-#define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))
+#define STEEM_INIT_SUPPLY                     (uint64_t(9000000000000000000ll))
 
 #define STEEM_MIN_TRANSFER_FEE           1
 //#define STEEM_MAX_TRANSFER_FEE           int64_t(10)
@@ -231,7 +231,7 @@
 #define STEEM_MAX_PERMLINK_LENGTH             256
 #define STEEM_MAX_WITNESS_URL_LENGTH          2048
 
-#define STEEM_MAX_SHARE_SUPPLY                uint64_t(1000000000000000000ll)
+#define STEEM_MAX_SHARE_SUPPLY                uint64_t(9000000000000000000ll)
 #define STEEM_MAX_SATOSHIS                    int64_t(4611686018427387903ll)
 #define STEEM_MAX_SIG_CHECK_DEPTH             2
 #define STEEM_MAX_SIG_CHECK_ACCOUNTS          125
