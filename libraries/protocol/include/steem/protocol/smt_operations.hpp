@@ -127,7 +127,7 @@ typedef static_variant<
 struct smt_setup_operation : public smt_base_operation
 {
    uint8_t                 decimal_places = 0;
-   int64_t                 max_supply = STEEM_MAX_SHARE_SUPPLY;
+   uint64_t                 max_supply = STEEM_MAX_SHARE_SUPPLY;
 
    smt_generation_policy   initial_generation_policy;
 

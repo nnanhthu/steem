@@ -38,7 +38,7 @@
 
 #define STEEM_MIN_TRANSFER_FEE                  1
 //#define STEEM_MAX_TRANSFER_FEE                  int64_t(10)
-#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000000 ) * int64_t( 100000000 ))
+#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000 ) * int64_t( 100000000 ))
 
 /// Allows to limit number of total produced blocks.
 #define TESTNET_BLOCK_LIMIT                   (3000000)
@@ -72,7 +72,7 @@
 #define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
-#define STEEM_INIT_SUPPLY                     (uint64_t(100000000000000000ll))
+#define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))
 
 #define STEEM_MIN_TRANSFER_FEE           1
 //#define STEEM_MAX_TRANSFER_FEE           int64_t(10)
@@ -231,7 +231,7 @@
 #define STEEM_MAX_PERMLINK_LENGTH             256
 #define STEEM_MAX_WITNESS_URL_LENGTH          2048
 
-#define STEEM_MAX_SHARE_SUPPLY                int64_t(1000000000000000ll)
+#define STEEM_MAX_SHARE_SUPPLY                uint64_t(1000000000000000000ll)
 #define STEEM_MAX_SATOSHIS                    int64_t(4611686018427387903ll)
 #define STEEM_MAX_SIG_CHECK_DEPTH             2
 #define STEEM_MAX_SIG_CHECK_ACCOUNTS          125
@@ -262,11 +262,11 @@
 #define STEEM_MAX_UNDO_HISTORY                10000
 
 #define STEEM_MIN_TRANSACTION_EXPIRATION_LIMIT (STEEM_BLOCK_INTERVAL * 5) // 5 transactions per block
-#define STEEM_BLOCKCHAIN_PRECISION            uint64_t( 1000 )
+#define STEEM_BLOCKCHAIN_PRECISION            uint64_t( 100000000 )
 
-#define STEEM_BLOCKCHAIN_PRECISION_DIGITS     3
+#define STEEM_BLOCKCHAIN_PRECISION_DIGITS     8
 #define STEEM_MAX_INSTANCE_ID                 (uint64_t(-1)>>16)
-#define STEEM_MIN_WITNESS_FUND                int64_t(10000000000000ll)//3000000000
+#define STEEM_MIN_WITNESS_FUND                int64_t(300000000000000ll)//3000000000
 /** NOTE: making this a power of 2 (say 2^15) would greatly accelerate fee calcs */
 #define STEEM_MAX_AUTHORITY_MEMBERSHIP        40
 #define STEEM_MAX_ASSET_WHITELIST_AUTHORITIES 10
@@ -340,7 +340,7 @@
 #define SMT_MAX_VOTES_PER_REGENERATION          ((SMT_MAX_NOMINAL_VOTES_PER_DAY * SMT_VESTING_WITHDRAW_INTERVAL_SECONDS) / 86400)
 #define SMT_DEFAULT_VOTES_PER_REGEN_PERIOD      (50)
 #define SMT_DEFAULT_PERCENT_CURATION_REWARDS    (25 * STEEM_1_PERCENT)
-#define SMT_TOKEN_CREATION_FEE                  int64_t(100000000)
+#define SMT_TOKEN_CREATION_FEE                  int64_t(2000000000)
 
 //#endif /// STEEM_ENABLE_SMT
 
