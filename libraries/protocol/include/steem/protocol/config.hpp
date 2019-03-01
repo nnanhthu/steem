@@ -29,7 +29,7 @@
 
 
 #define STEEM_MIN_ACCOUNT_CREATION_FEE          0
-#define STEEM_MAX_ACCOUNT_CREATION_FEE          int64_t(1000000000)
+#define STEEM_MAX_ACCOUNT_CREATION_FEE          int64_t(1000000)
 
 #define STEEM_OWNER_AUTH_RECOVERY_PERIOD                  fc::seconds(60)
 #define STEEM_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  fc::seconds(12)
@@ -38,7 +38,7 @@
 
 #define STEEM_MIN_TRANSFER_FEE                  1
 //#define STEEM_MAX_TRANSFER_FEE                  int64_t(10)
-#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000 ) * int64_t( 100000000 ))
+#define STEEM_INIT_SUPPLY                     (int64_t( 250 ) * int64_t( 1000000 ) * int64_t( 100000 ))
 
 /// Allows to limit number of total produced blocks.
 #define TESTNET_BLOCK_LIMIT                   (3000000)
@@ -65,7 +65,7 @@
 #define STEEM_UPVOTE_LOCKOUT_HF17             (fc::hours(12))
 
 #define STEEM_MIN_ACCOUNT_CREATION_FEE           1
-#define STEEM_MAX_ACCOUNT_CREATION_FEE           int64_t(1000000000)
+#define STEEM_MAX_ACCOUNT_CREATION_FEE           int64_t(1000000)
 
 #define STEEM_OWNER_AUTH_RECOVERY_PERIOD                  fc::days(30)
 #define STEEM_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  fc::days(1)
@@ -263,9 +263,9 @@
 #define STEEM_MAX_UNDO_HISTORY                10000
 
 #define STEEM_MIN_TRANSACTION_EXPIRATION_LIMIT (STEEM_BLOCK_INTERVAL * 5) // 5 transactions per block
-#define STEEM_BLOCKCHAIN_PRECISION            uint64_t( 100000000 )
+#define STEEM_BLOCKCHAIN_PRECISION            uint64_t( 100000 )
 
-#define STEEM_BLOCKCHAIN_PRECISION_DIGITS     8
+#define STEEM_BLOCKCHAIN_PRECISION_DIGITS     5
 #define STEEM_MAX_INSTANCE_ID                 (uint64_t(-1)>>16)
 #define STEEM_MIN_WITNESS_FUND                int64_t(300000000000000ll)//3000000000
 /** NOTE: making this a power of 2 (say 2^15) would greatly accelerate fee calcs */
@@ -341,7 +341,7 @@
 #define SMT_MAX_VOTES_PER_REGENERATION          ((SMT_MAX_NOMINAL_VOTES_PER_DAY * SMT_VESTING_WITHDRAW_INTERVAL_SECONDS) / 86400)
 #define SMT_DEFAULT_VOTES_PER_REGEN_PERIOD      (50)
 #define SMT_DEFAULT_PERCENT_CURATION_REWARDS    (25 * STEEM_1_PERCENT)
-#define SMT_TOKEN_CREATION_FEE                  int64_t(2000000000)
+#define SMT_TOKEN_CREATION_FEE                  int64_t(2000000)
 
 //#endif /// STEEM_ENABLE_SMT
 

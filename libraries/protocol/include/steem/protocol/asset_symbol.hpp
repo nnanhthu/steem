@@ -14,9 +14,9 @@
 #define SMT_MAX_NAI_POOL_COUNT               10
 #define SMT_MAX_NAI_GENERATION_TRIES         100
 
-#define STEEM_PRECISION_SBD   (8)
-#define STEEM_PRECISION_STEEM (8)
-#define STEEM_PRECISION_VESTS (8)
+#define STEEM_PRECISION_SBD   (5)
+#define STEEM_PRECISION_STEEM (5)
+#define STEEM_PRECISION_VESTS (6)
 
 // One's place is used for check digit, which means NAI 0-9 all have NAI data of 0 which is invalid
 // This space is safe to use because it would alwasys result in failure to convert from NAI
@@ -45,9 +45,9 @@
 
 #endif
 
-#define VESTS_SYMBOL_SER  (uint64_t(8) | (VESTS_SYMBOL_U64 << 8)) ///< VESTS|VESTS with 6 digits of precision
-#define STEEM_SYMBOL_SER  (uint64_t(8) | (STEEM_SYMBOL_U64 << 8)) ///< STEEM|TESTS with 3 digits of precision
-#define SBD_SYMBOL_SER    (uint64_t(8) |   (SBD_SYMBOL_U64 << 8)) ///< SBD|TBD with 3 digits of precision
+#define VESTS_SYMBOL_SER  (uint64_t(6) | (VESTS_SYMBOL_U64 << 8)) ///< VESTS|VESTS with 6 digits of precision
+#define STEEM_SYMBOL_SER  (uint64_t(5) | (STEEM_SYMBOL_U64 << 8)) ///< STEEM|TESTS with 5 digits of precision
+#define SBD_SYMBOL_SER    (uint64_t(5) |   (SBD_SYMBOL_U64 << 8)) ///< SBD|TBD with 5 digits of precision
 
 #define STEEM_ASSET_MAX_DECIMALS 12
 

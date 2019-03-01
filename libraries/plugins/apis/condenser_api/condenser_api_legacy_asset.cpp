@@ -43,15 +43,15 @@ uint32_t string_to_asset_num( const char* p, uint8_t decimals )
          switch( name_u64 )
          {
             case STEEM_SYMBOL_U64:
-               FC_ASSERT( decimals == 8, "Incorrect decimal places" );
+               FC_ASSERT( decimals == 5, "Incorrect decimal places" );
                asset_num = STEEM_ASSET_NUM_STEEM;
                break;
             case SBD_SYMBOL_U64:
-               FC_ASSERT( decimals == 8, "Incorrect decimal places" );
+               FC_ASSERT( decimals == 5, "Incorrect decimal places" );
                asset_num = STEEM_ASSET_NUM_SBD;
                break;
             case VESTS_SYMBOL_U64:
-               FC_ASSERT( decimals == 8, "Incorrect decimal places" );
+               FC_ASSERT( decimals == 6, "Incorrect decimal places" );
                asset_num = STEEM_ASSET_NUM_VESTS;
                break;
             default:
