@@ -73,6 +73,7 @@
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
 #define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))
+#define SBD_INIT_SUPPLY                       (uint64_t(10000000000000000ll))
 
 #define STEEM_MIN_TRANSFER_FEE           1
 //#define STEEM_MAX_TRANSFER_FEE           int64_t(10)

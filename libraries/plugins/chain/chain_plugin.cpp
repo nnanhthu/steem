@@ -438,6 +438,7 @@ void chain_plugin::plugin_startup()
    db_open_args.data_dir = app().data_dir() / "blockchain";
    db_open_args.shared_mem_dir = my->shared_memory_dir;
    db_open_args.initial_supply = STEEM_INIT_SUPPLY;
+   db_open_args.initial_sbd_supply = SBD_INIT_SUPPLY;
    db_open_args.shared_file_size = my->shared_memory_size;
    db_open_args.shared_file_full_threshold = my->shared_file_full_threshold;
    db_open_args.shared_file_scale_rate = my->shared_file_scale_rate;
