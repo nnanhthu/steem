@@ -36,7 +36,7 @@ void smt_create_operation::validate()const
    FC_ASSERT( smt_creation_fee.amount >= 0, "fee cannot be negative" );
    FC_ASSERT( smt_creation_fee.amount <= STEEM_MAX_SHARE_SUPPLY, "Fee must be smaller than STEEM_MAX_SHARE_SUPPLY" );
    //FC_ASSERT( is_asset_type( smt_creation_fee, STEEM_SYMBOL ) || is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be STEEM or SBD" );
-   FC_ASSERT( is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be WD" );
+   FC_ASSERT( is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be W" );
    FC_ASSERT( symbol.decimals() == precision, "Mismatch between redundantly provided precision ${prec1} vs ${prec2}",
       ("prec1",symbol.decimals())("prec2",precision) );
 }
@@ -176,7 +176,7 @@ void smt_capped_generation_policy::validate()const
    FC_ASSERT( hard_cap_steem_units_commitment.lower_bound >= SMT_MIN_SATURATION_STEEM_UNITS * uint64_t( max_unit_ratio ) );
 
    // this static_assert checks to be sure min_soft_cap / max_soft_cap computation can't overflow uint64_t
-   static_assert( uint64_t( STEEM_MAX_SHARE_SUPPLY ) < (std::numeric_limits< uint64_t >::max() / STEEM_100_PERCENT), "Overflow check failed" );
+   //static_assert( uint64_t( STEEM_MAX_SHARE_SUPPLY ) < (std::numeric_limits< uint64_t >::max() / STEEM_100_PERCENT), "Overflow check failed" );
    uint64_t min_soft_cap = (uint64_t( hard_cap_steem_units_commitment.lower_bound.value ) * soft_cap_percent) / STEEM_100_PERCENT;
    uint64_t max_soft_cap = (uint64_t( hard_cap_steem_units_commitment.upper_bound.value ) * soft_cap_percent) / STEEM_100_PERCENT;
 

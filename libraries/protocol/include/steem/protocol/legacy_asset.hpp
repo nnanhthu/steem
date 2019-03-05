@@ -4,9 +4,9 @@
 
 #define SBD_SYMBOL_LEGACY_SER_1   (uint64_t(1) | (SBD_SYMBOL_U64 << 8))
 #define SBD_SYMBOL_LEGACY_SER_2   (uint64_t(2) | (SBD_SYMBOL_U64 << 8))
-#define SBD_SYMBOL_LEGACY_SER_3   (uint64_t(5) | (SBD_SYMBOL_U64 << 8))
-#define SBD_SYMBOL_LEGACY_SER_4   (uint64_t(3) | (uint64_t('0') << 8) | (uint64_t('.') << 16) | (uint64_t('0') << 24) | (uint64_t('0') << 32) | (uint64_t('1') << 40))
-#define SBD_SYMBOL_LEGACY_SER_5   (uint64_t(3) | (uint64_t('6') << 8) | (uint64_t('.') << 16) | (uint64_t('0') << 24) | (uint64_t('0') << 32) | (uint64_t('0') << 40))
+#define SBD_SYMBOL_LEGACY_SER_3   (uint64_t(3) | (SBD_SYMBOL_U64 << 8))
+#define SBD_SYMBOL_LEGACY_SER_4   (uint64_t(5) | (uint64_t('0') << 8) | (uint64_t('.') << 16) | (uint64_t('0') << 24) | (uint64_t('0') << 32) | (uint64_t('0') << 40) | (uint64_t('0') << 48) | (uint64_t('1') << 56))
+#define SBD_SYMBOL_LEGACY_SER_5   (uint64_t(5) | (uint64_t('6') << 8) | (uint64_t('.') << 16) | (uint64_t('0') << 24) | (uint64_t('0') << 32) | (uint64_t('0') << 40) | (uint64_t('0') << 48) | (uint64_t('0') << 56))
 
 namespace steem { namespace protocol {
 
@@ -31,7 +31,7 @@ struct legacy_sbd_asset
       {
          if( force_canon )
          {
-            FC_ASSERT( symbol.is_canon(), "Must use canonical WD symbol serialization" );
+            FC_ASSERT( symbol.is_canon(), "Must use canonical W symbol serialization" );
          }
          return asset( amount, SBD_SYMBOL );
       }
@@ -81,12 +81,12 @@ inline void unpack( Stream& s, steem::protocol::legacy_sbd_asset_symbol_type& sy
 {
    //  994240:        "account_creation_fee": "0.1 STEEM"
    // 1021529:        "account_creation_fee": "10.0 STEEM"
-   // 3143833:        "account_creation_fee": "3.00000 STEEM"
-   // 3208405:        "account_creation_fee": "2.00000 STEEM"
+   // 3143833:        "account_creation_fee": "3.000 STEEM"
+   // 3208405:        "account_creation_fee": "2.000 STEEM"
    // 3695672:        "account_creation_fee": "3.00 STEEM"
-   // 4338089:        "account_creation_fee": "0.001 0.001"
-   // 4626205:        "account_creation_fee": "6.000 6.000"
-   // 4632595:        "account_creation_fee": "6.000 6.000"
+   // 4338089:        "account_creation_fee": "0.00001 0.00001"
+   // 4626205:        "account_creation_fee": "6.00000 6.00000"
+   // 4632595:        "account_creation_fee": "6.00000 6.00000"
    depth++;
    uint64_t ser = 0;
 

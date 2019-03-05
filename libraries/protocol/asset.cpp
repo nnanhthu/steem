@@ -287,6 +287,7 @@ DEFINE_PRICE_COMPARISON_OPERATOR( >= )
          if( a.symbol == b.base.symbol )
          {
             FC_ASSERT( b.base.amount.value > 0 );
+            //ilog("Info of asset *: ${a}, ${b}, ${c}", ("a", a.amount.value)("b", b.quote.amount.value)("c", b.base.amount.value));
             uint128_t result = (uint128_t(a.amount.value) * b.quote.amount.value)/b.base.amount.value;
             FC_ASSERT( result.hi == 0 );
             return asset( result.to_uint64(), b.quote.symbol );

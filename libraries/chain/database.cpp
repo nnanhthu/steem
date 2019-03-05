@@ -273,7 +273,7 @@ void database::open( const open_args& args )
       if( !find< dynamic_global_property_object >() )
          with_write_lock( [&]()
          {
-            init_genesis( args.initial_supply );
+            init_genesis( args.initial_supply, args.initial_sbd_supply );
          });
 
       _benchmark_dumper.set_enabled( args.benchmark_is_enabled );
@@ -2353,14 +2353,20 @@ void database::process_funds()
 
       // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
       int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
-
-      auto new_steem = ( props.virtual_supply.amount * current_inflation_rate ) / ( int64_t( STEEM_100_PERCENT ) * int64_t( STEEM_BLOCKS_PER_YEAR ) );
+      //ilog("Virtual supply, inflation: ${a}, ${b}",("a", props.virtual_supply.amount)("b", current_inflation_rate));
+      //ilog("Percent, steem block per year: ${a}, ${b}",("a", STEEM_100_PERCENT)("b", STEEM_BLOCKS_PER_YEAR));
+      auto new_steem_per_year = (props.virtual_supply.amount / int64_t( STEEM_100_PERCENT ))* int64_t(current_inflation_rate);
+      //ilog("Steem per year: ${a}",("a", new_steem_per_year));
+      auto new_steem = new_steem_per_year / int64_t( STEEM_BLOCKS_PER_YEAR );
+      //ilog("New steem"" ${a}",("a", new_steem));
       //auto content_reward = ( new_steem * STEEM_CONTENT_REWARD_PERCENT ) / STEEM_100_PERCENT;
 //      if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
 //         content_reward = pay_reward_funds( content_reward ); /// 75% to content creator
       auto vesting_reward = ( new_steem * STEEM_VESTING_FUND_PERCENT ) / STEEM_100_PERCENT; /// 50% to vesting fund
       //auto witness_reward = new_steem - content_reward - vesting_reward; /// Remaining 10% to witness pay
+
       auto witness_reward = new_steem - vesting_reward; /// Remaining 50% to witness pay
+
 
       const auto& cwit = get_witness( props.current_witness );
       witness_reward *= STEEM_MAX_WITNESSES;
@@ -2390,6 +2396,7 @@ void database::process_funds()
       });
 
       operation vop = producer_reward_operation( cwit.owner, asset( 0, VESTS_SYMBOL ) );
+      ilog("Witness reward in process_funds: ${a}",("a", witness_reward));
       create_vesting2( *this, get_account( cwit.owner ), asset( witness_reward, STEEM_SYMBOL ), false,
          [&]( const asset& vesting_shares )
          {
@@ -2541,6 +2548,7 @@ asset database::get_producer_reward()
    {
       // const auto& witness_obj = get_witness( props.current_witness );
       operation vop = producer_reward_operation( witness_account.name, asset( 0, VESTS_SYMBOL ) );
+      ilog("get_producer_reward when create_vesting2: ${a}",("a", pay));
       create_vesting2( *this, witness_account, pay, false,
          [&]( const asset& vesting_shares )
          {
@@ -2571,7 +2579,7 @@ asset database::get_pow_reward()const
 #endif
 
    static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-   static_assert( STEEM_MAX_WITNESSES == 21, "this code assumes 21 per round" );
+   static_assert( STEEM_MAX_WITNESSES == 5, "this code assumes 5 per round" );
    asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
    return std::max( percent, STEEM_MIN_POW_REWARD );
 }
@@ -2995,7 +3003,7 @@ void database::init_schema()
    return;*/
 }
 
-void database::init_genesis( uint64_t init_supply )
+void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
 {
    try
    {
@@ -3065,7 +3073,7 @@ void database::init_genesis( uint64_t init_supply )
             a.name = STEEM_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
             a.memo_key = init_public_key;
             a.balance  = asset( i ? 0 : init_supply, STEEM_SYMBOL );
-            a.sbd_balance = asset(i ? 0:init_supply, SBD_SYMBOL);
+            a.sbd_balance = asset(i ? 0:init_sbd_supply, SBD_SYMBOL);
          } );
 
          create< account_authority_object >( [&]( account_authority_object& auth )
@@ -3092,7 +3100,7 @@ void database::init_genesis( uint64_t init_supply )
          p.recent_slots_filled = fc::uint128::max_value();
          p.participation_count = 128;
          p.current_supply = asset( init_supply, STEEM_SYMBOL );
-         p.current_sbd_supply = asset( init_supply, SBD_SYMBOL );
+         p.current_sbd_supply = asset( init_sbd_supply, SBD_SYMBOL );
          p.virtual_supply = p.current_supply;
          p.maximum_block_size = STEEM_MAX_BLOCK_SIZE;
          p.reverse_auction_seconds = STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF6;
@@ -3511,9 +3519,14 @@ void database::process_header_extensions( const signed_block& next_block )
 
 void database::update_median_feed() {
 try {
-   if( (head_block_num() % STEEM_FEED_INTERVAL_BLOCKS) != 0 )
+    const auto &fhistory = get_feed_history();
+//    if(!fhistory.current_median_history.is_null()) {
+//        ilog("Current median history: ${a}",("a",fhistory.current_median_history));
+//        return;
+//    }
+    if( (head_block_num() % STEEM_FEED_INTERVAL_BLOCKS) != 0 && !fhistory.current_median_history.is_null())
       return;
-
+//    ilog("Start updating median feed");
    auto now = head_block_time();
    const witness_schedule_object& wso = get_witness_schedule_object();
    vector<price> feeds; feeds.reserve( wso.num_scheduled_witnesses );
@@ -4456,32 +4469,32 @@ void database::modify_balance( const account_object& a, const asset& delta, bool
             }
             break;
          case STEEM_ASSET_NUM_SBD:
-            if( a.sbd_seconds_last_update != head_block_time() )
-            {
-               acnt.sbd_seconds += fc::uint128_t(a.sbd_balance.amount.value) * (head_block_time() - a.sbd_seconds_last_update).to_seconds();
-               acnt.sbd_seconds_last_update = head_block_time();
-
-               if( acnt.sbd_seconds > 0 &&
-                   (acnt.sbd_seconds_last_update - acnt.sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
-               {
-                  auto interest = acnt.sbd_seconds / STEEM_SECONDS_PER_YEAR;
-                  interest *= get_dynamic_global_properties().sbd_interest_rate;
-                  interest /= STEEM_100_PERCENT;
-                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
-                  acnt.sbd_balance += interest_paid;
-                  acnt.sbd_seconds = 0;
-                  acnt.sbd_last_interest_payment = head_block_time();
-
-                  if(interest > 0)
-                     push_virtual_operation( interest_operation( a.name, interest_paid ) );
-
-                  modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& props)
-                  {
-                     props.current_sbd_supply += interest_paid;
-                     props.virtual_supply += interest_paid * get_feed_history().current_median_history;
-                  } );
-               }
-            }
+//            if( a.sbd_seconds_last_update != head_block_time() )
+//            {
+//               acnt.sbd_seconds += fc::uint128_t(a.sbd_balance.amount.value) * (head_block_time() - a.sbd_seconds_last_update).to_seconds();
+//               acnt.sbd_seconds_last_update = head_block_time();
+//
+//               if( acnt.sbd_seconds > 0 &&
+//                   (acnt.sbd_seconds_last_update - acnt.sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
+//               {
+//                  auto interest = acnt.sbd_seconds / STEEM_SECONDS_PER_YEAR;
+//                  interest *= get_dynamic_global_properties().sbd_interest_rate;
+//                  interest /= STEEM_100_PERCENT;
+//                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
+//                  acnt.sbd_balance += interest_paid;
+//                  acnt.sbd_seconds = 0;
+//                  acnt.sbd_last_interest_payment = head_block_time();
+//
+//                  if(interest > 0)
+//                     push_virtual_operation( interest_operation( a.name, interest_paid ) );
+//
+//                  modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& props)
+//                  {
+//                     props.current_sbd_supply += interest_paid;
+//                     props.virtual_supply += interest_paid * get_feed_history().current_median_history;
+//                  } );
+//               }
+//            }
             acnt.sbd_balance += delta;
             if( check_balance )
             {
@@ -4646,32 +4659,32 @@ void database::adjust_savings_balance( const account_object& a, const asset& del
             }
             break;
          case STEEM_ASSET_NUM_SBD:
-            if( a.savings_sbd_seconds_last_update != head_block_time() )
-            {
-               acnt.savings_sbd_seconds += fc::uint128_t(a.savings_sbd_balance.amount.value) * (head_block_time() - a.savings_sbd_seconds_last_update).to_seconds();
-               acnt.savings_sbd_seconds_last_update = head_block_time();
-
-               if( acnt.savings_sbd_seconds > 0 &&
-                   (acnt.savings_sbd_seconds_last_update - acnt.savings_sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
-               {
-                  auto interest = acnt.savings_sbd_seconds / STEEM_SECONDS_PER_YEAR;
-                  interest *= get_dynamic_global_properties().sbd_interest_rate;
-                  interest /= STEEM_100_PERCENT;
-                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
-                  acnt.savings_sbd_balance += interest_paid;
-                  acnt.savings_sbd_seconds = 0;
-                  acnt.savings_sbd_last_interest_payment = head_block_time();
-
-                  if(interest > 0)
-                     push_virtual_operation( interest_operation( a.name, interest_paid ) );
-
-                  modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& props)
-                  {
-                     props.current_sbd_supply += interest_paid;
-                     props.virtual_supply += interest_paid * get_feed_history().current_median_history;
-                  } );
-               }
-            }
+//            if( a.savings_sbd_seconds_last_update != head_block_time() )
+//            {
+//               acnt.savings_sbd_seconds += fc::uint128_t(a.savings_sbd_balance.amount.value) * (head_block_time() - a.savings_sbd_seconds_last_update).to_seconds();
+//               acnt.savings_sbd_seconds_last_update = head_block_time();
+//
+//               if( acnt.savings_sbd_seconds > 0 &&
+//                   (acnt.savings_sbd_seconds_last_update - acnt.savings_sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
+//               {
+//                  auto interest = acnt.savings_sbd_seconds / STEEM_SECONDS_PER_YEAR;
+//                  interest *= get_dynamic_global_properties().sbd_interest_rate;
+//                  interest /= STEEM_100_PERCENT;
+//                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
+//                  acnt.savings_sbd_balance += interest_paid;
+//                  acnt.savings_sbd_seconds = 0;
+//                  acnt.savings_sbd_last_interest_payment = head_block_time();
+//
+//                  if(interest > 0)
+//                     push_virtual_operation( interest_operation( a.name, interest_paid ) );
+//
+//                  modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& props)
+//                  {
+//                     props.current_sbd_supply += interest_paid;
+//                     props.virtual_supply += interest_paid * get_feed_history().current_median_history;
+//                  } );
+//               }
+//            }
             acnt.savings_sbd_balance += delta;
             if( check_balance )
             {

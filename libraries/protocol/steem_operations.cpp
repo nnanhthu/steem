@@ -17,7 +17,7 @@ namespace steem { namespace protocol {
    void account_create_operation::validate() const
    {
       validate_account_name( new_account_name );
-      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Account creation fee must be WD" );
+      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Account creation fee must be W" );
       owner.validate();
       active.validate();
 
@@ -33,7 +33,7 @@ namespace steem { namespace protocol {
    {
       validate_account_name( new_account_name );
       validate_account_name( creator );
-      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Account creation fee must be WD" );
+      FC_ASSERT( is_asset_type( fee, SBD_SYMBOL ), "Account creation fee must be W" );
       FC_ASSERT( is_asset_type( delegation, VESTS_SYMBOL ), "Delegation must be VESTS" );
 
       owner.validate();
@@ -241,7 +241,7 @@ namespace steem { namespace protocol {
       {
          asset account_creation_fee;
          fc::raw::unpack_from_vector( itr->second, account_creation_fee );
-         FC_ASSERT( account_creation_fee.symbol == SBD_SYMBOL, "account_creation_fee must be in WD" );
+         FC_ASSERT( account_creation_fee.symbol == SBD_SYMBOL, "account_creation_fee must be in W" );
          FC_ASSERT( account_creation_fee.amount >= STEEM_MIN_ACCOUNT_CREATION_FEE, "account_creation_fee smaller than minimum account creation fee" );
       }
 
@@ -523,11 +523,12 @@ namespace steem { namespace protocol {
 
    void convert_operation::validate()const
    {
+      FC_ASSERT( ENABLE_CONVERSION_FROM_SBD == true, "Conversion of W to BWF is not allowed" );
       validate_account_name( owner );
       /// only allow conversion from SBD to STEEM, allowing the opposite can enable traders to abuse
       /// market fluxuations through converting large quantities without moving the price.
-      FC_ASSERT( is_asset_type( amount, SBD_SYMBOL ), "Can only convert SBD to STEEM" );
-      FC_ASSERT( amount.amount > 0, "Must convert some SBD" );
+      FC_ASSERT( is_asset_type( amount, SBD_SYMBOL ), "Can only convert W to BWF" );
+      FC_ASSERT( amount.amount > 0, "Must convert some W" );
    }
 
    void report_over_production_operation::validate()const
@@ -705,9 +706,10 @@ namespace steem { namespace protocol {
 
    void convert_to_sbd_operation::validate()const
    {
+      FC_ASSERT( ENABLE_CONVERSION_TO_SBD == true, "Conversion of WBF to W is not allowed" );
       validate_account_name( owner );
       /// only convert from STEEM TO SBD, to convert from SBD to STEEM, using convert_operation.
-      FC_ASSERT( is_asset_type( amount, STEEM_SYMBOL ), "Can only convert WBF to WD" );
+      FC_ASSERT( is_asset_type( amount, STEEM_SYMBOL ), "Can only convert WBF to W" );
       FC_ASSERT( amount.amount > 0, "Must convert some WBF" );
    }
 

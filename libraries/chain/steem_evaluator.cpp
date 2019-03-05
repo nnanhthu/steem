@@ -1071,10 +1071,10 @@ namespace steem {
 
         void transfer_evaluator::do_apply( const transfer_operation& o )
         {
-            if(_db.is_producing() )
-            {
-                FC_ASSERT( o.fee <= asset( STEEM_MAX_TRANSFER_FEE, o.fee.symbol ), "Transfer fee cannot be too large" );
-            }
+//            if(_db.is_producing() )
+//            {
+//                FC_ASSERT( o.fee <= asset( STEEM_MAX_TRANSFER_FEE, o.fee.symbol ), "Transfer fee cannot be too large" );
+//            }
 
             FC_ASSERT( o.fee >= asset (STEEM_MIN_TRANSFER_FEE, o.fee.symbol), "Insufficient fee. paid: ${p} fee: ${f}",
                        ("p", o.fee)
@@ -2997,6 +2997,15 @@ namespace steem {
             //convert to sbd and adjust sbd balance of owner
             asset amount_in_sbd = util::to_sbd( fhistory.current_median_history, o.amount );
             _db.adjust_balance(o.owner, amount_in_sbd);
+            //update some dynamic properties
+            const auto& props = _db.get_dynamic_global_properties();
+            _db.modify( props, [&]( dynamic_global_property_object& p )
+            {
+                p.current_supply -= o.amount;
+                p.current_sbd_supply += amount_in_sbd;
+                p.virtual_supply -= o.amount;
+                p.virtual_supply += amount_in_sbd * fhistory.current_median_history;
+            } );
         }
     }
 } // steem::chain
