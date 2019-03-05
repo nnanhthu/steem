@@ -41,19 +41,19 @@ namespace steem { namespace chain {
        *  to tune rate limiting and capacity
        */
       uint32_t          maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT * 2;
-      uint16_t          sbd_interest_rate  = STEEM_DEFAULT_SBD_INTEREST_RATE;
+      //uint16_t          sbd_interest_rate  = STEEM_DEFAULT_SBD_INTEREST_RATE;
       /**
        * How many free accounts should be created per elected witness block.
        * Scaled so that STEEM_ACCOUNT_SUBSIDY_PRECISION represents one account.
        */
-      int32_t           account_subsidy_budget = STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET;
+      //int32_t           account_subsidy_budget = STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET;
 
       /**
        * What fraction of the "stockpiled" free accounts "expire" per elected witness block.
        * Scaled so that 1 << STEEM_RD_DECAY_DENOM_SHIFT represents 100% of accounts
        * expiring.
        */
-      uint32_t          account_subsidy_decay = STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY;
+      //uint32_t          account_subsidy_decay = STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY;
    };
 
    /**
@@ -155,7 +155,7 @@ namespace steem { namespace chain {
          hardfork_version  hardfork_version_vote;
          time_point_sec    hardfork_time_vote = STEEM_GENESIS_TIME;
 
-         int64_t           available_witness_account_subsidies = 0;
+         //int64_t           available_witness_account_subsidies = 0;
    };
 
 
@@ -206,9 +206,9 @@ namespace steem { namespace chain {
          uint8_t hardfork_required_witnesses    = STEEM_HARDFORK_REQUIRED_WITNESSES;
 
          // Derived fields that are stored for easy caching and reading of values.
-         rd_dynamics_params account_subsidy_rd;
-         rd_dynamics_params account_subsidy_witness_rd;
-         int64_t            min_witness_account_subsidy_decay = 0;
+         //rd_dynamics_params account_subsidy_rd;
+         //rd_dynamics_params account_subsidy_witness_rd;
+         //int64_t            min_witness_account_subsidy_decay = 0;
    };
 
 
@@ -283,9 +283,9 @@ FC_REFLECT_ENUM( steem::chain::witness_object::witness_schedule_type, (elected)(
 FC_REFLECT( steem::chain::chain_properties,
              (account_creation_fee)
              (maximum_block_size)
-             (sbd_interest_rate)
-             (account_subsidy_budget)
-             (account_subsidy_decay)
+             //(sbd_interest_rate)
+             //(account_subsidy_budget)
+             //(account_subsidy_decay)
           )
 
 FC_REFLECT( steem::chain::witness_object,
@@ -299,7 +299,7 @@ FC_REFLECT( steem::chain::witness_object,
              (last_work)
              (running_version)
              (hardfork_version_vote)(hardfork_time_vote)
-             (available_witness_account_subsidies)
+             //(available_witness_account_subsidies)
           )
 CHAINBASE_SET_INDEX_TYPE( steem::chain::witness_object, steem::chain::witness_index )
 
@@ -314,8 +314,8 @@ FC_REFLECT( steem::chain::witness_schedule_object,
              (max_miner_witnesses)
              (max_runner_witnesses)
              (hardfork_required_witnesses)
-             (account_subsidy_rd)
-             (account_subsidy_witness_rd)
-             (min_witness_account_subsidy_decay)
+             //(account_subsidy_rd)
+             //(account_subsidy_witness_rd)
+             //(min_witness_account_subsidy_decay)
           )
 CHAINBASE_SET_INDEX_TYPE( steem::chain::witness_schedule_object, steem::chain::witness_schedule_index )

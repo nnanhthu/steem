@@ -92,9 +92,9 @@ struct get_impacted_fee {
                _impacted = op.fee;
             }
 
-            void operator()(const account_create_with_delegation_operation &op) {
-               _impacted = op.fee;
-            }
+//            void operator()(const account_create_with_delegation_operation &op) {
+//               _impacted = op.fee;
+//            }
 
 //            void operator()(const comment_operation &op) {
 //            }
