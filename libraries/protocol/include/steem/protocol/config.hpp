@@ -96,17 +96,17 @@
 #define STEEM_NUM_INIT_MINERS                 1
 #define STEEM_INIT_TIME                       (fc::time_point_sec());
 
-#define STEEM_MAX_WITNESSES                   5
+#define STEEM_MAX_WITNESSES                   21
 
-#define STEEM_MAX_VOTED_WITNESSES_HF0         3
+#define STEEM_MAX_VOTED_WITNESSES_HF0         20
 #define STEEM_MAX_MINER_WITNESSES_HF0         1
 #define STEEM_MAX_RUNNER_WITNESSES_HF0        1
 
-#define STEEM_MAX_VOTED_WITNESSES_HF17        3
+#define STEEM_MAX_VOTED_WITNESSES_HF17        8
 #define STEEM_MAX_MINER_WITNESSES_HF17        0
-#define STEEM_MAX_RUNNER_WITNESSES_HF17       2
+#define STEEM_MAX_RUNNER_WITNESSES_HF17       11
 
-#define STEEM_HARDFORK_REQUIRED_WITNESSES     1 // 17 of the 21 dpos witnesses (20 elected and 1 virtual time) required for hardfork. This guarantees 75% participation on all subsequent rounds.
+#define STEEM_HARDFORK_REQUIRED_WITNESSES     17 // 17 of the 21 dpos witnesses (20 elected and 1 virtual time) required for hardfork. This guarantees 75% participation on all subsequent rounds.
 #define STEEM_MAX_TIME_UNTIL_EXPIRATION       (60*60) // seconds,  aka: 1 hour
 #define STEEM_MAX_MEMO_SIZE                   512 //2048
 #define STEEM_MAX_PROXY_RECURSION_DEPTH       4
