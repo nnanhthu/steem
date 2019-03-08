@@ -37,6 +37,8 @@ void smt_create_operation::validate()const
    FC_ASSERT( smt_creation_fee.amount <= STEEM_MAX_SHARE_SUPPLY, "Fee must be smaller than STEEM_MAX_SHARE_SUPPLY" );
    //FC_ASSERT( is_asset_type( smt_creation_fee, STEEM_SYMBOL ) || is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be STEEM or SBD" );
    FC_ASSERT( is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be W" );
+   FC_ASSERT( symbol.decimals() >= 0);
+   FC_ASSERT( symbol.decimals() <= SMT_MAX_DECIMAL_PLACES );
    FC_ASSERT( symbol.decimals() == precision, "Mismatch between redundantly provided precision ${prec1} vs ${prec2}",
       ("prec1",symbol.decimals())("prec2",precision) );
 }
@@ -264,6 +266,7 @@ void smt_setup_emissions_operation::validate()const
 void smt_setup_operation::validate()const
 {
    smt_base_operation::validate();
+   FC_ASSERT( decimal_places >= 0);
    FC_ASSERT( decimal_places <= SMT_MAX_DECIMAL_PLACES );
    FC_ASSERT( max_supply > 0 );
    FC_ASSERT( max_supply <= STEEM_MAX_SHARE_SUPPLY );
