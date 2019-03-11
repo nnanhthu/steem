@@ -99,12 +99,12 @@ typedef api_hardfork_property_object   get_hardfork_properties_return;
 
 /* get_reward_funds */
 
-typedef void_type get_reward_funds_args;
+//typedef void_type get_reward_funds_args;
 
-struct get_reward_funds_return
-{
-   vector< api_reward_fund_object > funds;
-};
+//struct get_reward_funds_return
+//{
+//   vector< api_reward_fund_object > funds;
+//};
 
 
 /* get_current_price_feed */
@@ -195,56 +195,56 @@ typedef list_owner_histories_return find_owner_histories_return;
 
 /* Account Recovery Requests */
 
-typedef list_object_args_type list_account_recovery_requests_args;
+//typedef list_object_args_type list_account_recovery_requests_args;
 
-struct list_account_recovery_requests_return
-{
-   vector< api_account_recovery_request_object > requests;
-};
+//struct list_account_recovery_requests_return
+//{
+//   vector< api_account_recovery_request_object > requests;
+//};
 
 
-struct find_account_recovery_requests_args
-{
-   vector< account_name_type > accounts;
-};
+//struct find_account_recovery_requests_args
+//{
+//   vector< account_name_type > accounts;
+//};
 
-typedef list_account_recovery_requests_return find_account_recovery_requests_return;
+//typedef list_account_recovery_requests_return find_account_recovery_requests_return;
 
 
 /* Change Recovery Account Requests */
 
-typedef list_object_args_type list_change_recovery_account_requests_args;
+//typedef list_object_args_type list_change_recovery_account_requests_args;
 
-struct list_change_recovery_account_requests_return
-{
-   vector< api_change_recovery_account_request_object > requests;
-};
+//struct list_change_recovery_account_requests_return
+//{
+//   vector< api_change_recovery_account_request_object > requests;
+//};
 
 
-struct find_change_recovery_account_requests_args
-{
-   vector< account_name_type > accounts;
-};
+//struct find_change_recovery_account_requests_args
+//{
+//   vector< account_name_type > accounts;
+//};
 
-typedef list_change_recovery_account_requests_return find_change_recovery_account_requests_return;
+//typedef list_change_recovery_account_requests_return find_change_recovery_account_requests_return;
 
 
 /* Escrow */
 
-typedef list_object_args_type list_escrows_args;
+//typedef list_object_args_type list_escrows_args;
+//
+//struct list_escrows_return
+//{
+//   vector< api_escrow_object > escrows;
+//};
 
-struct list_escrows_return
-{
-   vector< api_escrow_object > escrows;
-};
 
-
-struct find_escrows_args
-{
-   account_name_type from;
-};
-
-typedef list_escrows_return find_escrows_return;
+//struct find_escrows_args
+//{
+//   account_name_type from;
+//};
+//
+//typedef list_escrows_return find_escrows_return;
 
 
 /* Vesting Withdraw Routes */
@@ -268,56 +268,56 @@ typedef list_withdraw_vesting_routes_return find_withdraw_vesting_routes_return;
 
 /* Savings Withdraw */
 
-typedef list_object_args_type list_savings_withdrawals_args;
+//typedef list_object_args_type list_savings_withdrawals_args;
+//
+//struct list_savings_withdrawals_return
+//{
+//   vector< api_savings_withdraw_object > withdrawals;
+//};
 
-struct list_savings_withdrawals_return
-{
-   vector< api_savings_withdraw_object > withdrawals;
-};
 
-
-struct find_savings_withdrawals_args
-{
-   account_name_type account;
-};
-
-typedef list_savings_withdrawals_return find_savings_withdrawals_return;
+//struct find_savings_withdrawals_args
+//{
+//   account_name_type account;
+//};
+//
+//typedef list_savings_withdrawals_return find_savings_withdrawals_return;
 
 
 /* Vesting Delegations */
 
-typedef list_object_args_type list_vesting_delegations_args;
+//typedef list_object_args_type list_vesting_delegations_args;
+//
+//struct list_vesting_delegations_return
+//{
+//   vector< api_vesting_delegation_object > delegations;
+//};
 
-struct list_vesting_delegations_return
-{
-   vector< api_vesting_delegation_object > delegations;
-};
 
-
-struct find_vesting_delegations_args
-{
-   account_name_type account;
-};
-
-typedef list_vesting_delegations_return find_vesting_delegations_return;
+//struct find_vesting_delegations_args
+//{
+//   account_name_type account;
+//};
+//
+//typedef list_vesting_delegations_return find_vesting_delegations_return;
 
 
 /* Vesting Delegation Expirations */
 
-typedef list_object_args_type list_vesting_delegation_expirations_args;
+//typedef list_object_args_type list_vesting_delegation_expirations_args;
+//
+//struct list_vesting_delegation_expirations_return
+//{
+//   vector< api_vesting_delegation_expiration_object > delegations;
+//};
 
-struct list_vesting_delegation_expirations_return
-{
-   vector< api_vesting_delegation_expiration_object > delegations;
-};
 
-
-struct find_vesting_delegation_expirations_args
-{
-   account_name_type account;
-};
-
-typedef list_vesting_delegation_expirations_return find_vesting_delegation_expirations_return;
+//struct find_vesting_delegation_expirations_args
+//{
+//   account_name_type account;
+//};
+//
+//typedef list_vesting_delegation_expirations_return find_vesting_delegation_expirations_return;
 
 
 /* SBD Converstions */
@@ -340,85 +340,85 @@ typedef list_sbd_conversion_requests_return find_sbd_conversion_requests_return;
 
 /* Decline Voting Rights Requests */
 
-typedef list_object_args_type list_decline_voting_rights_requests_args;
+//typedef list_object_args_type list_decline_voting_rights_requests_args;
+//
+//struct list_decline_voting_rights_requests_return
+//{
+//   vector< api_decline_voting_rights_request_object > requests;
+//};
 
-struct list_decline_voting_rights_requests_return
-{
-   vector< api_decline_voting_rights_request_object > requests;
-};
 
-
-struct find_decline_voting_rights_requests_args
-{
-   vector< account_name_type > accounts;
-};
-
-typedef list_decline_voting_rights_requests_return find_decline_voting_rights_requests_return;
+//struct find_decline_voting_rights_requests_args
+//{
+//   vector< account_name_type > accounts;
+//};
+//
+//typedef list_decline_voting_rights_requests_return find_decline_voting_rights_requests_return;
 
 
 /* Comments */
 
-typedef list_object_args_type list_comments_args;
+//typedef list_object_args_type list_comments_args;
 
-struct list_comments_return
-{
-   vector< api_comment_object > comments;
-};
+//struct list_comments_return
+//{
+//   vector< api_comment_object > comments;
+//};
 
 
-struct find_comments_args
-{
-   vector< std::pair< account_name_type, string > > comments;
-};
+//struct find_comments_args
+//{
+//   vector< std::pair< account_name_type, string > > comments;
+//};
 
-typedef list_comments_return find_comments_return;
+//typedef list_comments_return find_comments_return;
 
 
 /* Votes */
 
-typedef list_object_args_type list_votes_args;
+//typedef list_object_args_type list_votes_args;
 
-struct list_votes_return
-{
-   vector< api_comment_vote_object > votes;
-};
+//struct list_votes_return
+//{
+//   vector< api_comment_vote_object > votes;
+//};
 
 
-struct find_votes_args
-{
-   account_name_type author;
-   string            permlink;
-};
+//struct find_votes_args
+//{
+//   account_name_type author;
+//   string            permlink;
+//};
 
-typedef list_votes_return find_votes_return;
+//typedef list_votes_return find_votes_return;
 
 
 /* Limit Orders */
 
-typedef list_object_args_type list_limit_orders_args;
+//typedef list_object_args_type list_limit_orders_args;
+//
+//struct list_limit_orders_return
+//{
+//   vector< api_limit_order_object > orders;
+//};
 
-struct list_limit_orders_return
-{
-   vector< api_limit_order_object > orders;
-};
 
-
-struct find_limit_orders_args
-{
-   account_name_type account;
-};
-
-typedef list_limit_orders_return find_limit_orders_return;
+//struct find_limit_orders_args
+//{
+//   account_name_type account;
+//};
+//
+//typedef list_limit_orders_return find_limit_orders_return;
 
 
 /* Order Book */
 
-struct get_order_book_args
-{
-   uint32_t          limit;
-};
+//struct get_order_book_args
+//{
+//   uint32_t          limit;
+//};
 
-typedef order_book get_order_book_return;
+//typedef order_book get_order_book_return;
 
 
 struct get_transaction_hex_args
@@ -531,19 +531,19 @@ struct find_smt_tokens_args
 typedef list_smt_tokens_return find_smt_tokens_return;
 
 
-typedef list_object_args_type list_smt_token_emissions_args;
+//typedef list_object_args_type list_smt_token_emissions_args;
 
-struct list_smt_token_emissions_return
-{
-   vector< smt_token_emissions_object > token_emissions;
-};
+//struct list_smt_token_emissions_return
+//{
+//   vector< smt_token_emissions_object > token_emissions;
+//};
 
-struct find_smt_token_emissions_args
-{
-   asset_symbol_type asset_symbol;
-};
+//struct find_smt_token_emissions_args
+//{
+//   asset_symbol_type asset_symbol;
+//};
 
-typedef list_smt_token_emissions_return find_smt_token_emissions_return;
+//typedef list_smt_token_emissions_return find_smt_token_emissions_return;
 
 struct get_balance_args
 {
@@ -599,8 +599,8 @@ FC_REFLECT_ENUM( steem::plugins::database_api::sort_order_type,
 FC_REFLECT( steem::plugins::database_api::list_object_args_type,
    (start)(limit)(order) )
 
-FC_REFLECT( steem::plugins::database_api::get_reward_funds_return,
-   (funds) )
+//FC_REFLECT( steem::plugins::database_api::get_reward_funds_return,
+//   (funds) )
 
 FC_REFLECT( steem::plugins::database_api::list_witnesses_return,
    (witnesses) )
@@ -629,24 +629,24 @@ FC_REFLECT( steem::plugins::database_api::list_owner_histories_return,
 FC_REFLECT( steem::plugins::database_api::find_owner_histories_args,
    (owner) )
 
-FC_REFLECT( steem::plugins::database_api::list_account_recovery_requests_return,
-   (requests) )
-
-FC_REFLECT( steem::plugins::database_api::find_account_recovery_requests_args,
-   (accounts) )
-
-FC_REFLECT(
-   steem::plugins::database_api::list_change_recovery_account_requests_return,
-   (requests) )
-
-FC_REFLECT( steem::plugins::database_api::find_change_recovery_account_requests_args,
-   (accounts) )
-
-FC_REFLECT( steem::plugins::database_api::list_escrows_return,
-   (escrows) )
-
-FC_REFLECT( steem::plugins::database_api::find_escrows_args,
-   (from) )
+//FC_REFLECT( steem::plugins::database_api::list_account_recovery_requests_return,
+//   (requests) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_account_recovery_requests_args,
+//   (accounts) )
+//
+//FC_REFLECT(
+//   steem::plugins::database_api::list_change_recovery_account_requests_return,
+//   (requests) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_change_recovery_account_requests_args,
+//   (accounts) )
+//
+//FC_REFLECT( steem::plugins::database_api::list_escrows_return,
+//   (escrows) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_escrows_args,
+//   (from) )
 
 FC_REFLECT( steem::plugins::database_api::list_withdraw_vesting_routes_return,
    (routes) )
@@ -654,23 +654,23 @@ FC_REFLECT( steem::plugins::database_api::list_withdraw_vesting_routes_return,
 FC_REFLECT( steem::plugins::database_api::find_withdraw_vesting_routes_args,
    (account)(order) )
 
-FC_REFLECT( steem::plugins::database_api::list_savings_withdrawals_return,
-   (withdrawals) )
-
-FC_REFLECT( steem::plugins::database_api::find_savings_withdrawals_args,
-   (account) )
-
-FC_REFLECT( steem::plugins::database_api::list_vesting_delegations_return,
-   (delegations) )
-
-FC_REFLECT( steem::plugins::database_api::find_vesting_delegations_args,
-   (account) )
-
-FC_REFLECT( steem::plugins::database_api::list_vesting_delegation_expirations_return,
-   (delegations) )
-
-FC_REFLECT( steem::plugins::database_api::find_vesting_delegation_expirations_args,
-   (account) )
+//FC_REFLECT( steem::plugins::database_api::list_savings_withdrawals_return,
+//   (withdrawals) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_savings_withdrawals_args,
+//   (account) )
+//
+//FC_REFLECT( steem::plugins::database_api::list_vesting_delegations_return,
+//   (delegations) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_vesting_delegations_args,
+//   (account) )
+//
+//FC_REFLECT( steem::plugins::database_api::list_vesting_delegation_expirations_return,
+//   (delegations) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_vesting_delegation_expirations_args,
+//   (account) )
 
 FC_REFLECT( steem::plugins::database_api::list_sbd_conversion_requests_return,
    (requests) )
@@ -678,32 +678,32 @@ FC_REFLECT( steem::plugins::database_api::list_sbd_conversion_requests_return,
 FC_REFLECT( steem::plugins::database_api::find_sbd_conversion_requests_args,
    (account) )
 
-FC_REFLECT( steem::plugins::database_api::list_decline_voting_rights_requests_return,
-   (requests) )
+//FC_REFLECT( steem::plugins::database_api::list_decline_voting_rights_requests_return,
+//   (requests) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_decline_voting_rights_requests_args,
+//   (accounts) )
 
-FC_REFLECT( steem::plugins::database_api::find_decline_voting_rights_requests_args,
-   (accounts) )
+//FC_REFLECT( steem::plugins::database_api::list_comments_return,
+//   (comments) )
 
-FC_REFLECT( steem::plugins::database_api::list_comments_return,
-   (comments) )
+//FC_REFLECT( steem::plugins::database_api::find_comments_args,
+//   (comments) )
 
-FC_REFLECT( steem::plugins::database_api::find_comments_args,
-   (comments) )
+//FC_REFLECT( steem::plugins::database_api::list_votes_return,
+//   (votes) )
 
-FC_REFLECT( steem::plugins::database_api::list_votes_return,
-   (votes) )
+//FC_REFLECT( steem::plugins::database_api::find_votes_args,
+//   (author)(permlink) )
+//
+//FC_REFLECT( steem::plugins::database_api::list_limit_orders_return,
+//   (orders) )
+//
+//FC_REFLECT( steem::plugins::database_api::find_limit_orders_args,
+//   (account) )
 
-FC_REFLECT( steem::plugins::database_api::find_votes_args,
-   (author)(permlink) )
-
-FC_REFLECT( steem::plugins::database_api::list_limit_orders_return,
-   (orders) )
-
-FC_REFLECT( steem::plugins::database_api::find_limit_orders_args,
-   (account) )
-
-FC_REFLECT( steem::plugins::database_api::get_order_book_args,
-   (limit) )
+//FC_REFLECT( steem::plugins::database_api::get_order_book_args,
+//   (limit) )
 
 FC_REFLECT( steem::plugins::database_api::get_transaction_hex_args,
    (trx) )
@@ -753,11 +753,11 @@ FC_REFLECT( steem::plugins::database_api::list_smt_tokens_return,
 FC_REFLECT( steem::plugins::database_api::find_smt_tokens_args,
    (symbols)(ignore_precision) )
 
-FC_REFLECT( steem::plugins::database_api::list_smt_token_emissions_return,
-   (token_emissions) )
+//FC_REFLECT( steem::plugins::database_api::list_smt_token_emissions_return,
+//   (token_emissions) )
 
-FC_REFLECT( steem::plugins::database_api::find_smt_token_emissions_args,
-   (asset_symbol) )
+//FC_REFLECT( steem::plugins::database_api::find_smt_token_emissions_args,
+//   (asset_symbol) )
 
 FC_REFLECT( steem::plugins::database_api::get_balance_args,
 (account)(symbol) )

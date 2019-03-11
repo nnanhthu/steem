@@ -171,14 +171,14 @@ struct get_resource_user_visitor
       return op.owner;
    }
 
-   account_name_type operator()( const recover_account_operation& op )const
-   {
-      for( const auto& account_weight : op.new_owner_authority.account_auths )
-         return account_weight.first;
-      for( const auto& account_weight : op.recent_owner_authority.account_auths )
-         return account_weight.first;
-      return op.account_to_recover;
-   }
+//   account_name_type operator()( const recover_account_operation& op )const
+//   {
+//      for( const auto& account_weight : op.new_owner_authority.account_auths )
+//         return account_weight.first;
+//      for( const auto& account_weight : op.recent_owner_authority.account_auths )
+//         return account_weight.first;
+//      return op.account_to_recover;
+//   }
 
    template< typename Op >
    account_name_type operator()( const Op& op )const
@@ -190,9 +190,9 @@ struct get_resource_user_visitor
       op.get_required_owner_authorities( req );
       for( const account_name_type& account : req )
          return account;
-      op.get_required_posting_authorities( req );
-      for( const account_name_type& account : req )
-         return account;
+//      op.get_required_posting_authorities( req );
+//      for( const account_name_type& account : req )
+//         return account;
       return account_name_type();
    }
 };
@@ -378,80 +378,80 @@ void rc_plugin_impl::on_post_apply_block( const block_notification& note )
       count_resources( tx, count );
    }
 
-   const witness_schedule_object& wso = _db.get_witness_schedule_object();
-   const rc_resource_param_object& params_obj = _db.get< rc_resource_param_object, by_id >( rc_resource_param_object::id_type() );
+//   const witness_schedule_object& wso = _db.get_witness_schedule_object();
+//   const rc_resource_param_object& params_obj = _db.get< rc_resource_param_object, by_id >( rc_resource_param_object::id_type() );
 
-   rc_block_info block_info;
+//   rc_block_info block_info;
 
-   if( params_obj.resource_param_array[ resource_new_accounts ].resource_dynamics_params !=
-       wso.account_subsidy_rd )
-   {
-      dlog( "Copying changed subsidy params from consensus in block ${b}", ("b", gpo.head_block_number) );
-      _db.modify( params_obj, [&]( rc_resource_param_object& p )
-      {
-         p.resource_param_array[ resource_new_accounts ].resource_dynamics_params = wso.account_subsidy_rd;
-         // Hardcoded to use default values of rc_curve_gen_params() fields for now
-         generate_rc_curve_params(
-            p.resource_param_array[ resource_new_accounts ].price_curve_params,
-            p.resource_param_array[ resource_new_accounts ].resource_dynamics_params,
-            rc_curve_gen_params() );
-      } );
-   }
+//   if( params_obj.resource_param_array[ resource_new_accounts ].resource_dynamics_params !=
+//       wso.account_subsidy_rd )
+//   {
+//      dlog( "Copying changed subsidy params from consensus in block ${b}", ("b", gpo.head_block_number) );
+//      _db.modify( params_obj, [&]( rc_resource_param_object& p )
+//      {
+//         p.resource_param_array[ resource_new_accounts ].resource_dynamics_params = wso.account_subsidy_rd;
+//         // Hardcoded to use default values of rc_curve_gen_params() fields for now
+//         generate_rc_curve_params(
+//            p.resource_param_array[ resource_new_accounts ].price_curve_params,
+//            p.resource_param_array[ resource_new_accounts ].resource_dynamics_params,
+//            rc_curve_gen_params() );
+//      } );
+//   }
 
-   _db.modify( _db.get< rc_pool_object, by_id >( rc_pool_object::id_type() ),
-      [&]( rc_pool_object& pool_obj )
-      {
-         bool debug_print = ((gpo.head_block_number % 10000) == 0);
+//   _db.modify( _db.get< rc_pool_object, by_id >( rc_pool_object::id_type() ),
+//      [&]( rc_pool_object& pool_obj )
+//      {
+//         bool debug_print = ((gpo.head_block_number % 10000) == 0);
+//
+//         for( size_t i=0; i<STEEM_NUM_RESOURCE_TYPES; i++ )
+//         {
+//            const rd_dynamics_params& params = params_obj.resource_param_array[i].resource_dynamics_params;
+//            int64_t& pool = pool_obj.pool_array[i];
+//            uint32_t dt = 1;
+//
+//            block_info.pool[i] = pool;
+//            block_info.dt[i] = dt;
+//
+//            block_info.budget[i] = int64_t( params.budget_per_time_unit ) * int64_t( dt );
+//            block_info.usage[i] = count.resource_count[i]*int64_t( params.resource_unit );
+//            block_info.decay[i] = rd_compute_pool_decay( params.decay_params, pool - block_info.usage[i], dt );
+//
+//            int64_t new_pool = pool - block_info.decay[i] + block_info.budget[i] - block_info.usage[i];
+//
+//            if( i == resource_new_accounts )
+//            {
+//               int64_t new_consensus_pool = _db.get_dynamic_global_properties().available_account_subsidies;
+//               block_info.adjustment[i] = new_consensus_pool - new_pool;
+//               if( block_info.adjustment[i] != 0 )
+//               {
+//                  ilog( "resource_new_accounts adjustment on block ${b}: ${a}", ("a", block_info.adjustment[i])("b", gpo.head_block_number) );
+//               }
+//            }
+//            else
+//            {
+//               block_info.adjustment[i] = 0;
+//            }
+//
+//            pool = new_pool + block_info.adjustment[i];
+//
+//            if( debug_print )
+//            {
+//               double k = 27.027027027027028;
+//               double a = double(params.pool_eq - pool);
+//               a /= k*double(pool);
+//               dlog( "a=${a}   aR=${aR}", ("a", a)("aR", a*gpo.total_vesting_shares.amount.value/STEEM_RC_REGEN_TIME) );
+//            }
+//         }
+//         if( debug_print )
+//         {
+//            dlog( "${t} : ${i}", ("t", gpo.time)("i", block_info) );
+//         }
+//      } );
 
-         for( size_t i=0; i<STEEM_NUM_RESOURCE_TYPES; i++ )
-         {
-            const rd_dynamics_params& params = params_obj.resource_param_array[i].resource_dynamics_params;
-            int64_t& pool = pool_obj.pool_array[i];
-            uint32_t dt = 1;
-
-            block_info.pool[i] = pool;
-            block_info.dt[i] = dt;
-
-            block_info.budget[i] = int64_t( params.budget_per_time_unit ) * int64_t( dt );
-            block_info.usage[i] = count.resource_count[i]*int64_t( params.resource_unit );
-            block_info.decay[i] = rd_compute_pool_decay( params.decay_params, pool - block_info.usage[i], dt );
-
-            int64_t new_pool = pool - block_info.decay[i] + block_info.budget[i] - block_info.usage[i];
-
-            if( i == resource_new_accounts )
-            {
-               int64_t new_consensus_pool = _db.get_dynamic_global_properties().available_account_subsidies;
-               block_info.adjustment[i] = new_consensus_pool - new_pool;
-               if( block_info.adjustment[i] != 0 )
-               {
-                  ilog( "resource_new_accounts adjustment on block ${b}: ${a}", ("a", block_info.adjustment[i])("b", gpo.head_block_number) );
-               }
-            }
-            else
-            {
-               block_info.adjustment[i] = 0;
-            }
-
-            pool = new_pool + block_info.adjustment[i];
-
-            if( debug_print )
-            {
-               double k = 27.027027027027028;
-               double a = double(params.pool_eq - pool);
-               a /= k*double(pool);
-               dlog( "a=${a}   aR=${aR}", ("a", a)("aR", a*gpo.total_vesting_shares.amount.value/STEEM_RC_REGEN_TIME) );
-            }
-         }
-         if( debug_print )
-         {
-            dlog( "${t} : ${i}", ("t", gpo.time)("i", block_info) );
-         }
-      } );
-
-   std::shared_ptr< exp_rc_data > export_data =
-      steem::plugins::block_data_export::find_export_data< exp_rc_data >( STEEM_RC_PLUGIN_NAME );
-   if( export_data )
-      export_data->block_info = block_info;
+//   std::shared_ptr< exp_rc_data > export_data =
+//      steem::plugins::block_data_export::find_export_data< exp_rc_data >( STEEM_RC_PLUGIN_NAME );
+//   if( export_data )
+//      export_data->block_info = block_info;
 }
 
 void rc_plugin_impl::on_first_block()
@@ -509,13 +509,13 @@ struct get_worker_name_visitor
    {   return work.input.worker_account;    }
 };
 
-account_name_type get_worker_name( const pow2_work& work )
-{
-   // Even though in both cases the result is work.input.worker_account,
-   // we have to use a visitor because pow2_work is a static_variant
-   get_worker_name_visitor vtor;
-   return work.visit( vtor );
-}
+//account_name_type get_worker_name( const pow2_work& work )
+//{
+//   // Even though in both cases the result is work.input.worker_account,
+//   // we have to use a visitor because pow2_work is a static_variant
+//   get_worker_name_visitor vtor;
+//   return work.visit( vtor );
+//}
 
 //
 // This visitor performs the following functions:
@@ -594,10 +594,10 @@ struct pre_apply_operation_visitor
       regenerate( *account, *rc_account );
    }
 
-   void operator()( const account_create_with_delegation_operation& op )const
-   {
-      regenerate( op.creator );
-   }
+//   void operator()( const account_create_with_delegation_operation& op )const
+//   {
+//      regenerate( op.creator );
+//   }
 
    void operator()( const transfer_to_vesting_operation& op )const
    {
@@ -615,11 +615,11 @@ struct pre_apply_operation_visitor
       regenerate( op.from_account );
    }
 
-   void operator()( const delegate_vesting_shares_operation& op )const
-   {
-      regenerate( op.delegator );
-      regenerate( op.delegatee );
-   }
+//   void operator()( const delegate_vesting_shares_operation& op )const
+//   {
+//      regenerate( op.delegator );
+//      regenerate( op.delegatee );
+//   }
 
 //   void operator()( const author_reward_operation& op )const
 //   {
@@ -643,16 +643,16 @@ struct pre_apply_operation_visitor
       regenerate( op.to_account );
    }
 
-   void operator()( const claim_reward_balance_operation& op )const
-   {
-      regenerate( op.account );
-   }
+//   void operator()( const claim_reward_balance_operation& op )const
+//   {
+//      regenerate( op.account );
+//   }
 
 //#ifdef STEEM_ENABLE_SMT
-   void operator()( const claim_reward_balance2_operation& op )const
-   {
-      regenerate( op.account );
-   }
+//   void operator()( const claim_reward_balance2_operation& op )const
+//   {
+//      regenerate( op.account );
+//   }
 //#endif
 
    void operator()( const hardfork_operation& op )const
@@ -667,10 +667,10 @@ struct pre_apply_operation_visitor
       }
    }
 
-   void operator()( const return_vesting_delegation_operation& op )const
-   {
-      regenerate( op.account );
-   }
+//   void operator()( const return_vesting_delegation_operation& op )const
+//   {
+//      regenerate( op.account );
+//   }
 
 //   void operator()( const comment_benefactor_reward_operation& op )const
 //   {
@@ -687,17 +687,17 @@ struct pre_apply_operation_visitor
       regenerate( STEEM_NULL_ACCOUNT );
    }
 
-   void operator()( const pow_operation& op )const
-   {
-      regenerate< true >( op.worker_account );
-      regenerate< false >( _current_witness );
-   }
-
-   void operator()( const pow2_operation& op )const
-   {
-      regenerate< true >( get_worker_name( op.work ) );
-      regenerate< false >( _current_witness );
-   }
+//   void operator()( const pow_operation& op )const
+//   {
+//      regenerate< true >( op.worker_account );
+//      regenerate< false >( _current_witness );
+//   }
+//
+//   void operator()( const pow2_operation& op )const
+//   {
+//      regenerate< true >( get_worker_name( op.work ) );
+//      regenerate< false >( _current_witness );
+//   }
 
    template< typename Op >
    void operator()( const Op& op )const {}
@@ -736,32 +736,32 @@ struct post_apply_operation_visitor
       create_rc_account( _db, _current_time, op.new_account_name, op.fee );
    }
 
-   void operator()( const account_create_with_delegation_operation& op )const
-   {
-      create_rc_account( _db, _current_time, op.new_account_name, op.fee );
-      _mod_accounts.emplace_back( op.creator );
-   }
-
-   void operator()( const create_claimed_account_operation& op )const
-   {
-      create_rc_account( _db, _current_time, op.new_account_name, _db.get_witness_schedule_object().median_props.account_creation_fee );
-   }
-
-   void operator()( const pow_operation& op )const
-   {
-      // ilog( "handling post-apply pow_operation" );
-      create_rc_account< true >( _db, _current_time, op.worker_account, asset( 0, STEEM_SYMBOL ) );
-      _mod_accounts.emplace_back( op.worker_account );
-      _mod_accounts.emplace_back( _current_witness );
-   }
-
-   void operator()( const pow2_operation& op )const
-   {
-      auto worker_name = get_worker_name( op.work );
-      create_rc_account< true >( _db, _current_time, worker_name, asset( 0, STEEM_SYMBOL ) );
-      _mod_accounts.emplace_back( worker_name );
-      _mod_accounts.emplace_back( _current_witness );
-   }
+//   void operator()( const account_create_with_delegation_operation& op )const
+//   {
+//      create_rc_account( _db, _current_time, op.new_account_name, op.fee );
+//      _mod_accounts.emplace_back( op.creator );
+//   }
+//
+//   void operator()( const create_claimed_account_operation& op )const
+//   {
+//      create_rc_account( _db, _current_time, op.new_account_name, _db.get_witness_schedule_object().median_props.account_creation_fee );
+//   }
+//
+//   void operator()( const pow_operation& op )const
+//   {
+//      // ilog( "handling post-apply pow_operation" );
+//      create_rc_account< true >( _db, _current_time, op.worker_account, asset( 0, STEEM_SYMBOL ) );
+//      _mod_accounts.emplace_back( op.worker_account );
+//      _mod_accounts.emplace_back( _current_witness );
+//   }
+//
+//   void operator()( const pow2_operation& op )const
+//   {
+//      auto worker_name = get_worker_name( op.work );
+//      create_rc_account< true >( _db, _current_time, worker_name, asset( 0, STEEM_SYMBOL ) );
+//      _mod_accounts.emplace_back( worker_name );
+//      _mod_accounts.emplace_back( _current_witness );
+//   }
 
    void operator()( const transfer_to_vesting_operation& op )
    {
@@ -774,11 +774,11 @@ struct post_apply_operation_visitor
       _mod_accounts.emplace_back( op.account, false );
    }
 
-   void operator()( const delegate_vesting_shares_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.delegator );
-      _mod_accounts.emplace_back( op.delegatee );
-   }
+//   void operator()( const delegate_vesting_shares_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.delegator );
+//      _mod_accounts.emplace_back( op.delegatee );
+//   }
 
 //   void operator()( const author_reward_operation& op )const
 //   {
@@ -802,16 +802,16 @@ struct post_apply_operation_visitor
       _mod_accounts.emplace_back( op.to_account );
    }
 
-   void operator()( const claim_reward_balance_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.account );
-   }
+//   void operator()( const claim_reward_balance_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.account );
+//   }
 
 //#ifdef STEEM_ENABLE_SMT
-   void operator()( const claim_reward_balance2_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.account );
-   }
+//   void operator()( const claim_reward_balance2_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.account );
+//   }
 //#endif
 
    void operator()( const hardfork_operation& op )const
@@ -841,10 +841,10 @@ struct post_apply_operation_visitor
       }
    }
 
-   void operator()( const return_vesting_delegation_operation& op )const
-   {
-      _mod_accounts.emplace_back( op.account );
-   }
+//   void operator()( const return_vesting_delegation_operation& op )const
+//   {
+//      _mod_accounts.emplace_back( op.account );
+//   }
 
 //   void operator()( const comment_benefactor_reward_operation& op )const
 //   {
@@ -1041,8 +1041,8 @@ void exp_rc_data::to_variant( fc::variant& v )const
 int64_t get_maximum_rc( const account_object& account, const rc_account_object& rc_account )
 {
    int64_t result = account.vesting_shares.amount.value;
-   result = fc::signed_sat_sub( result, account.delegated_vesting_shares.amount.value );
-   result = fc::signed_sat_add( result, account.received_vesting_shares.amount.value );
+//   result = fc::signed_sat_sub( result, account.delegated_vesting_shares.amount.value );
+//   result = fc::signed_sat_add( result, account.received_vesting_shares.amount.value );
    result = fc::signed_sat_add( result, rc_account.max_rc_creation_adjustment.amount.value );
    result = fc::signed_sat_sub( result, detail::get_next_vesting_withdrawal( account ) );
    return result;

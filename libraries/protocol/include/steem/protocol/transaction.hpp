@@ -46,7 +46,7 @@ using fc::ecc::canonical_signature_type;
 
       void get_required_authorities( flat_set< account_name_type >& active,
                                      flat_set< account_name_type >& owner,
-                                     flat_set< account_name_type >& posting,
+                                     //flat_set< account_name_type >& posting,
                                      vector< authority >& other )const;
    };
 
@@ -64,7 +64,7 @@ using fc::ecc::canonical_signature_type;
          const flat_set<public_key_type>& available_keys,
          const authority_getter& get_active,
          const authority_getter& get_owner,
-         const authority_getter& get_posting,
+         //const authority_getter& get_posting,
          uint32_t max_recursion = STEEM_MAX_SIG_CHECK_DEPTH,
          uint32_t max_membership = STEEM_MAX_AUTHORITY_MEMBERSHIP,
          uint32_t max_account_auths = STEEM_MAX_SIG_CHECK_ACCOUNTS,
@@ -75,7 +75,7 @@ using fc::ecc::canonical_signature_type;
          const chain_id_type& chain_id,
          const authority_getter& get_active,
          const authority_getter& get_owner,
-         const authority_getter& get_posting,
+         //const authority_getter& get_posting,
          uint32_t max_recursion/* = STEEM_MAX_SIG_CHECK_DEPTH*/,
          uint32_t max_membership = STEEM_MAX_AUTHORITY_MEMBERSHIP,
          uint32_t max_account_auths = STEEM_MAX_SIG_CHECK_ACCOUNTS,
@@ -87,7 +87,7 @@ using fc::ecc::canonical_signature_type;
          const flat_set<public_key_type>& available_keys,
          const authority_getter& get_active,
          const authority_getter& get_owner,
-         const authority_getter& get_posting,
+         //const authority_getter& get_posting,
          uint32_t max_recursion = STEEM_MAX_SIG_CHECK_DEPTH,
          uint32_t max_membership = STEEM_MAX_AUTHORITY_MEMBERSHIP,
          uint32_t max_account_auths = STEEM_MAX_SIG_CHECK_ACCOUNTS,

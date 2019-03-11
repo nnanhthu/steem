@@ -55,14 +55,14 @@ namespace steem { namespace protocol {
    };
 
 
-   struct interest_operation : public virtual_operation
-   {
-      interest_operation( const string& o = "", const asset& i = asset(0,SBD_SYMBOL) )
-         :owner(o),interest(i){}
-
-      account_name_type owner;
-      asset             interest;
-   };
+//   struct interest_operation : public virtual_operation
+//   {
+//      interest_operation( const string& o = "", const asset& i = asset(0,SBD_SYMBOL) )
+//         :owner(o),interest(i){}
+//
+//      account_name_type owner;
+//      asset             interest;
+//   };
 
 
    struct fill_convert_request_operation : public virtual_operation
@@ -100,33 +100,33 @@ namespace steem { namespace protocol {
    };
 
 
-   struct fill_order_operation : public virtual_operation
-   {
-      fill_order_operation(){}
-      fill_order_operation( const string& c_o, uint32_t c_id, const asset& c_p, const string& o_o, uint32_t o_id, const asset& o_p )
-      :current_owner(c_o), current_orderid(c_id), current_pays(c_p), open_owner(o_o), open_orderid(o_id), open_pays(o_p) {}
+//   struct fill_order_operation : public virtual_operation
+//   {
+//      fill_order_operation(){}
+//      fill_order_operation( const string& c_o, uint32_t c_id, const asset& c_p, const string& o_o, uint32_t o_id, const asset& o_p )
+//      :current_owner(c_o), current_orderid(c_id), current_pays(c_p), open_owner(o_o), open_orderid(o_id), open_pays(o_p) {}
+//
+//      account_name_type current_owner;
+//      uint32_t          current_orderid = 0;
+//      asset             current_pays;
+//      account_name_type open_owner;
+//      uint32_t          open_orderid = 0;
+//      asset             open_pays;
+//   };
 
-      account_name_type current_owner;
-      uint32_t          current_orderid = 0;
-      asset             current_pays;
-      account_name_type open_owner;
-      uint32_t          open_orderid = 0;
-      asset             open_pays;
-   };
 
-
-   struct fill_transfer_from_savings_operation : public virtual_operation
-   {
-      fill_transfer_from_savings_operation() {}
-      fill_transfer_from_savings_operation( const account_name_type& f, const account_name_type& t, const asset& a, const uint32_t r, const string& m )
-         :from(f), to(t), amount(a), request_id(r), memo(m) {}
-
-      account_name_type from;
-      account_name_type to;
-      asset             amount;
-      uint32_t          request_id = 0;
-      string            memo;
-   };
+//   struct fill_transfer_from_savings_operation : public virtual_operation
+//   {
+//      fill_transfer_from_savings_operation() {}
+//      fill_transfer_from_savings_operation( const account_name_type& f, const account_name_type& t, const asset& a, const uint32_t r, const string& m )
+//         :from(f), to(t), amount(a), request_id(r), memo(m) {}
+//
+//      account_name_type from;
+//      account_name_type to;
+//      asset             amount;
+//      uint32_t          request_id = 0;
+//      string            memo;
+//   };
 
    struct hardfork_operation : public virtual_operation
    {
@@ -145,14 +145,14 @@ namespace steem { namespace protocol {
 //      string            permlink;
 //   };
 
-   struct return_vesting_delegation_operation : public virtual_operation
-   {
-      return_vesting_delegation_operation() {}
-      return_vesting_delegation_operation( const account_name_type& a, const asset& v ) : account( a ), vesting_shares( v ) {}
-
-      account_name_type account;
-      asset             vesting_shares;
-   };
+//   struct return_vesting_delegation_operation : public virtual_operation
+//   {
+//      return_vesting_delegation_operation() {}
+//      return_vesting_delegation_operation( const account_name_type& a, const asset& v ) : account( a ), vesting_shares( v ) {}
+//
+//      account_name_type account;
+//      asset             vesting_shares;
+//   };
 
 //   struct comment_benefactor_reward_operation : public virtual_operation
 //   {
@@ -190,14 +190,14 @@ namespace steem { namespace protocol {
 //FC_REFLECT( steem::protocol::comment_reward_operation, (author)(permlink)(payout) )
 FC_REFLECT( steem::protocol::fill_convert_request_operation, (owner)(requestid)(amount_in)(amount_out) )
 FC_REFLECT( steem::protocol::liquidity_reward_operation, (owner)(payout) )
-FC_REFLECT( steem::protocol::interest_operation, (owner)(interest) )
+//FC_REFLECT( steem::protocol::interest_operation, (owner)(interest) )
 FC_REFLECT( steem::protocol::fill_vesting_withdraw_operation, (from_account)(to_account)(withdrawn)(deposited) )
 FC_REFLECT( steem::protocol::shutdown_witness_operation, (owner) )
-FC_REFLECT( steem::protocol::fill_order_operation, (current_owner)(current_orderid)(current_pays)(open_owner)(open_orderid)(open_pays) )
-FC_REFLECT( steem::protocol::fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo) )
+//FC_REFLECT( steem::protocol::fill_order_operation, (current_owner)(current_orderid)(current_pays)(open_owner)(open_orderid)(open_pays) )
+//FC_REFLECT( steem::protocol::fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo) )
 FC_REFLECT( steem::protocol::hardfork_operation, (hardfork_id) )
 //FC_REFLECT( steem::protocol::comment_payout_update_operation, (author)(permlink) )
-FC_REFLECT( steem::protocol::return_vesting_delegation_operation, (account)(vesting_shares) )
+//FC_REFLECT( steem::protocol::return_vesting_delegation_operation, (account)(vesting_shares) )
 //FC_REFLECT( steem::protocol::comment_benefactor_reward_operation, (benefactor)(author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
 FC_REFLECT( steem::protocol::producer_reward_operation, (producer)(vesting_shares) )
 FC_REFLECT( steem::protocol::clear_null_account_balance_operation, (total_cleared) )

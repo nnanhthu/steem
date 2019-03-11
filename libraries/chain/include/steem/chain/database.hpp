@@ -114,7 +114,7 @@ namespace steem { namespace chain {
          };
 
          /**
-          * Get fee from operation, this fee will be transferred to miner account
+          * Get fee from operation
           * @param op
           * @param result
           */
@@ -156,8 +156,8 @@ namespace steem { namespace chain {
           */
          bool                       is_known_block( const block_id_type& id )const;
          bool                       is_known_transaction( const transaction_id_type& id )const;
-         fc::sha256                 get_pow_target()const;
-         uint32_t                   get_pow_summary_target()const;
+//         fc::sha256                 get_pow_target()const;
+//         uint32_t                   get_pow_summary_target()const;
          block_id_type              find_block_id_for_num( uint32_t block_num )const;
          block_id_type              get_block_id_for_num( uint32_t block_num )const;
          optional<signed_block>     fetch_block_by_id( const block_id_type& id )const;
@@ -198,12 +198,12 @@ namespace steem { namespace chain {
 
 //         const escrow_object&   get_escrow(  const account_name_type& name, uint32_t escrow_id )const;
 //         const escrow_object*   find_escrow( const account_name_type& name, uint32_t escrow_id )const;
-//
+
 //         const limit_order_object& get_limit_order(  const account_name_type& owner, uint32_t id )const;
 //         const limit_order_object* find_limit_order( const account_name_type& owner, uint32_t id )const;
 
-         //const savings_withdraw_object& get_savings_withdraw(  const account_name_type& owner, uint32_t request_id )const;
-         //const savings_withdraw_object* find_savings_withdraw( const account_name_type& owner, uint32_t request_id )const;
+//         const savings_withdraw_object& get_savings_withdraw(  const account_name_type& owner, uint32_t request_id )const;
+//         const savings_withdraw_object* find_savings_withdraw( const account_name_type& owner, uint32_t request_id )const;
 
          const dynamic_global_property_object&  get_dynamic_global_properties()const;
          const node_property_object&            get_node_properties()const;
@@ -211,12 +211,12 @@ namespace steem { namespace chain {
          const witness_schedule_object&         get_witness_schedule_object()const;
          const hardfork_property_object&        get_hardfork_property_object()const;
 
-         //const time_point_sec                   calculate_discussion_payout_time( const comment_object& comment )const;
-         //const reward_fund_object&              get_reward_fund( const comment_object& c )const;
+//         const time_point_sec                   calculate_discussion_payout_time( const comment_object& comment )const;
+//         const reward_fund_object&              get_reward_fund( const comment_object& c )const;
 
          asset get_effective_vesting_shares( const account_object& account, asset_symbol_type vested_symbol )const;
 
-         void max_bandwidth_per_share()const;
+//         void max_bandwidth_per_share()const;
 
          /**
           *  Calculate the percent of block production slots that were missed in the
@@ -351,22 +351,22 @@ namespace steem { namespace chain {
          /** @return the sbd created and deposited to_account, may return STEEM if there is no median feed */
          std::pair< asset, asset > create_sbd( const account_object& to_account, asset steem, bool to_reward_balance=false );
          asset create_vesting( const account_object& to_account, asset steem, bool to_reward_balance=false );
-         //void adjust_total_payout( const comment_object& a, const asset& sbd, const asset& curator_sbd_value, const asset& beneficiary_value );
+//         void adjust_total_payout( const comment_object& a, const asset& sbd, const asset& curator_sbd_value, const asset& beneficiary_value );
 
          void        adjust_liquidity_reward( const account_object& owner, const asset& volume, bool is_bid );
          void        adjust_balance( const account_object& a, const asset& delta );
          void        adjust_balance( const account_name_type& name, const asset& delta );
-         //void        adjust_savings_balance( const account_object& a, const asset& delta );
+//         void        adjust_savings_balance( const account_object& a, const asset& delta );
          void        adjust_reward_balance( const account_object& a, const asset& value_delta,
                                             const asset& share_delta = asset(0,VESTS_SYMBOL) );
          void        adjust_reward_balance( const account_name_type& name, const asset& value_delta,
                                             const asset& share_delta = asset(0,VESTS_SYMBOL) );
          void        adjust_supply( const asset& delta, bool adjust_vesting = false );
-         //void        adjust_rshares2( const comment_object& comment, fc::uint128_t old_rshares2, fc::uint128_t new_rshares2 );
+//         void        adjust_rshares2( const comment_object& comment, fc::uint128_t old_rshares2, fc::uint128_t new_rshares2 );
          void        update_owner_authority( const account_object& account, const authority& owner_authority );
 
          asset       get_balance( const account_object& a, asset_symbol_type symbol )const;
-         //asset       get_savings_balance( const account_object& a, asset_symbol_type symbol )const;
+//         asset       get_savings_balance( const account_object& a, asset_symbol_type symbol )const;
          asset       get_balance( const string& aname, asset_symbol_type symbol )const { return get_balance( get_account(aname), symbol ); }
 
          /** this updates the votes for witnesses as a result of account voting proxy changing */
@@ -389,30 +389,30 @@ namespace steem { namespace chain {
           */
          void clear_witness_votes( const account_object& a );
          void process_vesting_withdrawals();
-         //share_type pay_curators( const comment_object& c, share_type& max_rewards );
-         //share_type cashout_comment_helper( util::comment_reward_context& ctx, const comment_object& comment, bool forward_curation_remainder = true );
-         //void process_comment_cashout();
+//         share_type pay_curators( const comment_object& c, share_type& max_rewards );
+//         share_type cashout_comment_helper( util::comment_reward_context& ctx, const comment_object& comment, bool forward_curation_remainder = true );
+//         void process_comment_cashout();
          void process_funds();
          void process_conversions();
-         //void process_savings_withdraws();
-         //void process_subsidized_accounts();
+//         void process_savings_withdraws();
+//         void process_subsidized_accounts();
 //#ifdef STEEM_ENABLE_SMT
          void process_smt_objects();
 //#endif
-         //void account_recovery_processing();
-         //void expire_escrow_ratification();
-         //void process_decline_voting_rights();
+//         void account_recovery_processing();
+//         void expire_escrow_ratification();
+//         void process_decline_voting_rights();
          void update_median_feed();
 
          asset get_liquidity_reward()const;
-         //asset get_content_reward()const;
+//         asset get_content_reward()const;
          asset get_producer_reward();
-         //asset get_curation_reward()const;
-         //asset get_pow_reward()const;
+//         asset get_curation_reward()const;
+//         asset get_pow_reward()const;
 
-         //uint16_t get_curation_rewards_percent( const comment_object& c ) const;
+//         uint16_t get_curation_rewards_percent( const comment_object& c ) const;
 
-         share_type pay_reward_funds( share_type reward );
+//         share_type pay_reward_funds( share_type reward );
 
          void  pay_liquidity_reward();
 
@@ -452,13 +452,13 @@ namespace steem { namespace chain {
          std::deque< signed_transaction >       _popped_tx;
          vector< signed_transaction >           _pending_tx;
 
-         //bool apply_order( const limit_order_object& new_order_object );
-         //bool fill_order( const limit_order_object& order, const asset& pays, const asset& receives );
-         //void cancel_order( const limit_order_object& obj );
-         //int  match( const limit_order_object& bid, const limit_order_object& ask, const price& trade_price );
+//         bool apply_order( const limit_order_object& new_order_object );
+//         bool fill_order( const limit_order_object& order, const asset& pays, const asset& receives );
+//         void cancel_order( const limit_order_object& obj );
+//         int  match( const limit_order_object& bid, const limit_order_object& ask, const price& trade_price );
 
          void perform_vesting_share_split( uint32_t magnitude );
-         //void retally_comment_children();
+//         void retally_comment_children();
          void retally_witness_votes();
          void retally_witness_vote_counts( bool force = false );
          void retally_liquidity_weight();
@@ -525,8 +525,8 @@ namespace steem { namespace chain {
          void update_last_irreversible_block();
          void migrate_irreversible_state();
          void clear_expired_transactions();
-         void clear_expired_orders();
-         void clear_expired_delegations();
+//         void clear_expired_orders();
+//         void clear_expired_delegations();
          void process_header_extensions( const signed_block& next_block );
 
          void init_hardforks();

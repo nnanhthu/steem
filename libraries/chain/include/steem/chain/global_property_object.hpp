@@ -78,7 +78,7 @@ namespace steem { namespace chain {
          /**
           *  This property defines the interest rate that SBD deposits receive.
           */
-         //uint16_t sbd_interest_rate = 0;
+//         uint16_t sbd_interest_rate = 0;
 
          uint16_t sbd_print_rate = STEEM_100_PERCENT;
 
@@ -112,13 +112,13 @@ namespace steem { namespace chain {
           * "wasting" voting power through spillover; any user voting faster than this rate will have
           * their votes reduced.
           */
-         //uint32_t vote_power_reserve_rate = STEEM_INITIAL_VOTE_POWER_RATE;
+         uint32_t vote_power_reserve_rate = STEEM_INITIAL_VOTE_POWER_RATE;
 
-         uint32_t delegation_return_period = STEEM_DELEGATION_RETURN_PERIOD_HF0;
+//         uint32_t delegation_return_period = STEEM_DELEGATION_RETURN_PERIOD_HF0;
 
          uint64_t reverse_auction_seconds = 0;
 
-         //int64_t available_account_subsidies = 0;
+//         int64_t available_account_subsidies = 0;
 
          uint16_t sbd_stop_percent = 0;
          uint16_t sbd_start_percent = 0;
@@ -157,17 +157,17 @@ FC_REFLECT( steem::chain::dynamic_global_property_object,
              (total_reward_shares2)
              (pending_rewarded_vesting_shares)
              (pending_rewarded_vesting_steem)
-             (sbd_interest_rate)
+//             (sbd_interest_rate)
              (sbd_print_rate)
              (maximum_block_size)
              (current_aslot)
              (recent_slots_filled)
              (participation_count)
              (last_irreversible_block_num)
-             //(vote_power_reserve_rate)
-             (delegation_return_period)
+             (vote_power_reserve_rate)
+//             (delegation_return_period)
              (reverse_auction_seconds)
-             (available_account_subsidies)
+//             (available_account_subsidies)
              (sbd_stop_percent)
              (sbd_start_percent)
 //#ifdef STEEM_ENABLE_SMT

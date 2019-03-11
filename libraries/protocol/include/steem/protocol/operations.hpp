@@ -61,7 +61,7 @@ namespace steem { namespace protocol {
             //decline_voting_rights_operation,
             //reset_account_operation,
             //set_reset_account_operation,
-            claim_reward_balance_operation,
+            //claim_reward_balance_operation,
             //delegate_vesting_shares_operation,
             //account_create_with_delegation_operation,
             witness_set_properties_operation,

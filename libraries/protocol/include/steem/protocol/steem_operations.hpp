@@ -18,8 +18,8 @@ namespace steem { namespace protocol {
       account_name_type new_account_name;
       authority         owner;
       authority         active;
-      authority         posting;
-      public_key_type   memo_key;
+      //authority         posting;
+      //public_key_type   memo_key;
       string            json_metadata;
 
       void validate()const;
@@ -27,42 +27,42 @@ namespace steem { namespace protocol {
    };
 
 
-   struct account_create_with_delegation_operation : public base_operation
-   {
-      asset             fee;
-      asset             delegation;
-      account_name_type creator;
-      account_name_type new_account_name;
-      authority         owner;
-      authority         active;
-      authority         posting;
-      public_key_type   memo_key;
-      string            json_metadata;
+//   struct account_create_with_delegation_operation : public base_operation
+//   {
+//      asset             fee;
+//      asset             delegation;
+//      account_name_type creator;
+//      account_name_type new_account_name;
+//      authority         owner;
+//      authority         active;
+//      authority         posting;
+//      public_key_type   memo_key;
+//      string            json_metadata;
+//
+//      extensions_type   extensions;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(creator); }
+//   };
 
-      extensions_type   extensions;
 
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(creator); }
-   };
-
-
-   struct account_update_operation : public base_operation
-   {
-      account_name_type             account;
-      optional< authority >         owner;
-      optional< authority >         active;
-      optional< authority >         posting;
-      public_key_type               memo_key;
-      string                        json_metadata;
-
-      void validate()const;
-
-      void get_required_owner_authorities( flat_set<account_name_type>& a )const
-      { if( owner ) a.insert( account ); }
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const
-      { if( !owner ) a.insert( account ); }
-   };
+//   struct account_update_operation : public base_operation
+//   {
+//      account_name_type             account;
+//      optional< authority >         owner;
+//      optional< authority >         active;
+//      optional< authority >         posting;
+//      public_key_type               memo_key;
+//      string                        json_metadata;
+//
+//      void validate()const;
+//
+//      void get_required_owner_authorities( flat_set<account_name_type>& a )const
+//      { if( owner ) a.insert( account ); }
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const
+//      { if( !owner ) a.insert( account ); }
+//   };
 
 
 //   struct comment_operation : public base_operation
@@ -81,94 +81,94 @@ namespace steem { namespace protocol {
 //      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ a.insert(author); }
 //   };
 
-   struct beneficiary_route_type
-   {
-      beneficiary_route_type() {}
-      beneficiary_route_type( const account_name_type& a, const uint16_t& w ) : account( a ), weight( w ){}
+//   struct beneficiary_route_type
+//   {
+//      beneficiary_route_type() {}
+//      beneficiary_route_type( const account_name_type& a, const uint16_t& w ) : account( a ), weight( w ){}
+//
+//      account_name_type account;
+//      uint16_t          weight;
+//
+//      // For use by std::sort such that the route is sorted first by name (ascending)
+//      bool operator < ( const beneficiary_route_type& o )const { return account < o.account; }
+//   };
 
-      account_name_type account;
-      uint16_t          weight;
-
-      // For use by std::sort such that the route is sorted first by name (ascending)
-      bool operator < ( const beneficiary_route_type& o )const { return account < o.account; }
-   };
-
-   struct comment_payout_beneficiaries
-   {
-      vector< beneficiary_route_type > beneficiaries;
-
-      void validate()const;
-   };
+//   struct comment_payout_beneficiaries
+//   {
+//      vector< beneficiary_route_type > beneficiaries;
+//
+//      void validate()const;
+//   };
 
 //#ifdef STEEM_ENABLE_SMT
-   struct votable_asset_info_v1
-   {
-      votable_asset_info_v1() = default;
-      votable_asset_info_v1(const share_type& max_payout, bool allow_rewards) :
-         max_accepted_payout(max_payout), allow_curation_rewards(allow_rewards) {}
-
-      share_type        max_accepted_payout    = 0;
-      bool              allow_curation_rewards = false;
-   };
-
-   typedef static_variant< votable_asset_info_v1 > votable_asset_info;
-
-   /** Allows to store all SMT tokens being allowed to use during voting process.
-    *  Maps asset symbol (SMT) to the vote info.
-    *  @see SMT spec for details: https://github.com/steemit/smt-whitepaper/blob/master/smt-manual/manual.md
-    */
-   struct allowed_vote_assets
-   {
-      /// Helper method to simplify construction of votable_asset_info.
-      void add_votable_asset(const asset_symbol_type& symbol, const share_type& max_accepted_payout,
-         bool allow_curation_rewards)
-         {
-            votable_asset_info info(votable_asset_info_v1(max_accepted_payout, allow_curation_rewards));
-            votable_assets[symbol] = std::move(info);
-         }
-
-      /** Allows to check if given symbol is allowed votable asset.
-       *  @param symbol - asset symbol to be check against votable feature
-       *  @param max_accepted_payout - optional output parameter which allows to take `max_accepted_payout`
-       *                  configured for given asset
-       *  @param allow_curation_rewards - optional output parameter which allows to take `allow_curation_rewards`
-       *                  specified for given votable asset.
-       *  @returns true if given asset is allowed votable asset for given comment.
-       */
-      bool is_allowed(const asset_symbol_type& symbol, share_type* max_accepted_payout = nullptr,
-         bool* allow_curation_rewards = nullptr) const
-         {
-            auto foundI = votable_assets.find(symbol);
-            if(foundI == votable_assets.end())
-            {
-               if(max_accepted_payout != nullptr)
-                  *max_accepted_payout = 0;
-               if(allow_curation_rewards != nullptr)
-                  *allow_curation_rewards = false;
-               return false;
-            }
-
-            if(max_accepted_payout != nullptr)
-               *max_accepted_payout = foundI->second.get<votable_asset_info_v1>().max_accepted_payout;
-            if(allow_curation_rewards != nullptr)
-               *allow_curation_rewards = foundI->second.get<votable_asset_info_v1>().allow_curation_rewards;
-
-            return true;
-         }
-
-      /** Part of `comment_option_operation` validation process, to be called when allowed_vote_assets object
-       *  has been added as comment option extension.
-       *  @throws fc::assert_exception on failure.
-       */
-      void validate() const
-      {
-         FC_ASSERT(votable_assets.size() <= SMT_MAX_VOTABLE_ASSETS, "Too much votable assets specified");
-         FC_ASSERT(is_allowed(STEEM_SYMBOL) == false,
-            "STEEM can not be explicitly specified as one of allowed_vote_assets");
-      }
-
-      flat_map< asset_symbol_type, votable_asset_info > votable_assets;
-   };
+//   struct votable_asset_info_v1
+//   {
+//      votable_asset_info_v1() = default;
+//      votable_asset_info_v1(const share_type& max_payout, bool allow_rewards) :
+//         max_accepted_payout(max_payout), allow_curation_rewards(allow_rewards) {}
+//
+//      share_type        max_accepted_payout    = 0;
+//      bool              allow_curation_rewards = false;
+//   };
+//
+//   typedef static_variant< votable_asset_info_v1 > votable_asset_info;
+//
+//   /** Allows to store all SMT tokens being allowed to use during voting process.
+//    *  Maps asset symbol (SMT) to the vote info.
+//    *  @see SMT spec for details: https://github.com/steemit/smt-whitepaper/blob/master/smt-manual/manual.md
+//    */
+//   struct allowed_vote_assets
+//   {
+//      /// Helper method to simplify construction of votable_asset_info.
+//      void add_votable_asset(const asset_symbol_type& symbol, const share_type& max_accepted_payout,
+//         bool allow_curation_rewards)
+//         {
+//            votable_asset_info info(votable_asset_info_v1(max_accepted_payout, allow_curation_rewards));
+//            votable_assets[symbol] = std::move(info);
+//         }
+//
+//      /** Allows to check if given symbol is allowed votable asset.
+//       *  @param symbol - asset symbol to be check against votable feature
+//       *  @param max_accepted_payout - optional output parameter which allows to take `max_accepted_payout`
+//       *                  configured for given asset
+//       *  @param allow_curation_rewards - optional output parameter which allows to take `allow_curation_rewards`
+//       *                  specified for given votable asset.
+//       *  @returns true if given asset is allowed votable asset for given comment.
+//       */
+//      bool is_allowed(const asset_symbol_type& symbol, share_type* max_accepted_payout = nullptr,
+//         bool* allow_curation_rewards = nullptr) const
+//         {
+//            auto foundI = votable_assets.find(symbol);
+//            if(foundI == votable_assets.end())
+//            {
+//               if(max_accepted_payout != nullptr)
+//                  *max_accepted_payout = 0;
+//               if(allow_curation_rewards != nullptr)
+//                  *allow_curation_rewards = false;
+//               return false;
+//            }
+//
+//            if(max_accepted_payout != nullptr)
+//               *max_accepted_payout = foundI->second.get<votable_asset_info_v1>().max_accepted_payout;
+//            if(allow_curation_rewards != nullptr)
+//               *allow_curation_rewards = foundI->second.get<votable_asset_info_v1>().allow_curation_rewards;
+//
+//            return true;
+//         }
+//
+//      /** Part of `comment_option_operation` validation process, to be called when allowed_vote_assets object
+//       *  has been added as comment option extension.
+//       *  @throws fc::assert_exception on failure.
+//       */
+//      void validate() const
+//      {
+//         FC_ASSERT(votable_assets.size() <= SMT_MAX_VOTABLE_ASSETS, "Too much votable assets specified");
+//         FC_ASSERT(is_allowed(STEEM_SYMBOL) == false,
+//            "STEEM can not be explicitly specified as one of allowed_vote_assets");
+//      }
+//
+//      flat_map< asset_symbol_type, votable_asset_info > votable_assets;
+//   };
 //#endif /// STEEM_ENABLE_SMT
 
 //   typedef static_variant<
@@ -204,31 +204,31 @@ namespace steem { namespace protocol {
 //   };
 
 
-   struct claim_account_operation : public base_operation
-   {
-      account_name_type creator;
-      asset             fee;
-      extensions_type   extensions;
+//   struct claim_account_operation : public base_operation
+//   {
+//      account_name_type creator;
+//      asset             fee;
+//      extensions_type   extensions;
+//
+//      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( creator ); }
+//      void validate() const;
+//   };
 
-      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( creator ); }
-      void validate() const;
-   };
 
-
-   struct create_claimed_account_operation : public base_operation
-   {
-      account_name_type creator;
-      account_name_type new_account_name;
-      authority         owner;
-      authority         active;
-      authority         posting;
-      public_key_type   memo_key;
-      string            json_metadata;
-      extensions_type   extensions;
-
-      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( creator ); }
-      void validate() const;
-   };
+//   struct create_claimed_account_operation : public base_operation
+//   {
+//      account_name_type creator;
+//      account_name_type new_account_name;
+//      authority         owner;
+//      authority         active;
+//      authority         posting;
+//      public_key_type   memo_key;
+//      string            json_metadata;
+//      extensions_type   extensions;
+//
+//      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( creator ); }
+//      void validate() const;
+//   };
 
 
 //   struct delete_comment_operation : public base_operation
@@ -459,7 +459,7 @@ namespace steem { namespace protocol {
        *  to tune rate limiting and capacity
        */
       uint32_t          maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT * 2;
-      uint16_t          sbd_interest_rate  = STEEM_DEFAULT_SBD_INTEREST_RATE;
+//      uint16_t          sbd_interest_rate  = STEEM_DEFAULT_SBD_INTEREST_RATE;
 
       template< bool force_canon >
       void validate()const
@@ -470,8 +470,8 @@ namespace steem { namespace protocol {
          }
          FC_ASSERT( account_creation_fee.amount >= STEEM_MIN_ACCOUNT_CREATION_FEE);
          FC_ASSERT( maximum_block_size >= STEEM_MIN_BLOCK_SIZE_LIMIT);
-         FC_ASSERT( sbd_interest_rate >= 0 );
-         FC_ASSERT( sbd_interest_rate <= STEEM_100_PERCENT );
+//         FC_ASSERT( sbd_interest_rate >= 0 );
+//         FC_ASSERT( sbd_interest_rate <= STEEM_100_PERCENT );
       }
    };
 
@@ -540,14 +540,14 @@ namespace steem { namespace protocol {
    };
 
 
-   struct account_witness_proxy_operation : public base_operation
-   {
-      account_name_type account;
-      account_name_type proxy;
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(account); }
-   };
+//   struct account_witness_proxy_operation : public base_operation
+//   {
+//      account_name_type account;
+//      account_name_type proxy;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert(account); }
+//   };
 
 
    /**
@@ -556,49 +556,49 @@ namespace steem { namespace protocol {
     *
     * There is no validation for this operation other than that required auths are valid
     */
-   struct custom_operation : public base_operation
-   {
-      flat_set< account_name_type > required_auths;
-      uint16_t                      id = 0;
-      vector< char >                data;
-
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_auths ) a.insert(i); }
-   };
+//   struct custom_operation : public base_operation
+//   {
+//      flat_set< account_name_type > required_auths;
+//      uint16_t                      id = 0;
+//      vector< char >                data;
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_auths ) a.insert(i); }
+//   };
 
 
    /** serves the same purpose as custom_operation but also supports required posting authorities. Unlike custom_operation,
     * this operation is designed to be human readable/developer friendly.
     **/
-   struct custom_json_operation : public base_operation
-   {
-      flat_set< account_name_type > required_auths;
-      flat_set< account_name_type > required_posting_auths;
-      string                        id; ///< must be less than 32 characters long
-      string                        json; ///< must be proper utf8 / JSON string.
+//   struct custom_json_operation : public base_operation
+//   {
+//      flat_set< account_name_type > required_auths;
+//      flat_set< account_name_type > required_posting_auths;
+//      string                        id; ///< must be less than 32 characters long
+//      string                        json; ///< must be proper utf8 / JSON string.
+//
+//      void validate()const;
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_auths ) a.insert(i); }
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_posting_auths ) a.insert(i); }
+//   };
 
-      void validate()const;
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_auths ) a.insert(i); }
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_posting_auths ) a.insert(i); }
-   };
 
-
-   struct custom_binary_operation : public base_operation
-   {
-      flat_set< account_name_type > required_owner_auths;
-      flat_set< account_name_type > required_active_auths;
-      flat_set< account_name_type > required_posting_auths;
-      vector< authority >           required_auths;
-
-      string                        id; ///< must be less than 32 characters long
-      vector< char >                data;
-
-      void validate()const;
-      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_owner_auths ) a.insert(i); }
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_active_auths ) a.insert(i); }
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_posting_auths ) a.insert(i); }
-      void get_required_authorities( vector< authority >& a )const{ for( const auto& i : required_auths ) a.push_back( i ); }
-   };
+//   struct custom_binary_operation : public base_operation
+//   {
+//      flat_set< account_name_type > required_owner_auths;
+//      flat_set< account_name_type > required_active_auths;
+//      flat_set< account_name_type > required_posting_auths;
+//      vector< authority >           required_auths;
+//
+//      string                        id; ///< must be less than 32 characters long
+//      vector< char >                data;
+//
+//      void validate()const;
+//      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_owner_auths ) a.insert(i); }
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_active_auths ) a.insert(i); }
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const{ for( const auto& i : required_posting_auths ) a.insert(i); }
+//      void get_required_authorities( vector< authority >& a )const{ for( const auto& i : required_auths ) a.push_back( i ); }
+//   };
 
 
    /**
@@ -696,84 +696,84 @@ namespace steem { namespace protocol {
 //   };
 
 
-   struct pow
-   {
-      public_key_type worker;
-      digest_type     input;
-      signature_type  signature;
-      digest_type     work;
-
-      void create( const fc::ecc::private_key& w, const digest_type& i );
-      void validate()const;
-   };
-
-
-   struct pow_operation : public base_operation
-   {
-      account_name_type worker_account;
-      block_id_type     block_id;
-      uint64_t          nonce = 0;
-      pow               work;
-      legacy_chain_properties  props;
-
-      void validate()const;
-      fc::sha256 work_input()const;
-
-      const account_name_type& get_worker_account()const { return worker_account; }
-
-      /** there is no need to verify authority, the proof of work is sufficient */
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{  }
-   };
+//   struct pow
+//   {
+//      public_key_type worker;
+//      digest_type     input;
+//      signature_type  signature;
+//      digest_type     work;
+//
+//      void create( const fc::ecc::private_key& w, const digest_type& i );
+//      void validate()const;
+//   };
 
 
-   struct pow2_input
-   {
-      account_name_type worker_account;
-      block_id_type     prev_block;
-      uint64_t          nonce = 0;
-   };
+//   struct pow_operation : public base_operation
+//   {
+//      account_name_type worker_account;
+//      block_id_type     block_id;
+//      uint64_t          nonce = 0;
+//      pow               work;
+//      legacy_chain_properties  props;
+//
+//      void validate()const;
+//      fc::sha256 work_input()const;
+//
+//      const account_name_type& get_worker_account()const { return worker_account; }
+//
+//      /** there is no need to verify authority, the proof of work is sufficient */
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{  }
+//   };
 
 
-   struct pow2
-   {
-      pow2_input        input;
-      uint32_t          pow_summary = 0;
+//   struct pow2_input
+//   {
+//      account_name_type worker_account;
+//      block_id_type     prev_block;
+//      uint64_t          nonce = 0;
+//   };
 
-      void create( const block_id_type& prev_block, const account_name_type& account_name, uint64_t nonce );
-      void validate()const;
-   };
 
-   struct equihash_pow
-   {
-      pow2_input           input;
-      fc::equihash::proof  proof;
-      block_id_type        prev_block;
-      uint32_t             pow_summary = 0;
+//   struct pow2
+//   {
+//      pow2_input        input;
+//      uint32_t          pow_summary = 0;
+//
+//      void create( const block_id_type& prev_block, const account_name_type& account_name, uint64_t nonce );
+//      void validate()const;
+//   };
 
-      void create( const block_id_type& recent_block, const account_name_type& account_name, uint32_t nonce );
-      void validate() const;
-   };
+//   struct equihash_pow
+//   {
+//      pow2_input           input;
+//      fc::equihash::proof  proof;
+//      block_id_type        prev_block;
+//      uint32_t             pow_summary = 0;
+//
+//      void create( const block_id_type& recent_block, const account_name_type& account_name, uint32_t nonce );
+//      void validate() const;
+//   };
 
-   typedef fc::static_variant< pow2, equihash_pow > pow2_work;
+//   typedef fc::static_variant< pow2, equihash_pow > pow2_work;
 
-   struct pow2_operation : public base_operation
-   {
-      pow2_work                     work;
-      optional< public_key_type >   new_owner_key;
-      legacy_chain_properties       props;
-
-      void validate()const;
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const;
-
-      void get_required_authorities( vector< authority >& a )const
-      {
-         if( new_owner_key )
-         {
-            a.push_back( authority( 1, *new_owner_key, 1 ) );
-         }
-      }
-   };
+//   struct pow2_operation : public base_operation
+//   {
+//      pow2_work                     work;
+//      optional< public_key_type >   new_owner_key;
+//      legacy_chain_properties       props;
+//
+//      void validate()const;
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const;
+//
+//      void get_required_authorities( vector< authority >& a )const
+//      {
+//         if( new_owner_key )
+//         {
+//            a.push_back( authority( 1, *new_owner_key, 1 ) );
+//         }
+//      }
+//   };
 
 
    /**
@@ -826,21 +826,21 @@ namespace steem { namespace protocol {
     * The account to recover confirms its identity to the blockchain in
     * the recover account operation.
     */
-   struct request_account_recovery_operation : public base_operation
-   {
-      account_name_type recovery_account;       ///< The recovery account is listed as the recovery account on the account to recover.
-
-      account_name_type account_to_recover;     ///< The account to recover. This is likely due to a compromised owner authority.
-
-      authority         new_owner_authority;    ///< The new owner authority the account to recover wishes to have. This is secret
-                                                ///< known by the account to recover and will be confirmed in a recover_account_operation
-
-      extensions_type   extensions;             ///< Extensions. Not currently used.
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( recovery_account ); }
-
-      void validate() const;
-   };
+//   struct request_account_recovery_operation : public base_operation
+//   {
+//      account_name_type recovery_account;       ///< The recovery account is listed as the recovery account on the account to recover.
+//
+//      account_name_type account_to_recover;     ///< The account to recover. This is likely due to a compromised owner authority.
+//
+//      authority         new_owner_authority;    ///< The new owner authority the account to recover wishes to have. This is secret
+//                                                ///< known by the account to recover and will be confirmed in a recover_account_operation
+//
+//      extensions_type   extensions;             ///< Extensions. Not currently used.
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( recovery_account ); }
+//
+//      void validate() const;
+//   };
 
 
    /**
@@ -880,60 +880,60 @@ namespace steem { namespace protocol {
     * complicated, but that is an application level concern, not the blockchain's
     * concern.
     */
-   struct recover_account_operation : public base_operation
-   {
-      account_name_type account_to_recover;        ///< The account to be recovered
-
-      authority         new_owner_authority;       ///< The new owner authority as specified in the request account recovery operation.
-
-      authority         recent_owner_authority;    ///< A previous owner authority that the account holder will use to prove past ownership of the account to be recovered.
-
-      extensions_type   extensions;                ///< Extensions. Not currently used.
-
-      void get_required_authorities( vector< authority >& a )const
-      {
-         a.push_back( new_owner_authority );
-         a.push_back( recent_owner_authority );
-      }
-
-      void validate() const;
-   };
+//   struct recover_account_operation : public base_operation
+//   {
+//      account_name_type account_to_recover;        ///< The account to be recovered
+//
+//      authority         new_owner_authority;       ///< The new owner authority as specified in the request account recovery operation.
+//
+//      authority         recent_owner_authority;    ///< A previous owner authority that the account holder will use to prove past ownership of the account to be recovered.
+//
+//      extensions_type   extensions;                ///< Extensions. Not currently used.
+//
+//      void get_required_authorities( vector< authority >& a )const
+//      {
+//         a.push_back( new_owner_authority );
+//         a.push_back( recent_owner_authority );
+//      }
+//
+//      void validate() const;
+//   };
 
 
    /**
     *  This operation allows recovery_accoutn to change account_to_reset's owner authority to
     *  new_owner_authority after 60 days of inactivity.
     */
-   struct reset_account_operation : public base_operation {
-      account_name_type reset_account;
-      account_name_type account_to_reset;
-      authority         new_owner_authority;
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const { a.insert( reset_account ); }
-      void validate()const;
-   };
+//   struct reset_account_operation : public base_operation {
+//      account_name_type reset_account;
+//      account_name_type account_to_reset;
+//      authority         new_owner_authority;
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const { a.insert( reset_account ); }
+//      void validate()const;
+//   };
 
    /**
     * This operation allows 'account' owner to control which account has the power
     * to execute the 'reset_account_operation' after 60 days.
     */
-   struct set_reset_account_operation : public base_operation {
-      account_name_type account;
-      account_name_type current_reset_account;
-      account_name_type reset_account;
-      void validate()const;
-      void get_required_owner_authorities( flat_set<account_name_type>& a )const
-      {
-         if( current_reset_account.size() )
-            a.insert( account );
-      }
-
-      void get_required_posting_authorities( flat_set<account_name_type>& a )const
-      {
-         if( !current_reset_account.size() )
-            a.insert( account );
-      }
-   };
+//   struct set_reset_account_operation : public base_operation {
+//      account_name_type account;
+//      account_name_type current_reset_account;
+//      account_name_type reset_account;
+//      void validate()const;
+//      void get_required_owner_authorities( flat_set<account_name_type>& a )const
+//      {
+//         if( current_reset_account.size() )
+//            a.insert( account );
+//      }
+//
+//      void get_required_posting_authorities( flat_set<account_name_type>& a )const
+//      {
+//         if( !current_reset_account.size() )
+//            a.insert( account );
+//      }
+//   };
 
 
    /**
@@ -954,86 +954,86 @@ namespace steem { namespace protocol {
     * witness vote weights. The top voted witness is explicitly the most trusted
     * witness according to stake.
     */
-   struct change_recovery_account_operation : public base_operation
-   {
-      account_name_type account_to_recover;     ///< The account that would be recovered in case of compromise
-      account_name_type new_recovery_account;   ///< The account that creates the recover request
-      extensions_type   extensions;             ///< Extensions. Not currently used.
-
-      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ a.insert( account_to_recover ); }
-      void validate() const;
-   };
-
-
-   struct transfer_to_savings_operation : public base_operation {
-      account_name_type from;
-      account_name_type to;
-      asset             amount;
-      string            memo;
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
-      void validate() const;
-   };
+//   struct change_recovery_account_operation : public base_operation
+//   {
+//      account_name_type account_to_recover;     ///< The account that would be recovered in case of compromise
+//      account_name_type new_recovery_account;   ///< The account that creates the recover request
+//      extensions_type   extensions;             ///< Extensions. Not currently used.
+//
+//      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ a.insert( account_to_recover ); }
+//      void validate() const;
+//   };
 
 
-   struct transfer_from_savings_operation : public base_operation {
-      account_name_type from;
-      uint32_t          request_id = 0;
-      account_name_type to;
-      asset             amount;
-      string            memo;
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
-      void validate() const;
-   };
-
-
-   struct cancel_transfer_from_savings_operation : public base_operation {
-      account_name_type from;
-      uint32_t          request_id = 0;
-
-      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
-      void validate() const;
-   };
+//   struct transfer_to_savings_operation : public base_operation {
+//      account_name_type from;
+//      account_name_type to;
+//      asset             amount;
+//      string            memo;
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
+//      void validate() const;
+//   };
 
 
-   struct decline_voting_rights_operation : public base_operation
-   {
-      account_name_type account;
-      bool              decline = true;
+//   struct transfer_from_savings_operation : public base_operation {
+//      account_name_type from;
+//      uint32_t          request_id = 0;
+//      account_name_type to;
+//      asset             amount;
+//      string            memo;
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
+//      void validate() const;
+//   };
 
-      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ a.insert( account ); }
-      void validate() const;
-   };
 
-   struct claim_reward_balance_operation : public base_operation
-   {
-      account_name_type account;
-      asset             reward_steem;
-      asset             reward_sbd;
-      asset             reward_vests;
+//   struct cancel_transfer_from_savings_operation : public base_operation {
+//      account_name_type from;
+//      uint32_t          request_id = 0;
+//
+//      void get_required_active_authorities( flat_set<account_name_type>& a )const{ a.insert( from ); }
+//      void validate() const;
+//   };
 
-      void get_required_posting_authorities( flat_set< account_name_type >& a )const{ a.insert( account ); }
-      void validate() const;
-   };
+
+//   struct decline_voting_rights_operation : public base_operation
+//   {
+//      account_name_type account;
+//      bool              decline = true;
+//
+//      void get_required_owner_authorities( flat_set<account_name_type>& a )const{ a.insert( account ); }
+//      void validate() const;
+//   };
+
+//   struct claim_reward_balance_operation : public base_operation
+//   {
+//      account_name_type account;
+//      asset             reward_steem;
+//      asset             reward_sbd;
+//      asset             reward_vests;
+//
+//      void get_required_posting_authorities( flat_set< account_name_type >& a )const{ a.insert( account ); }
+//      void validate() const;
+//   };
 
 //#ifdef STEEM_ENABLE_SMT
    /** Differs with original operation with extensions field and a container of tokens that will
     *  be rewarded to an account. See discussion in issue #1859
     */
-   struct claim_reward_balance2_operation : public base_operation
-   {
-      account_name_type account;
-      extensions_type   extensions;
-
-      /** \warning The contents of this container is required to be unique and sorted
-       *  (both by asset symbol) in ascending order. Otherwise operation validation will fail.
-       */
-      vector< asset > reward_tokens;
-
-      void get_required_posting_authorities( flat_set< account_name_type >& a )const{ a.insert( account ); }
-      void validate() const;
-   };
+//   struct claim_reward_balance2_operation : public base_operation
+//   {
+//      account_name_type account;
+//      extensions_type   extensions;
+//
+//      /** \warning The contents of this container is required to be unique and sorted
+//       *  (both by asset symbol) in ascending order. Otherwise operation validation will fail.
+//       */
+//      vector< asset > reward_tokens;
+//
+//      void get_required_posting_authorities( flat_set< account_name_type >& a )const{ a.insert( account ); }
+//      void validate() const;
+//   };
 //#endif
 
    /**
@@ -1045,15 +1045,15 @@ namespace steem { namespace protocol {
     * When a delegation is removed the shares are placed in limbo for a week to prevent a satoshi
     * of VESTS from voting on the same content twice.
     */
-   struct delegate_vesting_shares_operation : public base_operation
-   {
-      account_name_type delegator;        ///< The account delegating vesting shares
-      account_name_type delegatee;        ///< The account receiving vesting shares
-      asset             vesting_shares;   ///< The amount of vesting shares delegated
-
-      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( delegator ); }
-      void validate() const;
-   };
+//   struct delegate_vesting_shares_operation : public base_operation
+//   {
+//      account_name_type delegator;        ///< The account delegating vesting shares
+//      account_name_type delegatee;        ///< The account receiving vesting shares
+//      asset             vesting_shares;   ///< The amount of vesting shares delegated
+//
+//      void get_required_active_authorities( flat_set< account_name_type >& a ) const { a.insert( delegator ); }
+//      void validate() const;
+//   };
 
    /**
    *  This operation instructs the blockchain to start a conversion from STEEM to SBD,
@@ -1070,30 +1070,30 @@ namespace steem { namespace protocol {
 } } // steem::protocol
 
 
-FC_REFLECT( steem::protocol::transfer_to_savings_operation, (from)(to)(amount)(memo) )
-FC_REFLECT( steem::protocol::transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo) )
-FC_REFLECT( steem::protocol::cancel_transfer_from_savings_operation, (from)(request_id) )
-
-FC_REFLECT( steem::protocol::reset_account_operation, (reset_account)(account_to_reset)(new_owner_authority) )
-FC_REFLECT( steem::protocol::set_reset_account_operation, (account)(current_reset_account)(reset_account) )
+//FC_REFLECT( steem::protocol::transfer_to_savings_operation, (from)(to)(amount)(memo) )
+//FC_REFLECT( steem::protocol::transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo) )
+//FC_REFLECT( steem::protocol::cancel_transfer_from_savings_operation, (from)(request_id) )
+//
+//FC_REFLECT( steem::protocol::reset_account_operation, (reset_account)(account_to_reset)(new_owner_authority) )
+//FC_REFLECT( steem::protocol::set_reset_account_operation, (account)(current_reset_account)(reset_account) )
 
 
 FC_REFLECT( steem::protocol::report_over_production_operation, (reporter)(first_block)(second_block) )
 FC_REFLECT( steem::protocol::convert_operation, (owner)(requestid)(amount) )
 FC_REFLECT( steem::protocol::feed_publish_operation, (publisher)(exchange_rate) )
-FC_REFLECT( steem::protocol::pow, (worker)(input)(signature)(work) )
-FC_REFLECT( steem::protocol::pow2, (input)(pow_summary) )
-FC_REFLECT( steem::protocol::pow2_input, (worker_account)(prev_block)(nonce) )
-FC_REFLECT( steem::protocol::equihash_pow, (input)(proof)(prev_block)(pow_summary) )
+//FC_REFLECT( steem::protocol::pow, (worker)(input)(signature)(work) )
+//FC_REFLECT( steem::protocol::pow2, (input)(pow_summary) )
+//FC_REFLECT( steem::protocol::pow2_input, (worker_account)(prev_block)(nonce) )
+//FC_REFLECT( steem::protocol::equihash_pow, (input)(proof)(prev_block)(pow_summary) )
 FC_REFLECT( steem::protocol::legacy_chain_properties,
             (account_creation_fee)
             (maximum_block_size)
-            (sbd_interest_rate)
+            //(sbd_interest_rate)
           )
 
-FC_REFLECT_TYPENAME( steem::protocol::pow2_work )
-FC_REFLECT( steem::protocol::pow_operation, (worker_account)(block_id)(nonce)(work)(props) )
-FC_REFLECT( steem::protocol::pow2_operation, (work)(new_owner_key)(props) )
+//FC_REFLECT_TYPENAME( steem::protocol::pow2_work )
+//FC_REFLECT( steem::protocol::pow_operation, (worker_account)(block_id)(nonce)(work)(props) )
+//FC_REFLECT( steem::protocol::pow2_operation, (work)(new_owner_key)(props) )
 
 FC_REFLECT( steem::protocol::account_create_operation,
             (fee)
@@ -1101,29 +1101,29 @@ FC_REFLECT( steem::protocol::account_create_operation,
             (new_account_name)
             (owner)
             (active)
-            (posting)
-            (memo_key)
+            //(posting)
+            //(memo_key)
             (json_metadata) )
 
-FC_REFLECT( steem::protocol::account_create_with_delegation_operation,
-            (fee)
-            (delegation)
-            (creator)
-            (new_account_name)
-            (owner)
-            (active)
-            (posting)
-            (memo_key)
-            (json_metadata)
-            (extensions) )
-
-FC_REFLECT( steem::protocol::account_update_operation,
-            (account)
-            (owner)
-            (active)
-            (posting)
-            (memo_key)
-            (json_metadata) )
+//FC_REFLECT( steem::protocol::account_create_with_delegation_operation,
+//            (fee)
+//            (delegation)
+//            (creator)
+//            (new_account_name)
+//            (owner)
+//            (active)
+//            (posting)
+//            (memo_key)
+//            (json_metadata)
+//            (extensions) )
+//
+//FC_REFLECT( steem::protocol::account_update_operation,
+//            (account)
+//            (owner)
+//            (active)
+//            (posting)
+//            (memo_key)
+//            (json_metadata) )
 
 FC_REFLECT( steem::protocol::transfer_operation, (from)(to)(amount)(fee)(memo) )
 FC_REFLECT( steem::protocol::transfer_to_vesting_operation, (from)(to)(amount) )
@@ -1132,24 +1132,24 @@ FC_REFLECT( steem::protocol::set_withdraw_vesting_route_operation, (from_account
 FC_REFLECT( steem::protocol::witness_update_operation, (owner)(url)(block_signing_key)(props)(fee) )
 FC_REFLECT( steem::protocol::witness_set_properties_operation, (owner)(props)(extensions) )
 FC_REFLECT( steem::protocol::account_witness_vote_operation, (account)(witness)(approve) )
-FC_REFLECT( steem::protocol::account_witness_proxy_operation, (account)(proxy) )
+//FC_REFLECT( steem::protocol::account_witness_proxy_operation, (account)(proxy) )
 //FC_REFLECT( steem::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata) )
 //FC_REFLECT( steem::protocol::vote_operation, (voter)(author)(permlink)(weight) )
-FC_REFLECT( steem::protocol::custom_operation, (required_auths)(id)(data) )
-FC_REFLECT( steem::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json) )
-FC_REFLECT( steem::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data) )
+//FC_REFLECT( steem::protocol::custom_operation, (required_auths)(id)(data) )
+//FC_REFLECT( steem::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json) )
+//FC_REFLECT( steem::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data) )
 //FC_REFLECT( steem::protocol::limit_order_create_operation, (owner)(orderid)(amount_to_sell)(min_to_receive)(fill_or_kill)(expiration) )
 //FC_REFLECT( steem::protocol::limit_order_create2_operation, (owner)(orderid)(amount_to_sell)(exchange_rate)(fill_or_kill)(expiration) )
 //FC_REFLECT( steem::protocol::limit_order_cancel_operation, (owner)(orderid) )
 
 //FC_REFLECT( steem::protocol::delete_comment_operation, (author)(permlink) );
 
-FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
-FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
+//FC_REFLECT( steem::protocol::beneficiary_route_type, (account)(weight) )
+//FC_REFLECT( steem::protocol::comment_payout_beneficiaries, (beneficiaries) )
 
 //#ifdef STEEM_ENABLE_SMT
-FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_curation_rewards) )
-FC_REFLECT( steem::protocol::allowed_vote_assets, (votable_assets) )
+//FC_REFLECT( steem::protocol::votable_asset_info_v1, (max_accepted_payout)(allow_curation_rewards) )
+//FC_REFLECT( steem::protocol::allowed_vote_assets, (votable_assets) )
 //#endif
 
 //FC_REFLECT_TYPENAME( steem::protocol::comment_options_extension )
@@ -1159,15 +1159,15 @@ FC_REFLECT( steem::protocol::allowed_vote_assets, (votable_assets) )
 //FC_REFLECT( steem::protocol::escrow_approve_operation, (from)(to)(agent)(who)(escrow_id)(approve) );
 //FC_REFLECT( steem::protocol::escrow_dispute_operation, (from)(to)(agent)(who)(escrow_id) );
 //FC_REFLECT( steem::protocol::escrow_release_operation, (from)(to)(agent)(who)(receiver)(escrow_id)(sbd_amount)(steem_amount) );
-FC_REFLECT( steem::protocol::claim_account_operation, (creator)(fee)(extensions) );
-FC_REFLECT( steem::protocol::create_claimed_account_operation, (creator)(new_account_name)(owner)(active)(posting)(memo_key)(json_metadata)(extensions) );
-FC_REFLECT( steem::protocol::request_account_recovery_operation, (recovery_account)(account_to_recover)(new_owner_authority)(extensions) );
-FC_REFLECT( steem::protocol::recover_account_operation, (account_to_recover)(new_owner_authority)(recent_owner_authority)(extensions) );
-FC_REFLECT( steem::protocol::change_recovery_account_operation, (account_to_recover)(new_recovery_account)(extensions) );
-FC_REFLECT( steem::protocol::decline_voting_rights_operation, (account)(decline) );
-FC_REFLECT( steem::protocol::claim_reward_balance_operation, (account)(reward_steem)(reward_sbd)(reward_vests) )
+//FC_REFLECT( steem::protocol::claim_account_operation, (creator)(fee)(extensions) );
+//FC_REFLECT( steem::protocol::create_claimed_account_operation, (creator)(new_account_name)(owner)(active)(posting)(memo_key)(json_metadata)(extensions) );
+//FC_REFLECT( steem::protocol::request_account_recovery_operation, (recovery_account)(account_to_recover)(new_owner_authority)(extensions) );
+//FC_REFLECT( steem::protocol::recover_account_operation, (account_to_recover)(new_owner_authority)(recent_owner_authority)(extensions) );
+//FC_REFLECT( steem::protocol::change_recovery_account_operation, (account_to_recover)(new_recovery_account)(extensions) );
+//FC_REFLECT( steem::protocol::decline_voting_rights_operation, (account)(decline) );
+//FC_REFLECT( steem::protocol::claim_reward_balance_operation, (account)(reward_steem)(reward_sbd)(reward_vests) )
 //#ifdef STEEM_ENABLE_SMT
-FC_REFLECT( steem::protocol::claim_reward_balance2_operation, (account)(extensions)(reward_tokens) )
+//FC_REFLECT( steem::protocol::claim_reward_balance2_operation, (account)(extensions)(reward_tokens) )
 //#endif
-FC_REFLECT( steem::protocol::delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
+//FC_REFLECT( steem::protocol::delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
 FC_REFLECT( steem::protocol::convert_to_sbd_operation, (owner)(amount) )

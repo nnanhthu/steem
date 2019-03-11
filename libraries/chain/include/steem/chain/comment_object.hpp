@@ -11,38 +11,38 @@
 
 namespace steem { namespace chain {
 
-        using protocol::beneficiary_route_type;
-        using chainbase::t_vector;
-        using chainbase::t_pair;
+//   using protocol::beneficiary_route_type;
+   using chainbase::t_vector;
+   using chainbase::t_pair;
 //#ifdef STEEM_ENABLE_SMT
-        using protocol::votable_asset_info;
+//   using protocol::votable_asset_info;
 //#endif
 
-        struct strcmp_less
-        {
-            bool operator()( const shared_string& a, const shared_string& b )const
-            {
-                return less( a.c_str(), b.c_str() );
-            }
+   struct strcmp_less
+   {
+      bool operator()( const shared_string& a, const shared_string& b )const
+      {
+         return less( a.c_str(), b.c_str() );
+      }
 
 #ifndef ENABLE_STD_ALLOCATOR
-            bool operator()( const shared_string& a, const string& b )const
-            {
-                return less( a.c_str(), b.c_str() );
-            }
+      bool operator()( const shared_string& a, const string& b )const
+      {
+         return less( a.c_str(), b.c_str() );
+      }
 
-            bool operator()( const string& a, const shared_string& b )const
-            {
-                return less( a.c_str(), b.c_str() );
-            }
+      bool operator()( const string& a, const shared_string& b )const
+      {
+         return less( a.c_str(), b.c_str() );
+      }
 #endif
 
-        private:
-            inline bool less( const char* a, const char* b )const
-            {
-                return std::strcmp( a, b ) < 0;
-            }
-        };
+      private:
+         inline bool less( const char* a, const char* b )const
+         {
+            return std::strcmp( a, b ) < 0;
+         }
+   };
 
 //   class comment_object : public object < comment_object_type, comment_object >
 //   {
@@ -51,10 +51,8 @@ namespace steem { namespace chain {
 //      public:
 //         template< typename Constructor, typename Allocator >
 //         comment_object( Constructor&& c, allocator< Allocator > a )
-//            :category( a ), parent_permlink( a ), permlink( a ), beneficiaries( a )
-////#ifdef STEEM_ENABLE_SMT
-//            , allowed_vote_assets( a )
-////#endif
+//            :category( a ), parent_permlink( a ), permlink( a )
+//
 //         {
 //            c( *this );
 //         }
@@ -105,11 +103,11 @@ namespace steem { namespace chain {
 //         bool              allow_votes   = true;      /// allows a post to receive votes;
 //         bool              allow_curation_rewards = true;
 //
-//         using t_beneficiaries = t_vector< beneficiary_route_type >;
-//         t_beneficiaries   beneficiaries;
+////         using t_beneficiaries = t_vector< beneficiary_route_type >;
+////         t_beneficiaries   beneficiaries;
 ////#ifdef STEEM_ENABLE_SMT
-//         using t_votable_assets = t_vector< t_pair< asset_symbol_type, votable_asset_info > >;
-//         t_votable_assets  allowed_vote_assets;
+////         using t_votable_assets = t_vector< t_pair< asset_symbol_type, votable_asset_info > >;
+////         t_votable_assets  allowed_vote_assets;
 ////#endif
 //   };
 //
@@ -157,7 +155,7 @@ namespace steem { namespace chain {
 //         time_point_sec    last_update; ///< The time of the last update of the vote
 //         int8_t            num_changes = 0;
 //   };
-//
+
 //   struct by_comment_voter;
 //   struct by_voter_comment;
 //   typedef multi_index_container<
@@ -179,8 +177,8 @@ namespace steem { namespace chain {
 //      >,
 //      allocator< comment_vote_object >
 //   > comment_vote_index;
-//
-//
+
+
 //   struct by_cashout_time; /// cashout_time
 //   struct by_permlink; /// author, perm
 //   struct by_root;
@@ -246,7 +244,7 @@ namespace steem { namespace chain {
 //      >,
 //      allocator< comment_object >
 //   > comment_index;
-//
+
 //   struct by_comment;
 //
 //   typedef multi_index_container<
@@ -257,10 +255,10 @@ namespace steem { namespace chain {
 //      >,
 //      allocator< comment_content_object >
 //   > comment_content_index;
-//
-//} } // steem::chain
-//
-////#ifdef STEEM_ENABLE_SMT
+
+} } // steem::chain
+
+//#ifdef STEEM_ENABLE_SMT
 //FC_REFLECT( steem::chain::comment_object,
 //             (id)(author)(permlink)
 //             (category)(parent_author)(parent_permlink)
@@ -270,23 +268,23 @@ namespace steem { namespace chain {
 //             (children_abs_rshares)(cashout_time)(max_cashout_time)
 //             (total_vote_weight)(reward_weight)(total_payout_value)(curator_payout_value)(beneficiary_payout_value)(author_rewards)(net_votes)(root_comment)
 //             (max_accepted_payout)(percent_steem_dollars)(allow_replies)(allow_votes)(allow_curation_rewards)
-//             (beneficiaries)(allowed_vote_assets)
+////             (beneficiaries)(allowed_vote_assets)
 //          )
-////#else
-////FC_REFLECT( steem::chain::comment_object,
-////             (id)(author)(permlink)
-////             (category)(parent_author)(parent_permlink)
-////             (last_update)(created)(active)(last_payout)
-////             (depth)(children)
-////             (net_rshares)(abs_rshares)(vote_rshares)
-////             (children_abs_rshares)(cashout_time)(max_cashout_time)
-////             (total_vote_weight)(reward_weight)(total_payout_value)(curator_payout_value)(beneficiary_payout_value)(author_rewards)(net_votes)(root_comment)
-////             (max_accepted_payout)(percent_steem_dollars)(allow_replies)(allow_votes)(allow_curation_rewards)
-////             (beneficiaries)
-////          )
-////#endif
+//#else
+//FC_REFLECT( steem::chain::comment_object,
+//             (id)(author)(permlink)
+//             (category)(parent_author)(parent_permlink)
+//             (last_update)(created)(active)(last_payout)
+//             (depth)(children)
+//             (net_rshares)(abs_rshares)(vote_rshares)
+//             (children_abs_rshares)(cashout_time)(max_cashout_time)
+//             (total_vote_weight)(reward_weight)(total_payout_value)(curator_payout_value)(beneficiary_payout_value)(author_rewards)(net_votes)(root_comment)
+//             (max_accepted_payout)(percent_steem_dollars)(allow_replies)(allow_votes)(allow_curation_rewards)
+//             (beneficiaries)
+//          )
+//#endif
 //CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_object, steem::chain::comment_index )
-//
+
 //FC_REFLECT( steem::chain::comment_content_object,
 //            (id)(comment)(title)(body)(json_metadata) )
 //CHAINBASE_SET_INDEX_TYPE( steem::chain::comment_content_object, steem::chain::comment_content_index )
@@ -305,9 +303,9 @@ namespace steem { namespace chain {
 //   {
 //   public:
 //      typedef steem::chain::comment_index IndexType;
-//      typedef typename steem::chain::comment_object::t_beneficiaries t_beneficiaries;
+////      typedef typename steem::chain::comment_object::t_beneficiaries t_beneficiaries;
 ////#ifdef STEEM_ENABLE_SMT
-//      typedef typename steem::chain::comment_object::t_votable_assets t_votable_assets;
+////      typedef typename steem::chain::comment_object::t_votable_assets t_votable_assets;
 ////#endif
 //      index_statistic_info gather_statistics(const IndexType& index, bool onlyStaticInfo) const
 //      {
@@ -321,9 +319,9 @@ namespace steem { namespace chain {
 //               info._item_additional_allocation += o.category.capacity()*sizeof(shared_string::value_type);
 //               info._item_additional_allocation += o.parent_permlink.capacity()*sizeof(shared_string::value_type);
 //               info._item_additional_allocation += o.permlink.capacity()*sizeof(shared_string::value_type);
-//               info._item_additional_allocation += o.beneficiaries.capacity()*sizeof(t_beneficiaries::value_type);
+////               info._item_additional_allocation += o.beneficiaries.capacity()*sizeof(t_beneficiaries::value_type);
 ////#ifdef STEEM_ENABLE_SMT
-//               info._item_additional_allocation += o.allowed_vote_assets.capacity()*sizeof(t_votable_assets::value_type);
+////               info._item_additional_allocation += o.allowed_vote_assets.capacity()*sizeof(t_votable_assets::value_type);
 ////#endif
 //            }
 //         }

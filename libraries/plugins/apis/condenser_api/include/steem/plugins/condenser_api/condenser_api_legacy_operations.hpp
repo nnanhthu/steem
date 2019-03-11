@@ -23,25 +23,25 @@ namespace steem { namespace plugins { namespace condenser_api {
                 }
             };
 
-            typedef static_variant<
-            protocol::comment_payout_beneficiaries
-            //#ifdef STEEM_ENABLE_SMT
-            ,protocol::allowed_vote_assets
-            //#endif
-            > legacy_comment_options_extensions;
+//            typedef static_variant<
+////            protocol::comment_payout_beneficiaries
+//            //#ifdef STEEM_ENABLE_SMT
+//            protocol::allowed_vote_assets
+//            //#endif
+//            > legacy_comment_options_extensions;
 
-            typedef vector< legacy_comment_options_extensions > legacy_comment_options_extensions_type;
+//            typedef vector< legacy_comment_options_extensions > legacy_comment_options_extensions_type;
 
-            typedef static_variant<
-            protocol::pow2,
-            protocol::equihash_pow
-            > legacy_pow2_work;
+//            typedef static_variant<
+////            protocol::pow2,
+////            protocol::equihash_pow
+//            > legacy_pow2_work;
 
             using namespace steem::protocol;
 
-            typedef account_update_operation               legacy_account_update_operation;
+//            typedef account_update_operation               legacy_account_update_operation;
 //   typedef comment_operation                      legacy_comment_operation;
-            typedef create_claimed_account_operation       legacy_create_claimed_account_operation;
+//            typedef create_claimed_account_operation       legacy_create_claimed_account_operation;
 //   typedef delete_comment_operation               legacy_delete_comment_operation;
 //   typedef vote_operation                         legacy_vote_operation;
 //   typedef escrow_approve_operation               legacy_escrow_approve_operation;
@@ -49,20 +49,20 @@ namespace steem { namespace plugins { namespace condenser_api {
             typedef set_withdraw_vesting_route_operation   legacy_set_withdraw_vesting_route_operation;
             typedef witness_set_properties_operation       legacy_witness_set_properties_operation;
             typedef account_witness_vote_operation         legacy_account_witness_vote_operation;
-            typedef account_witness_proxy_operation        legacy_account_witness_proxy_operation;
-            typedef custom_operation                       legacy_custom_operation;
-            typedef custom_json_operation                  legacy_custom_json_operation;
-            typedef custom_binary_operation                legacy_custom_binary_operation;
+//            typedef account_witness_proxy_operation        legacy_account_witness_proxy_operation;
+//            typedef custom_operation                       legacy_custom_operation;
+//            typedef custom_json_operation                  legacy_custom_json_operation;
+//            typedef custom_binary_operation                legacy_custom_binary_operation;
 //   typedef limit_order_cancel_operation           legacy_limit_order_cancel_operation;
-            typedef pow_operation                          legacy_pow_operation;
+//            typedef pow_operation                          legacy_pow_operation;
             typedef report_over_production_operation       legacy_report_over_production_operation;
-            typedef request_account_recovery_operation     legacy_request_account_recovery_operation;
-            typedef recover_account_operation              legacy_recover_account_operation;
-            typedef reset_account_operation                legacy_reset_account_operation;
-            typedef set_reset_account_operation            legacy_set_reset_account_operation;
-            typedef change_recovery_account_operation      legacy_change_recovery_account_operation;
-            typedef cancel_transfer_from_savings_operation legacy_cancel_transfer_from_savings_operation;
-            typedef decline_voting_rights_operation        legacy_decline_voting_rights_operation;
+//            typedef request_account_recovery_operation     legacy_request_account_recovery_operation;
+//            typedef recover_account_operation              legacy_recover_account_operation;
+//            typedef reset_account_operation                legacy_reset_account_operation;
+//            typedef set_reset_account_operation            legacy_set_reset_account_operation;
+//            typedef change_recovery_account_operation      legacy_change_recovery_account_operation;
+//            typedef cancel_transfer_from_savings_operation legacy_cancel_transfer_from_savings_operation;
+//            typedef decline_voting_rights_operation        legacy_decline_voting_rights_operation;
             typedef shutdown_witness_operation             legacy_shutdown_witness_operation;
             typedef hardfork_operation                     legacy_hardfork_operation;
             //typedef comment_payout_update_operation        legacy_comment_payout_update_operation;
@@ -86,10 +86,10 @@ namespace steem { namespace plugins { namespace condenser_api {
                 api_chain_properties() {}
                 api_chain_properties( const chain::chain_properties& c ) :
                         account_creation_fee( legacy_asset::from_asset( c.account_creation_fee ) ),
-                        maximum_block_size( c.maximum_block_size ),
-                        sbd_interest_rate( c.sbd_interest_rate ),
-                        account_subsidy_budget( c.account_subsidy_budget ),
-                        account_subsidy_decay( c.account_subsidy_decay )
+                        maximum_block_size( c.maximum_block_size )
+//                        sbd_interest_rate( c.sbd_interest_rate ),
+//                        account_subsidy_budget( c.account_subsidy_budget ),
+//                        account_subsidy_decay( c.account_subsidy_decay )
                 {}
 
                 operator legacy_chain_properties() const
@@ -97,15 +97,15 @@ namespace steem { namespace plugins { namespace condenser_api {
                    legacy_chain_properties props;
                    props.account_creation_fee = legacy_sbd_asset::from_asset( asset( account_creation_fee ) );
                    props.maximum_block_size = maximum_block_size;
-                   props.sbd_interest_rate = sbd_interest_rate;
+//                   props.sbd_interest_rate = sbd_interest_rate;
                    return props;
                 }
 
                 legacy_asset   account_creation_fee;
                 uint32_t       maximum_block_size = STEEM_MIN_BLOCK_SIZE_LIMIT * 2;
-                uint16_t       sbd_interest_rate = STEEM_DEFAULT_SBD_INTEREST_RATE;
-                int32_t        account_subsidy_budget = STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET;
-                uint32_t       account_subsidy_decay = STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY;
+//                uint16_t       sbd_interest_rate = STEEM_DEFAULT_SBD_INTEREST_RATE;
+//                int32_t        account_subsidy_budget = STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET;
+//                uint32_t       account_subsidy_decay = STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY;
             };
 
             struct legacy_account_create_operation
@@ -117,8 +117,8 @@ namespace steem { namespace plugins { namespace condenser_api {
                         new_account_name( op.new_account_name ),
                         owner( op.owner ),
                         active( op.active ),
-                        posting( op.posting ),
-                        memo_key( op.memo_key ),
+//                        posting( op.posting ),
+//                        memo_key( op.memo_key ),
                         json_metadata( op.json_metadata )
                 {}
 
@@ -130,8 +130,8 @@ namespace steem { namespace plugins { namespace condenser_api {
                    op.new_account_name = new_account_name;
                    op.owner = owner;
                    op.active = active;
-                   op.posting = posting;
-                   op.memo_key = memo_key;
+//                   op.posting = posting;
+//                   op.memo_key = memo_key;
                    op.json_metadata = json_metadata;
                    return op;
                 }
@@ -141,56 +141,56 @@ namespace steem { namespace plugins { namespace condenser_api {
                 account_name_type new_account_name;
                 authority         owner;
                 authority         active;
-                authority         posting;
-                public_key_type   memo_key;
+//                authority         posting;
+//                public_key_type   memo_key;
                 string            json_metadata;
             };
 
-            struct legacy_account_create_with_delegation_operation
-            {
-                legacy_account_create_with_delegation_operation() {}
-                legacy_account_create_with_delegation_operation( const account_create_with_delegation_operation op ) :
-                        fee( legacy_asset::from_asset( op.fee ) ),
-                        delegation( legacy_asset::from_asset( op.delegation ) ),
-                        creator( op.creator ),
-                        new_account_name( op.new_account_name ),
-                        owner( op.owner ),
-                        active( op.active ),
-                        posting( op.posting ),
-                        memo_key( op.memo_key ),
-                        json_metadata( op.json_metadata )
-                {
-                   extensions.insert( op.extensions.begin(), op.extensions.end() );
-                }
-
-                operator account_create_with_delegation_operation()const
-                {
-                   account_create_with_delegation_operation op;
-                   op.fee = fee;
-                   op.delegation = delegation;
-                   op.creator = creator;
-                   op.new_account_name = new_account_name;
-                   op.owner = owner;
-                   op.active = active;
-                   op.posting = posting;
-                   op.memo_key = memo_key;
-                   op.json_metadata = json_metadata;
-                   op.extensions.insert( extensions.begin(), extensions.end() );
-                   return op;
-                }
-
-                legacy_asset      fee;
-                legacy_asset      delegation;
-                account_name_type creator;
-                account_name_type new_account_name;
-                authority         owner;
-                authority         active;
-                authority         posting;
-                public_key_type   memo_key;
-                string            json_metadata;
-
-                extensions_type   extensions;
-            };
+//            struct legacy_account_create_with_delegation_operation
+//            {
+//                legacy_account_create_with_delegation_operation() {}
+//                legacy_account_create_with_delegation_operation( const account_create_with_delegation_operation op ) :
+//                        fee( legacy_asset::from_asset( op.fee ) ),
+//                        delegation( legacy_asset::from_asset( op.delegation ) ),
+//                        creator( op.creator ),
+//                        new_account_name( op.new_account_name ),
+//                        owner( op.owner ),
+//                        active( op.active ),
+//                        posting( op.posting ),
+//                        memo_key( op.memo_key ),
+//                        json_metadata( op.json_metadata )
+//                {
+//                   extensions.insert( op.extensions.begin(), op.extensions.end() );
+//                }
+//
+//                operator account_create_with_delegation_operation()const
+//                {
+//                   account_create_with_delegation_operation op;
+//                   op.fee = fee;
+//                   op.delegation = delegation;
+//                   op.creator = creator;
+//                   op.new_account_name = new_account_name;
+//                   op.owner = owner;
+//                   op.active = active;
+//                   op.posting = posting;
+//                   op.memo_key = memo_key;
+//                   op.json_metadata = json_metadata;
+//                   op.extensions.insert( extensions.begin(), extensions.end() );
+//                   return op;
+//                }
+//
+//                legacy_asset      fee;
+//                legacy_asset      delegation;
+//                account_name_type creator;
+//                account_name_type new_account_name;
+//                authority         owner;
+//                authority         active;
+//                authority         posting;
+//                public_key_type   memo_key;
+//                string            json_metadata;
+//
+//                extensions_type   extensions;
+//            };
 
 //   struct legacy_comment_options_operation
 //   {
@@ -349,33 +349,33 @@ namespace steem { namespace plugins { namespace condenser_api {
 //      legacy_asset      steem_amount;
 //   };
 
-            struct legacy_pow2_operation
-            {
-                legacy_pow2_operation() {}
-                legacy_pow2_operation( const pow2_operation& op ) :
-                        new_owner_key( op.new_owner_key )
-                {
-                   op.work.visit( convert_to_legacy_static_variant< legacy_pow2_work >( work ) );
-                   props.account_creation_fee = legacy_asset::from_asset( op.props.account_creation_fee.to_asset< false >() );
-                   props.maximum_block_size = op.props.maximum_block_size;
-                   props.sbd_interest_rate = op.props.sbd_interest_rate;
-                }
-
-                operator pow2_operation()const
-                {
-                   pow2_operation op;
-                   work.visit( convert_to_legacy_static_variant< pow2_work >( op.work ) );
-                   op.new_owner_key = new_owner_key;
-                   op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset( props.account_creation_fee ) );
-                   op.props.maximum_block_size = props.maximum_block_size;
-                   op.props.sbd_interest_rate = props.sbd_interest_rate;
-                   return op;
-                }
-
-                legacy_pow2_work              work;
-                optional< public_key_type >   new_owner_key;
-                api_chain_properties          props;
-            };
+//            struct legacy_pow2_operation
+//            {
+//                legacy_pow2_operation() {}
+//                legacy_pow2_operation( const pow2_operation& op ) :
+//                        new_owner_key( op.new_owner_key )
+//                {
+//                   op.work.visit( convert_to_legacy_static_variant< legacy_pow2_work >( work ) );
+//                   props.account_creation_fee = legacy_asset::from_asset( op.props.account_creation_fee.to_asset< false >() );
+//                   props.maximum_block_size = op.props.maximum_block_size;
+//                   props.sbd_interest_rate = op.props.sbd_interest_rate;
+//                }
+//
+//                operator pow2_operation()const
+//                {
+//                   pow2_operation op;
+//                   work.visit( convert_to_legacy_static_variant< pow2_work >( op.work ) );
+//                   op.new_owner_key = new_owner_key;
+//                   op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset( props.account_creation_fee ) );
+//                   op.props.maximum_block_size = props.maximum_block_size;
+//                   op.props.sbd_interest_rate = props.sbd_interest_rate;
+//                   return op;
+//                }
+//
+//                legacy_pow2_work              work;
+//                optional< public_key_type >   new_owner_key;
+//                api_chain_properties          props;
+//            };
 
             struct legacy_transfer_to_vesting_operation
             {
@@ -431,7 +431,7 @@ namespace steem { namespace plugins { namespace condenser_api {
                 {
                    props.account_creation_fee = legacy_asset::from_asset( op.props.account_creation_fee.to_asset< false >() );
                    props.maximum_block_size = op.props.maximum_block_size;
-                   props.sbd_interest_rate = op.props.sbd_interest_rate;
+//                   props.sbd_interest_rate = op.props.sbd_interest_rate;
                 }
 
                 operator witness_update_operation()const
@@ -442,7 +442,7 @@ namespace steem { namespace plugins { namespace condenser_api {
                    op.block_signing_key = block_signing_key;
                    op.props.account_creation_fee = legacy_sbd_asset::from_asset( asset( props.account_creation_fee ) );
                    op.props.maximum_block_size = props.maximum_block_size;
-                   op.props.sbd_interest_rate = props.sbd_interest_rate;
+//                   op.props.sbd_interest_rate = props.sbd_interest_rate;
                    op.fee = fee;
                    return op;
                 }
@@ -561,110 +561,110 @@ namespace steem { namespace plugins { namespace condenser_api {
 //      time_point_sec    expiration;
 //   };
 
-            struct legacy_transfer_to_savings_operation
-            {
-                legacy_transfer_to_savings_operation() {}
-                legacy_transfer_to_savings_operation( const transfer_to_savings_operation& op ) :
-                        from( op.from ),
-                        to( op.to ),
-                        amount( legacy_asset::from_asset( op.amount ) ),
-                        memo( op.memo )
-                {}
+//            struct legacy_transfer_to_savings_operation
+//            {
+//                legacy_transfer_to_savings_operation() {}
+//                legacy_transfer_to_savings_operation( const transfer_to_savings_operation& op ) :
+//                        from( op.from ),
+//                        to( op.to ),
+//                        amount( legacy_asset::from_asset( op.amount ) ),
+//                        memo( op.memo )
+//                {}
+//
+//                operator transfer_to_savings_operation()const
+//                {
+//                   transfer_to_savings_operation op;
+//                   op.from = from;
+//                   op.to = to;
+//                   op.amount = amount;
+//                   op.memo = memo;
+//                   return op;
+//                }
+//
+//                account_name_type from;
+//                account_name_type to;
+//                legacy_asset      amount;
+//                string            memo;
+//            };
 
-                operator transfer_to_savings_operation()const
-                {
-                   transfer_to_savings_operation op;
-                   op.from = from;
-                   op.to = to;
-                   op.amount = amount;
-                   op.memo = memo;
-                   return op;
-                }
+//            struct legacy_transfer_from_savings_operation
+//            {
+//                legacy_transfer_from_savings_operation() {}
+//                legacy_transfer_from_savings_operation( const transfer_from_savings_operation& op ) :
+//                        from( op.from ),
+//                        request_id( op.request_id ),
+//                        to( op.to ),
+//                        amount( legacy_asset::from_asset( op.amount ) ),
+//                        memo( op.memo )
+//                {}
+//
+//                operator transfer_from_savings_operation()const
+//                {
+//                   transfer_from_savings_operation op;
+//                   op.from = from;
+//                   op.request_id = request_id;
+//                   op.to = to;
+//                   op.amount = amount;
+//                   op.memo = memo;
+//                   return op;
+//                }
+//
+//                account_name_type from;
+//                uint32_t          request_id;
+//                account_name_type to;
+//                legacy_asset      amount;
+//                string            memo;
+//            };
 
-                account_name_type from;
-                account_name_type to;
-                legacy_asset      amount;
-                string            memo;
-            };
+//            struct legacy_claim_reward_balance_operation
+//            {
+//                legacy_claim_reward_balance_operation() {}
+//                legacy_claim_reward_balance_operation( const claim_reward_balance_operation& op ) :
+//                        account( op.account ),
+//                        reward_steem( legacy_asset::from_asset( op.reward_steem ) ),
+//                        reward_sbd( legacy_asset::from_asset( op.reward_sbd ) ),
+//                        reward_vests( legacy_asset::from_asset( op.reward_vests ) )
+//                {}
+//
+//                operator claim_reward_balance_operation()const
+//                {
+//                   claim_reward_balance_operation op;
+//                   op.account = account;
+//                   op.reward_steem = reward_steem;
+//                   op.reward_sbd = reward_sbd;
+//                   op.reward_vests = reward_vests;
+//                   return op;
+//                }
+//
+//                account_name_type account;
+//                legacy_asset      reward_steem;
+//                legacy_asset      reward_sbd;
+//                legacy_asset      reward_vests;
+//            };
 
-            struct legacy_transfer_from_savings_operation
-            {
-                legacy_transfer_from_savings_operation() {}
-                legacy_transfer_from_savings_operation( const transfer_from_savings_operation& op ) :
-                        from( op.from ),
-                        request_id( op.request_id ),
-                        to( op.to ),
-                        amount( legacy_asset::from_asset( op.amount ) ),
-                        memo( op.memo )
-                {}
-
-                operator transfer_from_savings_operation()const
-                {
-                   transfer_from_savings_operation op;
-                   op.from = from;
-                   op.request_id = request_id;
-                   op.to = to;
-                   op.amount = amount;
-                   op.memo = memo;
-                   return op;
-                }
-
-                account_name_type from;
-                uint32_t          request_id;
-                account_name_type to;
-                legacy_asset      amount;
-                string            memo;
-            };
-
-            struct legacy_claim_reward_balance_operation
-            {
-                legacy_claim_reward_balance_operation() {}
-                legacy_claim_reward_balance_operation( const claim_reward_balance_operation& op ) :
-                        account( op.account ),
-                        reward_steem( legacy_asset::from_asset( op.reward_steem ) ),
-                        reward_sbd( legacy_asset::from_asset( op.reward_sbd ) ),
-                        reward_vests( legacy_asset::from_asset( op.reward_vests ) )
-                {}
-
-                operator claim_reward_balance_operation()const
-                {
-                   claim_reward_balance_operation op;
-                   op.account = account;
-                   op.reward_steem = reward_steem;
-                   op.reward_sbd = reward_sbd;
-                   op.reward_vests = reward_vests;
-                   return op;
-                }
-
-                account_name_type account;
-                legacy_asset      reward_steem;
-                legacy_asset      reward_sbd;
-                legacy_asset      reward_vests;
-            };
-
-            struct legacy_delegate_vesting_shares_operation
-            {
-                legacy_delegate_vesting_shares_operation() {}
-                legacy_delegate_vesting_shares_operation( const delegate_vesting_shares_operation& op ) :
-                        delegator( op.delegator ),
-                        delegatee( op.delegatee ),
-                        vesting_shares( legacy_asset::from_asset( op.vesting_shares ) )
-                {}
-
-                operator delegate_vesting_shares_operation()const
-                {
-                   delegate_vesting_shares_operation op;
-                   op.delegator = delegator;
-                   op.delegatee = delegatee;
-                   op.vesting_shares = vesting_shares;
-                   return op;
-                }
-
-                account_name_type delegator;
-                account_name_type delegatee;
-                legacy_asset      vesting_shares;
-            };
-
+//            struct legacy_delegate_vesting_shares_operation
+//            {
+//                legacy_delegate_vesting_shares_operation() {}
+//                legacy_delegate_vesting_shares_operation( const delegate_vesting_shares_operation& op ) :
+//                        delegator( op.delegator ),
+//                        delegatee( op.delegatee ),
+//                        vesting_shares( legacy_asset::from_asset( op.vesting_shares ) )
+//                {}
+//
+////                operator delegate_vesting_shares_operation()const
+////                {
+////                   delegate_vesting_shares_operation op;
+////                   op.delegator = delegator;
+////                   op.delegatee = delegatee;
+////                   op.vesting_shares = vesting_shares;
+////                   return op;
+////                }
+//
+//                account_name_type delegator;
+//                account_name_type delegatee;
+//                legacy_asset      vesting_shares;
+//            };
+//
 //   struct legacy_author_reward_operation
 //   {
 //      legacy_author_reward_operation() {}
@@ -763,25 +763,25 @@ namespace steem { namespace plugins { namespace condenser_api {
                 legacy_asset      payout;
             };
 
-            struct legacy_interest_operation
-            {
-                legacy_interest_operation() {}
-                legacy_interest_operation( const interest_operation& op ) :
-                        owner( op.owner ),
-                        interest( legacy_asset::from_asset( op.interest ) )
-                {}
-
-                operator interest_operation()const
-                {
-                   interest_operation op;
-                   op.owner = owner;
-                   op.interest = interest;
-                   return op;
-                }
-
-                account_name_type owner;
-                legacy_asset      interest;
-            };
+//            struct legacy_interest_operation
+//            {
+//                legacy_interest_operation() {}
+//                legacy_interest_operation( const interest_operation& op ) :
+//                        owner( op.owner ),
+//                        interest( legacy_asset::from_asset( op.interest ) )
+//                {}
+//
+//                operator interest_operation()const
+//                {
+//                   interest_operation op;
+//                   op.owner = owner;
+//                   op.interest = interest;
+//                   return op;
+//                }
+//
+//                account_name_type owner;
+//                legacy_asset      interest;
+//            };
 
             struct legacy_fill_convert_request_operation
             {
@@ -835,86 +835,86 @@ namespace steem { namespace plugins { namespace condenser_api {
                 legacy_asset      deposited;
             };
 
-            struct legacy_fill_order_operation
-            {
-                legacy_fill_order_operation() {}
-                legacy_fill_order_operation( const fill_order_operation& op ) :
-                        current_owner( op.current_owner ),
-                        current_orderid( op.current_orderid ),
-                        current_pays( legacy_asset::from_asset( op.current_pays ) ),
-                        open_owner( op.open_owner ),
-                        open_orderid( op.open_orderid ),
-                        open_pays( legacy_asset::from_asset( op.open_pays ) )
-                {}
+//            struct legacy_fill_order_operation
+//            {
+//                legacy_fill_order_operation() {}
+//                legacy_fill_order_operation( const fill_order_operation& op ) :
+//                        current_owner( op.current_owner ),
+//                        current_orderid( op.current_orderid ),
+//                        current_pays( legacy_asset::from_asset( op.current_pays ) ),
+//                        open_owner( op.open_owner ),
+//                        open_orderid( op.open_orderid ),
+//                        open_pays( legacy_asset::from_asset( op.open_pays ) )
+//                {}
+//
+//                operator fill_order_operation()const
+//                {
+//                   fill_order_operation op;
+//                   op.current_owner = current_owner;
+//                   op.current_orderid = current_orderid;
+//                   op.current_pays = current_pays;
+//                   op.open_owner = open_owner;
+//                   op.open_orderid = open_orderid;
+//                   op.open_pays = open_pays;
+//                   return op;
+//                }
+//
+//                account_name_type current_owner;
+//                uint32_t          current_orderid;
+//                legacy_asset      current_pays;
+//                account_name_type open_owner;
+//                uint32_t          open_orderid;
+//                legacy_asset      open_pays;
+//            };
 
-                operator fill_order_operation()const
-                {
-                   fill_order_operation op;
-                   op.current_owner = current_owner;
-                   op.current_orderid = current_orderid;
-                   op.current_pays = current_pays;
-                   op.open_owner = open_owner;
-                   op.open_orderid = open_orderid;
-                   op.open_pays = open_pays;
-                   return op;
-                }
+//            struct legacy_fill_transfer_from_savings_operation
+//            {
+//                legacy_fill_transfer_from_savings_operation() {}
+//                legacy_fill_transfer_from_savings_operation( const fill_transfer_from_savings_operation& op ) :
+//                        from( op.from ),
+//                        to( op.to ),
+//                        amount( legacy_asset::from_asset( op.amount ) ),
+//                        request_id( op.request_id ),
+//                        memo( op.memo )
+//                {}
+//
+//                operator fill_transfer_from_savings_operation()const
+//                {
+//                   fill_transfer_from_savings_operation op;
+//                   op.from = from;
+//                   op.to = to;
+//                   op.amount = amount;
+//                   op.request_id = request_id;
+//                   op.memo = memo;
+//                   return op;
+//                }
+//
+//                account_name_type from;
+//                account_name_type to;
+//                legacy_asset      amount;
+//                uint32_t          request_id = 0;
+//                string            memo;
+//            };
 
-                account_name_type current_owner;
-                uint32_t          current_orderid;
-                legacy_asset      current_pays;
-                account_name_type open_owner;
-                uint32_t          open_orderid;
-                legacy_asset      open_pays;
-            };
-
-            struct legacy_fill_transfer_from_savings_operation
-            {
-                legacy_fill_transfer_from_savings_operation() {}
-                legacy_fill_transfer_from_savings_operation( const fill_transfer_from_savings_operation& op ) :
-                        from( op.from ),
-                        to( op.to ),
-                        amount( legacy_asset::from_asset( op.amount ) ),
-                        request_id( op.request_id ),
-                        memo( op.memo )
-                {}
-
-                operator fill_transfer_from_savings_operation()const
-                {
-                   fill_transfer_from_savings_operation op;
-                   op.from = from;
-                   op.to = to;
-                   op.amount = amount;
-                   op.request_id = request_id;
-                   op.memo = memo;
-                   return op;
-                }
-
-                account_name_type from;
-                account_name_type to;
-                legacy_asset      amount;
-                uint32_t          request_id = 0;
-                string            memo;
-            };
-
-            struct legacy_return_vesting_delegation_operation
-            {
-                legacy_return_vesting_delegation_operation() {}
-                legacy_return_vesting_delegation_operation( const return_vesting_delegation_operation& op ) :
-                        account( op.account ),
-                        vesting_shares( legacy_asset::from_asset( op.vesting_shares ) )
-                {}
-
-                operator return_vesting_delegation_operation()const
-                {
-                   return_vesting_delegation_operation op;
-                   op.account = account;
-                   op.vesting_shares = vesting_shares;
-                   return op;
-                }
-
-                account_name_type account;
-                legacy_asset      vesting_shares;
-            };
+//            struct legacy_return_vesting_delegation_operation
+//            {
+//                legacy_return_vesting_delegation_operation() {}
+//                legacy_return_vesting_delegation_operation( const return_vesting_delegation_operation& op ) :
+//                        account( op.account ),
+//                        vesting_shares( legacy_asset::from_asset( op.vesting_shares ) )
+//                {}
+//
+//                operator return_vesting_delegation_operation()const
+//                {
+//                   return_vesting_delegation_operation op;
+//                   op.account = account;
+//                   op.vesting_shares = vesting_shares;
+//                   return op;
+//                }
+//
+//                account_name_type account;
+//                legacy_asset      vesting_shares;
+//            };
 
 //   struct legacy_comment_benefactor_reward_operation
 //   {
@@ -968,29 +968,29 @@ namespace steem { namespace plugins { namespace condenser_api {
                 legacy_asset      vesting_shares;
             };
 
-            struct legacy_claim_account_operation
-            {
-                legacy_claim_account_operation() {}
-                legacy_claim_account_operation( const claim_account_operation& op ) :
-                        creator( op.creator ),
-                        fee( legacy_asset::from_asset( op.fee ) )
-                {
-                   extensions.insert( op.extensions.begin(), op.extensions.end() );
-                }
-
-                operator claim_account_operation()const
-                {
-                   claim_account_operation op;
-                   op.creator = creator;
-                   op.fee = fee;
-                   op.extensions.insert( extensions.begin(), extensions.end() );
-                   return op;
-                }
-
-                account_name_type creator;
-                legacy_asset      fee;
-                extensions_type   extensions;
-            };
+//            struct legacy_claim_account_operation
+//            {
+//                legacy_claim_account_operation() {}
+//                legacy_claim_account_operation( const claim_account_operation& op ) :
+//                        creator( op.creator ),
+//                        fee( legacy_asset::from_asset( op.fee ) )
+//                {
+//                   extensions.insert( op.extensions.begin(), op.extensions.end() );
+//                }
+//
+//                operator claim_account_operation()const
+//                {
+//                   claim_account_operation op;
+//                   op.creator = creator;
+//                   op.fee = fee;
+//                   op.extensions.insert( extensions.begin(), extensions.end() );
+//                   return op;
+//                }
+//
+//                account_name_type creator;
+//                legacy_asset      fee;
+//                extensions_type   extensions;
+//            };
 
             struct legacy_smt_create_operation
             {
@@ -1027,11 +1027,11 @@ namespace steem { namespace plugins { namespace condenser_api {
                 legacy_smt_setup_operation( const smt_setup_operation& op ) :
                         decimal_places( op.decimal_places ),
                         max_supply( op.max_supply ),
-                        initial_generation_policy( op.initial_generation_policy ),
-                        generation_begin_time(op.generation_begin_time),
-                        generation_end_time(op.generation_end_time),
-                        announced_launch_time(op.announced_launch_time),
-                        launch_expiration_time(op.launch_expiration_time),
+//                        initial_generation_policy( op.initial_generation_policy ),
+//                        generation_begin_time(op.generation_begin_time),
+//                        generation_end_time(op.generation_end_time),
+//                        announced_launch_time(op.announced_launch_time),
+//                        launch_expiration_time(op.launch_expiration_time),
                         extensions( op.extensions ),
                         control_account( op.control_account ),
                         symbol( op.symbol )
@@ -1042,11 +1042,11 @@ namespace steem { namespace plugins { namespace condenser_api {
                     smt_setup_operation op;
                     op.decimal_places = decimal_places;
                     op.max_supply = max_supply;
-                    op.initial_generation_policy = initial_generation_policy;
-                    op.generation_begin_time = generation_begin_time;
-                    op.generation_end_time = generation_end_time;
-                    op.announced_launch_time = announced_launch_time;
-                    op.launch_expiration_time = launch_expiration_time;
+//                    op.initial_generation_policy = initial_generation_policy;
+//                    op.generation_begin_time = generation_begin_time;
+//                    op.generation_end_time = generation_end_time;
+//                    op.announced_launch_time = announced_launch_time;
+//                    op.launch_expiration_time = launch_expiration_time;
                     op.extensions = extensions;
                     op.control_account = control_account;
                     op.symbol = symbol;
@@ -1056,128 +1056,128 @@ namespace steem { namespace plugins { namespace condenser_api {
                 uint8_t                 decimal_places;
                 int64_t                 max_supply;
 
-                smt_generation_policy   initial_generation_policy;
+//                smt_generation_policy   initial_generation_policy;
 
-                time_point_sec          generation_begin_time;
-                time_point_sec          generation_end_time;
-                time_point_sec          announced_launch_time;
-                time_point_sec          launch_expiration_time;
+//                time_point_sec          generation_begin_time;
+//                time_point_sec          generation_end_time;
+//                time_point_sec          announced_launch_time;
+//                time_point_sec          launch_expiration_time;
                 extensions_type         extensions;
                 account_name_type       control_account;
                 asset_symbol_type       symbol;
             };
 
-            struct legacy_smt_setup_emissions_operation
-            {
-                legacy_smt_setup_emissions_operation() {}
-                legacy_smt_setup_emissions_operation( const smt_setup_emissions_operation& op ) :
-                        schedule_time(op.schedule_time),
-                        emissions_unit(op.emissions_unit),
-                        interval_seconds(op.interval_seconds),
-                        interval_count(op.interval_count),
-                        lep_time(op.lep_time),
-                        rep_time(op.rep_time),
-                        lep_abs_amount(op.lep_abs_amount),
-                        rep_abs_amount(op.rep_abs_amount),
-                        lep_rel_amount_numerator(op.lep_rel_amount_numerator),
-                        rep_rel_amount_numerator(op.rep_rel_amount_numerator),
-                        rel_amount_denom_bits(op.rel_amount_denom_bits),
-                        extensions( op.extensions ),
-                        control_account( op.control_account ),
-                        symbol( op.symbol )
-                {}
-
-                operator smt_setup_emissions_operation()const
-                {
-                    smt_setup_emissions_operation op;
-                    op.schedule_time = schedule_time;
-                    op.emissions_unit = emissions_unit;
-                    op.interval_seconds = interval_seconds;
-                    op.interval_count = interval_count;
-                    op.lep_time = lep_time;
-                    op.rep_time = rep_time;
-                    op.lep_abs_amount = lep_abs_amount;
-                    op.rep_abs_amount = rep_abs_amount;
-                    op.lep_rel_amount_numerator = lep_rel_amount_numerator;
-                    op.rep_rel_amount_numerator = rep_rel_amount_numerator;
-                    op.rel_amount_denom_bits = rel_amount_denom_bits;
-                    op.extensions = extensions;
-                    op.control_account = control_account;
-                    op.symbol = symbol;
-                    return op;
-                }
-
-                time_point_sec      schedule_time;
-                smt_emissions_unit  emissions_unit;
-
-                uint32_t            interval_seconds;
-                uint32_t            interval_count;
-
-                time_point_sec      lep_time;
-                time_point_sec      rep_time;
-
-                asset               lep_abs_amount;
-                asset               rep_abs_amount;
-                uint32_t            lep_rel_amount_numerator;
-                uint32_t            rep_rel_amount_numerator;
-
-                uint8_t             rel_amount_denom_bits;
-                extensions_type   extensions;
-                account_name_type control_account;
-                asset_symbol_type symbol;
-            };
-
-            struct legacy_smt_set_setup_parameters_operation
-            {
-                legacy_smt_set_setup_parameters_operation() {}
-                legacy_smt_set_setup_parameters_operation( const smt_set_setup_parameters_operation& op ) :
-                        setup_parameters(op.setup_parameters),
-                        extensions( op.extensions ),
-                        control_account( op.control_account ),
-                        symbol( op.symbol )
-                {}
-
-                operator smt_set_setup_parameters_operation()const
-                {
-                    smt_set_setup_parameters_operation op;
-                    op.setup_parameters = setup_parameters;
-                    op.extensions = extensions;
-                    op.control_account = control_account;
-                    op.symbol = symbol;
-                    return op;
-                }
-
-                flat_set< smt_setup_parameter >  setup_parameters;
-                extensions_type   extensions;
-                account_name_type control_account;
-                asset_symbol_type symbol;
-            };
-
-            struct legacy_smt_set_runtime_parameters_operation
-            {
-                legacy_smt_set_runtime_parameters_operation() {}
-                legacy_smt_set_runtime_parameters_operation( const smt_set_runtime_parameters_operation& op ) :
-                        runtime_parameters(op.runtime_parameters),
-                        extensions( op.extensions ),
-                        control_account( op.control_account ),
-                        symbol( op.symbol )
-                {}
-
-                operator smt_set_runtime_parameters_operation()const
-                {
-                    smt_set_runtime_parameters_operation op;
-                    op.runtime_parameters = runtime_parameters;
-                    op.extensions = extensions;
-                    op.control_account = control_account;
-                    op.symbol = symbol;
-                    return op;
-                }
-
-                flat_set< smt_runtime_parameter >   runtime_parameters;
-                extensions_type   extensions;
-                account_name_type control_account;
-                asset_symbol_type symbol;
-            };
+//            struct legacy_smt_setup_emissions_operation
+//            {
+//                legacy_smt_setup_emissions_operation() {}
+//                legacy_smt_setup_emissions_operation( const smt_setup_emissions_operation& op ) :
+//                        schedule_time(op.schedule_time),
+//                        emissions_unit(op.emissions_unit),
+//                        interval_seconds(op.interval_seconds),
+//                        interval_count(op.interval_count),
+//                        lep_time(op.lep_time),
+//                        rep_time(op.rep_time),
+//                        lep_abs_amount(op.lep_abs_amount),
+//                        rep_abs_amount(op.rep_abs_amount),
+//                        lep_rel_amount_numerator(op.lep_rel_amount_numerator),
+//                        rep_rel_amount_numerator(op.rep_rel_amount_numerator),
+//                        rel_amount_denom_bits(op.rel_amount_denom_bits),
+//                        extensions( op.extensions ),
+//                        control_account( op.control_account ),
+//                        symbol( op.symbol )
+//                {}
+//
+//                operator smt_setup_emissions_operation()const
+//                {
+//                    smt_setup_emissions_operation op;
+//                    op.schedule_time = schedule_time;
+//                    op.emissions_unit = emissions_unit;
+//                    op.interval_seconds = interval_seconds;
+//                    op.interval_count = interval_count;
+//                    op.lep_time = lep_time;
+//                    op.rep_time = rep_time;
+//                    op.lep_abs_amount = lep_abs_amount;
+//                    op.rep_abs_amount = rep_abs_amount;
+//                    op.lep_rel_amount_numerator = lep_rel_amount_numerator;
+//                    op.rep_rel_amount_numerator = rep_rel_amount_numerator;
+//                    op.rel_amount_denom_bits = rel_amount_denom_bits;
+//                    op.extensions = extensions;
+//                    op.control_account = control_account;
+//                    op.symbol = symbol;
+//                    return op;
+//                }
+//
+//                time_point_sec      schedule_time;
+//                smt_emissions_unit  emissions_unit;
+//
+//                uint32_t            interval_seconds;
+//                uint32_t            interval_count;
+//
+//                time_point_sec      lep_time;
+//                time_point_sec      rep_time;
+//
+//                asset               lep_abs_amount;
+//                asset               rep_abs_amount;
+//                uint32_t            lep_rel_amount_numerator;
+//                uint32_t            rep_rel_amount_numerator;
+//
+//                uint8_t             rel_amount_denom_bits;
+//                extensions_type   extensions;
+//                account_name_type control_account;
+//                asset_symbol_type symbol;
+//            };
+//
+//            struct legacy_smt_set_setup_parameters_operation
+//            {
+//                legacy_smt_set_setup_parameters_operation() {}
+//                legacy_smt_set_setup_parameters_operation( const smt_set_setup_parameters_operation& op ) :
+//                        setup_parameters(op.setup_parameters),
+//                        extensions( op.extensions ),
+//                        control_account( op.control_account ),
+//                        symbol( op.symbol )
+//                {}
+//
+//                operator smt_set_setup_parameters_operation()const
+//                {
+//                    smt_set_setup_parameters_operation op;
+//                    op.setup_parameters = setup_parameters;
+//                    op.extensions = extensions;
+//                    op.control_account = control_account;
+//                    op.symbol = symbol;
+//                    return op;
+//                }
+//
+//                flat_set< smt_setup_parameter >  setup_parameters;
+//                extensions_type   extensions;
+//                account_name_type control_account;
+//                asset_symbol_type symbol;
+//            };
+//
+//            struct legacy_smt_set_runtime_parameters_operation
+//            {
+//                legacy_smt_set_runtime_parameters_operation() {}
+//                legacy_smt_set_runtime_parameters_operation( const smt_set_runtime_parameters_operation& op ) :
+//                        runtime_parameters(op.runtime_parameters),
+//                        extensions( op.extensions ),
+//                        control_account( op.control_account ),
+//                        symbol( op.symbol )
+//                {}
+//
+//                operator smt_set_runtime_parameters_operation()const
+//                {
+//                    smt_set_runtime_parameters_operation op;
+//                    op.runtime_parameters = runtime_parameters;
+//                    op.extensions = extensions;
+//                    op.control_account = control_account;
+//                    op.symbol = symbol;
+//                    return op;
+//                }
+//
+//                flat_set< smt_runtime_parameter >   runtime_parameters;
+//                extensions_type   extensions;
+//                account_name_type control_account;
+//                asset_symbol_type symbol;
+//            };
 
             struct legacy_convert_to_sbd_operation
             {
@@ -1210,59 +1210,59 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_feed_publish_operation,
             legacy_convert_operation,
             legacy_account_create_operation,
-            legacy_account_update_operation,
+//            legacy_account_update_operation,
             legacy_witness_update_operation,
             legacy_account_witness_vote_operation,
-            legacy_account_witness_proxy_operation,
-            legacy_pow_operation,
-            legacy_custom_operation,
+//            legacy_account_witness_proxy_operation,
+//            legacy_pow_operation,
+//            legacy_custom_operation,
             legacy_report_over_production_operation,
 //            legacy_delete_comment_operation,
-            legacy_custom_json_operation,
+//            legacy_custom_json_operation,
 //            legacy_comment_options_operation,
             legacy_set_withdraw_vesting_route_operation,
 //            legacy_limit_order_create2_operation,
-            legacy_claim_account_operation,
-            legacy_create_claimed_account_operation,
-            legacy_request_account_recovery_operation,
-            legacy_recover_account_operation,
-            legacy_change_recovery_account_operation,
+//            legacy_claim_account_operation,
+//            legacy_create_claimed_account_operation,
+//            legacy_request_account_recovery_operation,
+//            legacy_recover_account_operation,
+//            legacy_change_recovery_account_operation,
 //            legacy_escrow_transfer_operation,
 //            legacy_escrow_dispute_operation,
 //            legacy_escrow_release_operation,
-            legacy_pow2_operation,
+//            legacy_pow2_operation,
 //            legacy_escrow_approve_operation,
-            legacy_transfer_to_savings_operation,
-            legacy_transfer_from_savings_operation,
-            legacy_cancel_transfer_from_savings_operation,
-            legacy_custom_binary_operation,
-            legacy_decline_voting_rights_operation,
-            legacy_reset_account_operation,
-            legacy_set_reset_account_operation,
-            legacy_claim_reward_balance_operation,
-            legacy_delegate_vesting_shares_operation,
-            legacy_account_create_with_delegation_operation,
+//            legacy_transfer_to_savings_operation,
+//            legacy_transfer_from_savings_operation,
+//            legacy_cancel_transfer_from_savings_operation,
+//            legacy_custom_binary_operation,
+//            legacy_decline_voting_rights_operation,
+//            legacy_reset_account_operation,
+//            legacy_set_reset_account_operation,
+//            legacy_claim_reward_balance_operation,
+//            legacy_delegate_vesting_shares_operation,
+//            legacy_account_create_with_delegation_operation,
             legacy_witness_set_properties_operation,
             legacy_fill_convert_request_operation,
 //            legacy_author_reward_operation,
 //            legacy_curation_reward_operation,
 //            legacy_comment_reward_operation,
             legacy_liquidity_reward_operation,
-            legacy_interest_operation,
+//            legacy_interest_operation,
             legacy_fill_vesting_withdraw_operation,
-            legacy_fill_order_operation,
+//            legacy_fill_order_operation,
             legacy_shutdown_witness_operation,
-            legacy_fill_transfer_from_savings_operation,
+//            legacy_fill_transfer_from_savings_operation,
             legacy_hardfork_operation,
             //           legacy_comment_payout_update_operation,
-            legacy_return_vesting_delegation_operation,
+//            legacy_return_vesting_delegation_operation,
             //           legacy_comment_benefactor_reward_operation,
             legacy_producer_reward_operation,
             legacy_smt_create_operation,
             legacy_smt_setup_operation,
-            legacy_smt_setup_emissions_operation,
-            legacy_smt_set_setup_parameters_operation,
-            legacy_smt_set_runtime_parameters_operation,
+//            legacy_smt_setup_emissions_operation,
+//            legacy_smt_set_setup_parameters_operation,
+//            legacy_smt_set_runtime_parameters_operation,
             legacy_convert_to_sbd_operation
             > legacy_operation;
 
@@ -1274,9 +1274,9 @@ namespace steem { namespace plugins { namespace condenser_api {
 
                 legacy_operation& l_op;
 
-                bool operator()( const account_update_operation& op )const                 { l_op = op; return true; }
+//                bool operator()( const account_update_operation& op )const                 { l_op = op; return true; }
 //      bool operator()( const comment_operation& op )const                        { l_op = op; return true; }
-                bool operator()( const create_claimed_account_operation& op )const         { l_op = op; return true; }
+//                bool operator()( const create_claimed_account_operation& op )const         { l_op = op; return true; }
 //      bool operator()( const delete_comment_operation& op )const                 { l_op = op; return true; }
 //      bool operator()( const vote_operation& op )const                           { l_op = op; return true; }
 //      bool operator()( const escrow_approve_operation& op )const                 { l_op = op; return true; }
@@ -1284,20 +1284,20 @@ namespace steem { namespace plugins { namespace condenser_api {
                 bool operator()( const set_withdraw_vesting_route_operation& op )const     { l_op = op; return true; }
                 bool operator()( const witness_set_properties_operation& op )const         { l_op = op; return true; }
                 bool operator()( const account_witness_vote_operation& op )const           { l_op = op; return true; }
-                bool operator()( const account_witness_proxy_operation& op )const          { l_op = op; return true; }
-                bool operator()( const custom_operation& op )const                         { l_op = op; return true; }
-                bool operator()( const custom_json_operation& op )const                    { l_op = op; return true; }
-                bool operator()( const custom_binary_operation& op )const                  { l_op = op; return true; }
+//                bool operator()( const account_witness_proxy_operation& op )const          { l_op = op; return true; }
+//                bool operator()( const custom_operation& op )const                         { l_op = op; return true; }
+//                bool operator()( const custom_json_operation& op )const                    { l_op = op; return true; }
+//                bool operator()( const custom_binary_operation& op )const                  { l_op = op; return true; }
 //      bool operator()( const limit_order_cancel_operation& op )const             { l_op = op; return true; }
-                bool operator()( const pow_operation& op )const                            { l_op = op; return true; }
+//                bool operator()( const pow_operation& op )const                            { l_op = op; return true; }
                 bool operator()( const report_over_production_operation& op )const         { l_op = op; return true; }
-                bool operator()( const request_account_recovery_operation& op )const       { l_op = op; return true; }
-                bool operator()( const recover_account_operation& op )const                { l_op = op; return true; }
-                bool operator()( const reset_account_operation& op )const                  { l_op = op; return true; }
-                bool operator()( const set_reset_account_operation& op )const              { l_op = op; return true; }
-                bool operator()( const change_recovery_account_operation& op )const        { l_op = op; return true; }
-                bool operator()( const cancel_transfer_from_savings_operation& op )const   { l_op = op; return true; }
-                bool operator()( const decline_voting_rights_operation& op )const          { l_op = op; return true; }
+//                bool operator()( const request_account_recovery_operation& op )const       { l_op = op; return true; }
+//                bool operator()( const recover_account_operation& op )const                { l_op = op; return true; }
+//                bool operator()( const reset_account_operation& op )const                  { l_op = op; return true; }
+//                bool operator()( const set_reset_account_operation& op )const              { l_op = op; return true; }
+//                bool operator()( const change_recovery_account_operation& op )const        { l_op = op; return true; }
+//                bool operator()( const cancel_transfer_from_savings_operation& op )const   { l_op = op; return true; }
+//                bool operator()( const decline_voting_rights_operation& op )const          { l_op = op; return true; }
                 bool operator()( const shutdown_witness_operation& op )const               { l_op = op; return true; }
                 bool operator()( const hardfork_operation& op )const                       { l_op = op; return true; }
 //      bool operator()( const comment_payout_update_operation& op )const          { l_op = op; return true; }
@@ -1374,41 +1374,41 @@ namespace steem { namespace plugins { namespace condenser_api {
 //         return true;
 //      }
 
-                bool operator()( const pow2_operation& op )const
-                {
-                   l_op = legacy_pow2_operation( op );
-                   return true;
-                }
-
-                bool operator()( const transfer_to_savings_operation& op )const
-                {
-                   l_op = legacy_transfer_to_savings_operation( op );
-                   return true;
-                }
-
-                bool operator()( const transfer_from_savings_operation& op )const
-                {
-                   l_op = legacy_transfer_from_savings_operation( op );
-                   return true;
-                }
-
-                bool operator()( const claim_reward_balance_operation& op )const
-                {
-                   l_op = legacy_claim_reward_balance_operation( op );
-                   return true;
-                }
-
-                bool operator()( const delegate_vesting_shares_operation& op )const
-                {
-                   l_op = legacy_delegate_vesting_shares_operation( op );
-                   return true;
-                }
-
-                bool operator()( const account_create_with_delegation_operation& op )const
-                {
-                   l_op = legacy_account_create_with_delegation_operation( op );
-                   return true;
-                }
+//                bool operator()( const pow2_operation& op )const
+//                {
+//                   l_op = legacy_pow2_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const transfer_to_savings_operation& op )const
+//                {
+//                   l_op = legacy_transfer_to_savings_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const transfer_from_savings_operation& op )const
+//                {
+//                   l_op = legacy_transfer_from_savings_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const claim_reward_balance_operation& op )const
+//                {
+//                   l_op = legacy_claim_reward_balance_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const delegate_vesting_shares_operation& op )const
+//                {
+//                   l_op = legacy_delegate_vesting_shares_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const account_create_with_delegation_operation& op )const
+//                {
+//                   l_op = legacy_account_create_with_delegation_operation( op );
+//                   return true;
+//                }
 
                 bool operator()( const fill_convert_request_operation& op )const
                 {
@@ -1440,11 +1440,11 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return true;
                 }
 
-                bool operator()( const interest_operation& op )const
-                {
-                   l_op = legacy_interest_operation( op );
-                   return true;
-                }
+//                bool operator()( const interest_operation& op )const
+//                {
+//                   l_op = legacy_interest_operation( op );
+//                   return true;
+//                }
 
                 bool operator()( const fill_vesting_withdraw_operation& op )const
                 {
@@ -1452,23 +1452,23 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return true;
                 }
 
-                bool operator()( const fill_order_operation& op )const
-                {
-                   l_op = legacy_fill_order_operation( op );
-                   return true;
-                }
-
-                bool operator()( const fill_transfer_from_savings_operation& op )const
-                {
-                   l_op = legacy_fill_transfer_from_savings_operation( op );
-                   return true;
-                }
-
-                bool operator()( const return_vesting_delegation_operation& op )const
-                {
-                   l_op = legacy_return_vesting_delegation_operation( op );
-                   return true;
-                }
+//                bool operator()( const fill_order_operation& op )const
+//                {
+//                   l_op = legacy_fill_order_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const fill_transfer_from_savings_operation& op )const
+//                {
+//                   l_op = legacy_fill_transfer_from_savings_operation( op );
+//                   return true;
+//                }
+//
+//                bool operator()( const return_vesting_delegation_operation& op )const
+//                {
+//                   l_op = legacy_return_vesting_delegation_operation( op );
+//                   return true;
+//                }
 
 //      bool operator()( const comment_benefactor_reward_operation& op )const
 //      {
@@ -1482,11 +1482,11 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return true;
                 }
 
-                bool operator()( const claim_account_operation& op )const
-                {
-                   l_op = legacy_claim_account_operation( op );
-                   return true;
-                }
+//                bool operator()( const claim_account_operation& op )const
+//                {
+//                   l_op = legacy_claim_account_operation( op );
+//                   return true;
+//                }
 
                 bool operator()( const smt_create_operation& op )const
                 {
@@ -1500,23 +1500,23 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return true;
                 }
 
-                bool operator()( const smt_setup_emissions_operation& op )const
-                {
-                    l_op = legacy_smt_setup_emissions_operation( op );
-                    return true;
-                }
-
-                bool operator()( const smt_set_setup_parameters_operation& op )const
-                {
-                    l_op = legacy_smt_set_setup_parameters_operation( op );
-                    return true;
-                }
-
-                bool operator()( const smt_set_runtime_parameters_operation& op )const
-                {
-                    l_op = legacy_smt_set_runtime_parameters_operation( op );
-                    return true;
-                }
+//                bool operator()( const smt_setup_emissions_operation& op )const
+//                {
+//                    l_op = legacy_smt_setup_emissions_operation( op );
+//                    return true;
+//                }
+//
+//                bool operator()( const smt_set_setup_parameters_operation& op )const
+//                {
+//                    l_op = legacy_smt_set_setup_parameters_operation( op );
+//                    return true;
+//                }
+//
+//                bool operator()( const smt_set_runtime_parameters_operation& op )const
+//                {
+//                    l_op = legacy_smt_set_runtime_parameters_operation( op );
+//                    return true;
+//                }
 
                 bool operator()( const convert_to_sbd_operation& op )const
                 {
@@ -1595,35 +1595,35 @@ namespace steem { namespace plugins { namespace condenser_api {
 //      return operation( escrow_release_operation( op ) );
 //   }
 
-                operation operator()( const legacy_pow2_operation& op )const
-                {
-                   return operation( pow2_operation( op ) );
-                }
-
-                operation operator()( const legacy_transfer_to_savings_operation& op )const
-                {
-                   return operation( transfer_to_savings_operation( op ) );
-                }
-
-                operation operator()( const legacy_transfer_from_savings_operation& op )const
-                {
-                   return operation( transfer_from_savings_operation( op ) );
-                }
-
-                operation operator()( const legacy_claim_reward_balance_operation& op )const
-                {
-                   return operation( claim_reward_balance_operation( op ) );
-                }
-
-                operation operator()( const legacy_delegate_vesting_shares_operation& op )const
-                {
-                   return operation( delegate_vesting_shares_operation( op ) );
-                }
-
-                operation operator()( const legacy_account_create_with_delegation_operation& op )const
-                {
-                   return operation( account_create_with_delegation_operation( op ) );
-                }
+//                operation operator()( const legacy_pow2_operation& op )const
+//                {
+//                   return operation( pow2_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_transfer_to_savings_operation& op )const
+//                {
+//                   return operation( transfer_to_savings_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_transfer_from_savings_operation& op )const
+//                {
+//                   return operation( transfer_from_savings_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_claim_reward_balance_operation& op )const
+//                {
+//                   return operation( claim_reward_balance_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_delegate_vesting_shares_operation& op )const
+//                {
+//                   return operation( delegate_vesting_shares_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_account_create_with_delegation_operation& op )const
+//                {
+//                   return operation( account_create_with_delegation_operation( op ) );
+//                }
 
                 operation operator()( const legacy_fill_convert_request_operation& op )const
                 {
@@ -1650,30 +1650,30 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return operation( liquidity_reward_operation( op ) );
                 }
 
-                operation operator()( const legacy_interest_operation& op )const
-                {
-                   return operation( interest_operation( op ) );
-                }
+//                operation operator()( const legacy_interest_operation& op )const
+//                {
+//                   return operation( interest_operation( op ) );
+//                }
 
                 operation operator()( const legacy_fill_vesting_withdraw_operation& op )const
                 {
                    return operation( fill_vesting_withdraw_operation( op ) );
                 }
 
-                operation operator()( const legacy_fill_order_operation& op )const
-                {
-                   return operation( fill_order_operation( op ) );
-                }
+//                operation operator()( const legacy_fill_order_operation& op )const
+//                {
+//                   return operation( fill_order_operation( op ) );
+//                }
 
-                operation operator()( const legacy_fill_transfer_from_savings_operation& op )const
-                {
-                   return operation( fill_transfer_from_savings_operation( op ) );
-                }
+//                operation operator()( const legacy_fill_transfer_from_savings_operation& op )const
+//                {
+//                   return operation( fill_transfer_from_savings_operation( op ) );
+//                }
 
-                operation operator()( const legacy_return_vesting_delegation_operation& op )const
-                {
-                   return operation( return_vesting_delegation_operation( op ) );
-                }
+//                operation operator()( const legacy_return_vesting_delegation_operation& op )const
+//                {
+//                   return operation( return_vesting_delegation_operation( op ) );
+//                }
 
 //   operation operator()( const legacy_comment_benefactor_reward_operation& op )const
 //   {
@@ -1685,10 +1685,10 @@ namespace steem { namespace plugins { namespace condenser_api {
                    return operation( producer_reward_operation( op ) );
                 }
 
-                operation operator()( const legacy_claim_account_operation& op )const
-                {
-                   return operation( claim_account_operation( op ) );
-                }
+//                operation operator()( const legacy_claim_account_operation& op )const
+//                {
+//                   return operation( claim_account_operation( op ) );
+//                }
 
                 operation operator()( const legacy_smt_create_operation& op )const
                 {
@@ -1700,20 +1700,20 @@ namespace steem { namespace plugins { namespace condenser_api {
                     return operation( smt_setup_operation( op ) );
                 }
 
-                operation operator()( const legacy_smt_setup_emissions_operation& op )const
-                {
-                    return operation( smt_setup_emissions_operation( op ) );
-                }
+//                operation operator()( const legacy_smt_setup_emissions_operation& op )const
+//                {
+//                    return operation( smt_setup_emissions_operation( op ) );
+//                }
 
-                operation operator()( const legacy_smt_set_setup_parameters_operation& op )const
-                {
-                    return operation( smt_set_setup_parameters_operation( op ) );
-                }
-
-                operation operator()( const legacy_smt_set_runtime_parameters_operation& op )const
-                {
-                    return operation( smt_set_runtime_parameters_operation( op ) );
-                }
+//                operation operator()( const legacy_smt_set_setup_parameters_operation& op )const
+//                {
+//                    return operation( smt_set_setup_parameters_operation( op ) );
+//                }
+//
+//                operation operator()( const legacy_smt_set_runtime_parameters_operation& op )const
+//                {
+//                    return operation( smt_set_runtime_parameters_operation( op ) );
+//                }
 
                 operation operator()( const legacy_convert_to_sbd_operation& op )const
                 {
@@ -1735,11 +1735,11 @@ namespace fc {
     void to_variant( const steem::plugins::condenser_api::legacy_operation&, fc::variant& );
     void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_operation& );
 
-    void to_variant( const steem::plugins::condenser_api::legacy_comment_options_extensions&, fc::variant& );
-    void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_comment_options_extensions& );
-
-    void to_variant( const steem::plugins::condenser_api::legacy_pow2_work&, fc::variant& );
-    void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_pow2_work& );
+//    void to_variant( const steem::plugins::condenser_api::legacy_comment_options_extensions&, fc::variant& );
+//    void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_comment_options_extensions& );
+//
+//    void to_variant( const steem::plugins::condenser_api::legacy_pow2_work&, fc::variant& );
+//    void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_pow2_work& );
 
     struct from_old_static_variant
     {
@@ -1787,12 +1787,13 @@ namespace fc {
 }
 
 FC_REFLECT( steem::plugins::condenser_api::api_chain_properties,
-(account_creation_fee)(maximum_block_size)(sbd_interest_rate)(account_subsidy_budget)(account_subsidy_decay)
+(account_creation_fee)(maximum_block_size)
+//(sbd_interest_rate)(account_subsidy_budget)(account_subsidy_decay)
 )
 
 FC_REFLECT( steem::plugins::condenser_api::legacy_price, (base)(quote) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_to_savings_operation, (from)(to)(amount)(memo) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_to_savings_operation, (from)(to)(amount)(memo) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_convert_operation, (owner)(requestid)(amount) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_feed_publish_operation, (publisher)(exchange_rate) )
 
@@ -1802,21 +1803,21 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_account_create_operation,
         (new_account_name)
 (owner)
 (active)
-(posting)
-(memo_key)
+//(posting)
+//(memo_key)
 (json_metadata) )
 
-FC_REFLECT( steem::plugins::condenser_api::legacy_account_create_with_delegation_operation,
-(fee)
-        (delegation)
-        (creator)
-        (new_account_name)
-(owner)
-(active)
-(posting)
-(memo_key)
-(json_metadata)
-(extensions) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_account_create_with_delegation_operation,
+//(fee)
+//        (delegation)
+//        (creator)
+//        (new_account_name)
+//(owner)
+//(active)
+//(posting)
+//(memo_key)
+//(json_metadata)
+//(extensions) )
 
 FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_operation, (from)(to)(amount)(fee)(memo) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_transfer_to_vesting_operation, (from)(to)(amount) )
@@ -1827,22 +1828,22 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_witness_update_operation, (own
 //FC_REFLECT( steem::plugins::condenser_api::legacy_comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions) )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration) );
 //FC_REFLECT( steem::plugins::condenser_api::legacy_escrow_release_operation, (from)(to)(agent)(who)(receiver)(escrow_id)(sbd_amount)(steem_amount) );
-FC_REFLECT( steem::plugins::condenser_api::legacy_pow2_operation, (work)(new_owner_key)(props) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_claim_reward_balance_operation, (account)(reward_steem)(reward_sbd)(reward_vests) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
+//FC_REFLECT( steem::plugins::condenser_api::legacy_pow2_operation, (work)(new_owner_key)(props) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_claim_reward_balance_operation, (account)(reward_steem)(reward_sbd)(reward_vests) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
 //FC_REFLECT( steem::plugins::condenser_api::legacy_author_reward_operation, (author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_curation_reward_operation, (curator)(reward)(comment_author)(comment_permlink) )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_comment_reward_operation, (author)(permlink)(payout) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_fill_convert_request_operation, (owner)(requestid)(amount_in)(amount_out) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_liquidity_reward_operation, (owner)(payout) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_interest_operation, (owner)(interest) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_interest_operation, (owner)(interest) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_fill_vesting_withdraw_operation, (from_account)(to_account)(withdrawn)(deposited) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_fill_order_operation, (current_owner)(current_orderid)(current_pays)(open_owner)(open_orderid)(open_pays) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_return_vesting_delegation_operation, (account)(vesting_shares) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_fill_order_operation, (current_owner)(current_orderid)(current_pays)(open_owner)(open_orderid)(open_pays) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_return_vesting_delegation_operation, (account)(vesting_shares) )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_comment_benefactor_reward_operation, (benefactor)(author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_producer_reward_operation, (producer)(vesting_shares) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_claim_account_operation, (creator)(fee)(extensions) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_claim_account_operation, (creator)(fee)(extensions) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_smt_create_operation,
 (smt_creation_fee)
         (precision)
@@ -1852,39 +1853,39 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_smt_create_operation,
 FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_operation,
 (decimal_places)
         (max_supply)
-        (initial_generation_policy)
-        (generation_begin_time)
-        (generation_end_time)
-        (announced_launch_time)
-        (launch_expiration_time)
+//        (initial_generation_policy)
+//        (generation_begin_time)
+//        (generation_end_time)
+//        (announced_launch_time)
+//        (launch_expiration_time)
         (extensions)
         (control_account)
 (symbol) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_emissions_operation,
-(schedule_time)
-        (emissions_unit)
-        (interval_seconds)
-        (interval_count)
-        (lep_time)
-        (rep_time)
-        (lep_abs_amount)
-        (rep_abs_amount)
-        (lep_rel_amount_numerator)
-        (rep_rel_amount_numerator)
-        (rel_amount_denom_bits)
-        (extensions)
-        (control_account)
-(symbol) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_setup_parameters_operation,
-(setup_parameters)
-        (extensions)
-        (control_account)
-(symbol) )
-FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_runtime_parameters_operation,
-(runtime_parameters)
-        (extensions)
-        (control_account)
-(symbol) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_emissions_operation,
+//(schedule_time)
+//        (emissions_unit)
+//        (interval_seconds)
+//        (interval_count)
+//        (lep_time)
+//        (rep_time)
+//        (lep_abs_amount)
+//        (rep_abs_amount)
+//        (lep_rel_amount_numerator)
+//        (rep_rel_amount_numerator)
+//        (rel_amount_denom_bits)
+//        (extensions)
+//        (control_account)
+//(symbol) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_setup_parameters_operation,
+//(setup_parameters)
+//        (extensions)
+//        (control_account)
+//(symbol) )
+//FC_REFLECT( steem::plugins::condenser_api::legacy_smt_set_runtime_parameters_operation,
+//(runtime_parameters)
+//        (extensions)
+//        (control_account)
+//(symbol) )
 
 FC_REFLECT( steem::plugins::condenser_api::legacy_convert_to_sbd_operation, (owner)(amount) )
 

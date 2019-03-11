@@ -86,29 +86,29 @@ namespace detail {
       boost::signals2::connection   _post_apply_operation_conn;
    };
 
-   struct comment_options_extension_visitor
-   {
-      comment_options_extension_visitor( const comment_object& c, const database& db ) : _c( c ), _db( db ) {}
-
-      typedef void result_type;
-
-      const comment_object& _c;
-      const database& _db;
-
-//#ifdef STEEM_ENABLE_SMT
-      void operator()( const allowed_vote_assets& va) const
-      {
-         FC_TODO("To be implemented  support for allowed_vote_assets");
-      }
-//#endif
-
-      void operator()( const comment_payout_beneficiaries& cpb )const
-      {
-         STEEM_ASSERT( cpb.beneficiaries.size() <= 8,
-            plugin_exception,
-            "Cannot specify more than 8 beneficiaries." );
-      }
-   };
+//   struct comment_options_extension_visitor
+//   {
+//      comment_options_extension_visitor( const comment_object& c, const database& db ) : _c( c ), _db( db ) {}
+//
+//      typedef void result_type;
+//
+//      const comment_object& _c;
+//      const database& _db;
+//
+////#ifdef STEEM_ENABLE_SMT
+//      void operator()( const allowed_vote_assets& va) const
+//      {
+//         FC_TODO("To be implemented  support for allowed_vote_assets");
+//      }
+////#endif
+//
+//      void operator()( const comment_payout_beneficiaries& cpb )const
+//      {
+//         STEEM_ASSERT( cpb.beneficiaries.size() <= 8,
+//            plugin_exception,
+//            "Cannot specify more than 8 beneficiaries." );
+//      }
+//   };
 
    void check_memo( const string& memo, const chain::account_object& account, const account_authority_object& auth )
    {
@@ -150,17 +150,17 @@ namespace detail {
                "Detected private active key in memo field. You should change your active keys." );
       }
 
-      for( auto& key_weight_pair : auth.posting.key_auths )
-      {
-         for( auto& key : keys )
-            STEEM_ASSERT( key_weight_pair.first != key,  plugin_exception,
-               "Detected private posting key in memo field. You should change your posting keys." );
-      }
+//      for( auto& key_weight_pair : auth.posting.key_auths )
+//      {
+//         for( auto& key : keys )
+//            STEEM_ASSERT( key_weight_pair.first != key,  plugin_exception,
+//               "Detected private posting key in memo field. You should change your posting keys." );
+//      }
 
-      const auto& memo_key = account.memo_key;
-      for( auto& key : keys )
-         STEEM_ASSERT( memo_key != key,  plugin_exception,
-            "Detected private memo key in memo field. You should change your memo key." );
+//      const auto& memo_key = account.memo_key;
+//      for( auto& key : keys )
+//         STEEM_ASSERT( memo_key != key,  plugin_exception,
+//            "Detected private memo key in memo field. You should change your memo key." );
    }
 
    struct operation_visitor
@@ -207,21 +207,21 @@ namespace detail {
                         _db.get< account_authority_object, chain::by_account >( o.from ) );
       }
 
-      void operator()( const transfer_to_savings_operation& o )const
-      {
-         if( o.memo.length() > 0 )
-            check_memo( o.memo,
-                        _db.get< chain::account_object, chain::by_name >( o.from ),
-                        _db.get< account_authority_object, chain::by_account >( o.from ) );
-      }
-
-      void operator()( const transfer_from_savings_operation& o )const
-      {
-         if( o.memo.length() > 0 )
-            check_memo( o.memo,
-                        _db.get< chain::account_object, chain::by_name >( o.from ),
-                        _db.get< account_authority_object, chain::by_account >( o.from ) );
-      }
+//      void operator()( const transfer_to_savings_operation& o )const
+//      {
+//         if( o.memo.length() > 0 )
+//            check_memo( o.memo,
+//                        _db.get< chain::account_object, chain::by_name >( o.from ),
+//                        _db.get< account_authority_object, chain::by_account >( o.from ) );
+//      }
+//
+//      void operator()( const transfer_from_savings_operation& o )const
+//      {
+//         if( o.memo.length() > 0 )
+//            check_memo( o.memo,
+//                        _db.get< chain::account_object, chain::by_name >( o.from ),
+//                        _db.get< account_authority_object, chain::by_account >( o.from ) );
+//      }
    };
 
    void witness_plugin_impl::on_pre_apply_block( const chain::block_notification& b )
@@ -241,20 +241,20 @@ namespace detail {
    {
       switch( note.op.which() )
       {
-         case operation::tag< custom_operation >::value:
-         case operation::tag< custom_json_operation >::value:
-         case operation::tag< custom_binary_operation >::value:
-         {
-            flat_set< account_name_type > impacted;
-            app::operation_get_impacted_accounts( note.op, impacted );
-
-            for( auto& account : impacted )
-               if( _db.is_producing() )
-                  STEEM_ASSERT( _dupe_customs.insert( account ).second, plugin_exception,
-                     "Account ${a} already submitted a custom json operation this block.",
-                     ("a", account) );
-         }
-            break;
+//         case operation::tag< custom_operation >::value:
+//         case operation::tag< custom_json_operation >::value:
+//         case operation::tag< custom_binary_operation >::value:
+//         {
+//            flat_set< account_name_type > impacted;
+//            app::operation_get_impacted_accounts( note.op, impacted );
+//
+//            for( auto& account : impacted )
+//               if( _db.is_producing() )
+//                  STEEM_ASSERT( _dupe_customs.insert( account ).second, plugin_exception,
+//                     "Account ${a} already submitted a custom json operation this block.",
+//                     ("a", account) );
+//         }
+//            break;
          default:
             break;
       }

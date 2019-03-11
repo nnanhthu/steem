@@ -448,7 +448,7 @@ namespace steem { namespace chain {
 //      >,
 //      allocator< decline_voting_rights_request_object >
 //   > decline_voting_rights_request_index;
-//
+
 //   typedef multi_index_container<
 //      reward_fund_object,
 //      indexed_by<
@@ -497,7 +497,7 @@ CHAINBASE_SET_INDEX_TYPE( steem::chain::withdraw_vesting_route_object, steem::ch
 //FC_REFLECT( steem::chain::decline_voting_rights_request_object,
 //             (id)(account)(effective_date) )
 //CHAINBASE_SET_INDEX_TYPE( steem::chain::decline_voting_rights_request_object, steem::chain::decline_voting_rights_request_index )
-//
+
 //FC_REFLECT( steem::chain::reward_fund_object,
 //            (id)
 //            (name)

@@ -55,21 +55,21 @@
 
 #define STEEM_GENESIS_TIME                    (fc::time_point_sec(1458835200))
 #define STEEM_MINING_TIME                     (fc::time_point_sec(1458838800))
-#define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF12 (60*60*24)    /// 1 day
-#define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF17 (60*60*12)    /// 12 hours
-#define STEEM_CASHOUT_WINDOW_SECONDS          (60*60*24*7)  /// 7 days
-#define STEEM_SECOND_CASHOUT_WINDOW           (60*60*24*30) /// 30 days
-#define STEEM_MAX_CASHOUT_WINDOW_SECONDS      (60*60*24*14) /// 2 weeks
-#define STEEM_UPVOTE_LOCKOUT_HF7              (fc::minutes(1))
-#define STEEM_UPVOTE_LOCKOUT_SECONDS          (60*60*12)    /// 12 hours
-#define STEEM_UPVOTE_LOCKOUT_HF17             (fc::hours(12))
+//#define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF12 (60*60*24)    /// 1 day
+//#define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF17 (60*60*12)    /// 12 hours
+//#define STEEM_CASHOUT_WINDOW_SECONDS          (60*60*24*7)  /// 7 days
+//#define STEEM_SECOND_CASHOUT_WINDOW           (60*60*24*30) /// 30 days
+//#define STEEM_MAX_CASHOUT_WINDOW_SECONDS      (60*60*24*14) /// 2 weeks
+//#define STEEM_UPVOTE_LOCKOUT_HF7              (fc::minutes(1))
+//#define STEEM_UPVOTE_LOCKOUT_SECONDS          (60*60*12)    /// 12 hours
+//#define STEEM_UPVOTE_LOCKOUT_HF17             (fc::hours(12))
 
 #define STEEM_MIN_ACCOUNT_CREATION_FEE           1
 #define STEEM_MAX_ACCOUNT_CREATION_FEE           int64_t(1000000)
 
-#define STEEM_OWNER_AUTH_RECOVERY_PERIOD                  fc::days(30)
-#define STEEM_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  fc::days(1)
-#define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
+//#define STEEM_OWNER_AUTH_RECOVERY_PERIOD                  fc::days(30)
+//#define STEEM_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  fc::days(1)
+//#define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
 #define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))
@@ -114,26 +114,26 @@
 #define STEEM_VESTING_WITHDRAW_INTERVALS      13
 #define STEEM_VESTING_WITHDRAW_INTERVAL_SECONDS (60*60*24*7) /// 1 week per interval
 #define STEEM_MAX_WITHDRAW_ROUTES             10
-#define STEEM_SAVINGS_WITHDRAW_TIME        	(fc::days(3))
-#define STEEM_SAVINGS_WITHDRAW_REQUEST_LIMIT  100
+//#define STEEM_SAVINGS_WITHDRAW_TIME        	(fc::days(3))
+//#define STEEM_SAVINGS_WITHDRAW_REQUEST_LIMIT  100
 #define STEEM_VOTING_MANA_REGENERATION_SECONDS (5*60*60*24) // 5 day
 #define STEEM_MAX_VOTE_CHANGES                5
 #define STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF6 (60*30) /// 30 minutes
 #define STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF20 (60*15) /// 15 minutes
-#define STEEM_MIN_VOTE_INTERVAL_SEC           3
-#define STEEM_VOTE_DUST_THRESHOLD             (50000000)
+//#define STEEM_MIN_VOTE_INTERVAL_SEC           3
+//#define STEEM_VOTE_DUST_THRESHOLD             (50000000)
 
-#define STEEM_MIN_ROOT_COMMENT_INTERVAL       (fc::seconds(60*5)) // 5 minutes
-#define STEEM_MIN_REPLY_INTERVAL              (fc::seconds(20)) // 20 seconds
-#define STEEM_MIN_REPLY_INTERVAL_HF20         (fc::seconds(3)) // 3 seconds
-#define STEEM_POST_AVERAGE_WINDOW             (60*60*24u) // 1 day
-#define STEEM_POST_WEIGHT_CONSTANT            (uint64_t(4*STEEM_100_PERCENT) * (4*STEEM_100_PERCENT))// (4*STEEM_100_PERCENT) -> 2 posts per 1 days, average 1 every 12 hours
+//#define STEEM_MIN_ROOT_COMMENT_INTERVAL       (fc::seconds(60*5)) // 5 minutes
+//#define STEEM_MIN_REPLY_INTERVAL              (fc::seconds(20)) // 20 seconds
+//#define STEEM_MIN_REPLY_INTERVAL_HF20         (fc::seconds(3)) // 3 seconds
+//#define STEEM_POST_AVERAGE_WINDOW             (60*60*24u) // 1 day
+//#define STEEM_POST_WEIGHT_CONSTANT            (uint64_t(4*STEEM_100_PERCENT) * (4*STEEM_100_PERCENT))// (4*STEEM_100_PERCENT) -> 2 posts per 1 days, average 1 every 12 hours
 
 #define STEEM_MAX_ACCOUNT_WITNESS_VOTES       30
 
 #define STEEM_100_PERCENT                     10000
 #define STEEM_1_PERCENT                       (STEEM_100_PERCENT/100)
-#define STEEM_DEFAULT_SBD_INTEREST_RATE       (10*STEEM_1_PERCENT) ///< 10% APR
+//#define STEEM_DEFAULT_SBD_INTEREST_RATE       (10*STEEM_1_PERCENT) ///< 10% APR
 
 #define STEEM_INFLATION_RATE_START_PERCENT    (978) // Fixes block 7,000,000 to 9.5%
 #define STEEM_INFLATION_RATE_STOP_PERCENT     (95) // 0.95%
@@ -147,9 +147,9 @@
 
 #define STEEM_BANDWIDTH_AVERAGE_WINDOW_SECONDS (60*60*24*7) ///< 1 week
 #define STEEM_BANDWIDTH_PRECISION             (uint64_t(1000000)) ///< 1 million
-#define STEEM_MAX_COMMENT_DEPTH_PRE_HF17      6
-#define STEEM_MAX_COMMENT_DEPTH               0xffff // 64k
-#define STEEM_SOFT_MAX_COMMENT_DEPTH          0xff // 255
+//#define STEEM_MAX_COMMENT_DEPTH_PRE_HF17      6
+//#define STEEM_MAX_COMMENT_DEPTH               0xffff // 64k
+//#define STEEM_SOFT_MAX_COMMENT_DEPTH          0xff // 255
 
 #define STEEM_MAX_RESERVE_RATIO               (20000)
 
@@ -176,11 +176,11 @@
 #define STEEM_ACTIVE_CHALLENGE_COOLDOWN       fc::days(1)
 #define STEEM_OWNER_CHALLENGE_COOLDOWN        fc::days(1)
 
-#define STEEM_POST_REWARD_FUND_NAME           ("post")
+//#define STEEM_POST_REWARD_FUND_NAME           ("post")
 //#define STEEM_COMMENT_REWARD_FUND_NAME        ("comment")
-#define STEEM_RECENT_RSHARES_DECAY_TIME_HF17    (fc::days(30))
-#define STEEM_RECENT_RSHARES_DECAY_TIME_HF19    (fc::days(15))
-#define STEEM_CONTENT_CONSTANT_HF0            (uint128_t(uint64_t(2000000000000ll)))
+//#define STEEM_RECENT_RSHARES_DECAY_TIME_HF17    (fc::days(30))
+//#define STEEM_RECENT_RSHARES_DECAY_TIME_HF19    (fc::days(15))
+//#define STEEM_CONTENT_CONSTANT_HF0            (uint128_t(uint64_t(2000000000000ll)))
 // note, if redefining these constants make sure calculate_claims doesn't overflow
 
 // 5ccc e802 de5f
@@ -228,8 +228,8 @@
 #define STEEM_MIN_ACCOUNT_NAME_LENGTH          3
 #define STEEM_MAX_ACCOUNT_NAME_LENGTH         16
 
-#define STEEM_MIN_PERMLINK_LENGTH             0
-#define STEEM_MAX_PERMLINK_LENGTH             256
+//#define STEEM_MIN_PERMLINK_LENGTH             0
+//#define STEEM_MAX_PERMLINK_LENGTH             256
 #define STEEM_MAX_WITNESS_URL_LENGTH          2048
 
 #define STEEM_MAX_SHARE_SUPPLY                uint64_t(1000000000000000000ll)
@@ -240,7 +240,7 @@
 #define STEEM_MIN_TRANSACTION_SIZE_LIMIT      1024
 #define STEEM_SECONDS_PER_YEAR                (uint64_t(60*60*24*365ll))
 
-#define STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC  (60*60*24*30)
+//#define STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC  (60*60*24*30)
 #define STEEM_MAX_TRANSACTION_SIZE            (1024*64)/16
 #define STEEM_MIN_BLOCK_SIZE_LIMIT            (STEEM_MAX_TRANSACTION_SIZE)
 #define STEEM_MAX_BLOCK_SIZE                  (STEEM_MAX_TRANSACTION_SIZE*STEEM_BLOCK_INTERVAL*2000*16)
@@ -281,9 +281,9 @@
 #define STEEM_INITIAL_VOTE_POWER_RATE (40)
 #define STEEM_REDUCED_VOTE_POWER_RATE (10)
 
-#define STEEM_MAX_LIMIT_ORDER_EXPIRATION     (60*60*24*28) // 28 days
-#define STEEM_DELEGATION_RETURN_PERIOD_HF0   (STEEM_CASHOUT_WINDOW_SECONDS)
-#define STEEM_DELEGATION_RETURN_PERIOD_HF20  (STEEM_VOTING_MANA_REGENERATION_SECONDS)
+//#define STEEM_MAX_LIMIT_ORDER_EXPIRATION     (60*60*24*28) // 28 days
+//#define STEEM_DELEGATION_RETURN_PERIOD_HF0   (STEEM_CASHOUT_WINDOW_SECONDS)
+//#define STEEM_DELEGATION_RETURN_PERIOD_HF20  (STEEM_VOTING_MANA_REGENERATION_SECONDS)
 
 #define STEEM_RD_MIN_DECAY_BITS               6
 #define STEEM_RD_MAX_DECAY_BITS              32
@@ -297,22 +297,22 @@
 #define STEEM_RD_MIN_BUDGET                  1
 #define STEEM_RD_MAX_DECAY                   (uint32_t(0xFFFFFFFF))
 
-#define STEEM_ACCOUNT_SUBSIDY_PRECISION      (STEEM_100_PERCENT)
+//#define STEEM_ACCOUNT_SUBSIDY_PRECISION      (STEEM_100_PERCENT)
 
 // We want the global subsidy to run out first in normal (Poisson)
 // conditions, so we boost the per-witness subsidy a little.
-#define STEEM_WITNESS_SUBSIDY_BUDGET_PERCENT (125 * STEEM_1_PERCENT)
+//#define STEEM_WITNESS_SUBSIDY_BUDGET_PERCENT (125 * STEEM_1_PERCENT)
 
 // Since witness decay only procs once per round, multiplying the decay
 // constant by the number of witnesses means the per-witness pools have
 // the same effective decay rate in real-time terms.
-#define STEEM_WITNESS_SUBSIDY_DECAY_PERCENT  (STEEM_MAX_WITNESSES * STEEM_100_PERCENT)
+//#define STEEM_WITNESS_SUBSIDY_DECAY_PERCENT  (STEEM_MAX_WITNESSES * STEEM_100_PERCENT)
 
 // 347321 corresponds to a 5-day halflife
-#define STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY  (347321)
+//#define STEEM_DEFAULT_ACCOUNT_SUBSIDY_DECAY  (347321)
 // Default rate is 0.5 accounts per block
-#define STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET (797)
-#define STEEM_DECAY_BACKSTOP_PERCENT         (90 * STEEM_1_PERCENT)
+//#define STEEM_DEFAULT_ACCOUNT_SUBSIDY_BUDGET (797)
+//#define STEEM_DECAY_BACKSTOP_PERCENT         (90 * STEEM_1_PERCENT)
 
 /**
  *  Reserved Account IDs with special meaning
@@ -332,15 +332,15 @@
 
 //#ifdef STEEM_ENABLE_SMT
 
-#define SMT_MAX_VOTABLE_ASSETS 2
-#define SMT_VESTING_WITHDRAW_INTERVAL_SECONDS   (60*60*24*7) /// 1 week per interval
-#define SMT_UPVOTE_LOCKOUT                      (60*60*12)   /// 12 hours
-#define SMT_EMISSION_MIN_INTERVAL_SECONDS       (60*60*6)    /// 6 hours
-#define SMT_EMIT_INDEFINITELY                   (std::numeric_limits<uint32_t>::max())
-#define SMT_MAX_NOMINAL_VOTES_PER_DAY           (1000)
-#define SMT_MAX_VOTES_PER_REGENERATION          ((SMT_MAX_NOMINAL_VOTES_PER_DAY * SMT_VESTING_WITHDRAW_INTERVAL_SECONDS) / 86400)
-#define SMT_DEFAULT_VOTES_PER_REGEN_PERIOD      (50)
-#define SMT_DEFAULT_PERCENT_CURATION_REWARDS    (25 * STEEM_1_PERCENT)
+//#define SMT_MAX_VOTABLE_ASSETS 2
+//#define SMT_VESTING_WITHDRAW_INTERVAL_SECONDS   (60*60*24*7) /// 1 week per interval
+//#define SMT_UPVOTE_LOCKOUT                      (60*60*12)   /// 12 hours
+//#define SMT_EMISSION_MIN_INTERVAL_SECONDS       (60*60*6)    /// 6 hours
+//#define SMT_EMIT_INDEFINITELY                   (std::numeric_limits<uint32_t>::max())
+//#define SMT_MAX_NOMINAL_VOTES_PER_DAY           (1000)
+//#define SMT_MAX_VOTES_PER_REGENERATION          ((SMT_MAX_NOMINAL_VOTES_PER_DAY * SMT_VESTING_WITHDRAW_INTERVAL_SECONDS) / 86400)
+//#define SMT_DEFAULT_VOTES_PER_REGEN_PERIOD      (50)
+//#define SMT_DEFAULT_PERCENT_CURATION_REWARDS    (25 * STEEM_1_PERCENT)
 #define SMT_TOKEN_CREATION_FEE                  int64_t(2000000)
 
 //#endif /// STEEM_ENABLE_SMT

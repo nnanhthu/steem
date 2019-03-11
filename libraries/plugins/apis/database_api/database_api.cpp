@@ -28,7 +28,7 @@ class database_api_impl
          (get_dynamic_global_properties)
          (get_witness_schedule)
          (get_hardfork_properties)
-         (get_reward_funds)
+//         (get_reward_funds)
          (get_current_price_feed)
          (get_feed_history)
          (list_witnesses)
@@ -39,31 +39,31 @@ class database_api_impl
          (find_accounts)
          (list_owner_histories)
          (find_owner_histories)
-         (list_account_recovery_requests)
-         (find_account_recovery_requests)
-         (list_change_recovery_account_requests)
-         (find_change_recovery_account_requests)
-         (list_escrows)
-         (find_escrows)
+//         (list_account_recovery_requests)
+//         (find_account_recovery_requests)
+//         (list_change_recovery_account_requests)
+//         (find_change_recovery_account_requests)
+//         (list_escrows)
+//         (find_escrows)
          (list_withdraw_vesting_routes)
          (find_withdraw_vesting_routes)
-         (list_savings_withdrawals)
-         (find_savings_withdrawals)
-         (list_vesting_delegations)
-         (find_vesting_delegations)
-         (list_vesting_delegation_expirations)
-         (find_vesting_delegation_expirations)
+//         (list_savings_withdrawals)
+//         (find_savings_withdrawals)
+//         (list_vesting_delegations)
+//         (find_vesting_delegations)
+//         (list_vesting_delegation_expirations)
+//         (find_vesting_delegation_expirations)
          (list_sbd_conversion_requests)
          (find_sbd_conversion_requests)
-         (list_decline_voting_rights_requests)
-         (find_decline_voting_rights_requests)
-         (list_comments)
-         (find_comments)
-         (list_votes)
-         (find_votes)
-         (list_limit_orders)
-         (find_limit_orders)
-         (get_order_book)
+//         (list_decline_voting_rights_requests)
+//         (find_decline_voting_rights_requests)
+//         (list_comments)
+//         (find_comments)
+//         (list_votes)
+//         (find_votes)
+//         (list_limit_orders)
+//         (find_limit_orders)
+//         (get_order_book)
          (get_transaction_hex)
          (get_required_signatures)
          (get_potential_signatures)
@@ -74,8 +74,8 @@ class database_api_impl
          (get_nai_pool)
          (list_smt_tokens)
          (find_smt_tokens)
-         (list_smt_token_emissions)
-         (find_smt_token_emissions)
+//         (list_smt_token_emissions)
+//         (find_smt_token_emissions)
          (get_balance)
 //#endif
       )
@@ -157,21 +157,21 @@ DEFINE_API_IMPL( database_api_impl, get_hardfork_properties )
    return _db.get_hardfork_property_object();
 }
 
-DEFINE_API_IMPL( database_api_impl, get_reward_funds )
-{
-   get_reward_funds_return result;
-
-   const auto& rf_idx = _db.get_index< reward_fund_index, by_id >();
-   auto itr = rf_idx.begin();
-
-   while( itr != rf_idx.end() )
-   {
-      result.funds.push_back( *itr );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, get_reward_funds )
+//{
+//   get_reward_funds_return result;
+//
+//   const auto& rf_idx = _db.get_index< reward_fund_index, by_id >();
+//   auto itr = rf_idx.begin();
+//
+//   while( itr != rf_idx.end() )
+//   {
+//      result.funds.push_back( *itr );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 DEFINE_API_IMPL( database_api_impl, get_current_price_feed )
 {
@@ -327,16 +327,16 @@ DEFINE_API_IMPL( database_api_impl, list_accounts )
             [&]( const account_object& a ){ return api_account_object( a, _db ); } );
          break;
       }
-      case( by_proxy ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, account_name_type > >();
-         iterate_results< chain::account_index, chain::by_proxy >(
-            boost::make_tuple( key.first, key.second ),
-            result.accounts,
-            args.limit,
-            [&]( const account_object& a ){ return api_account_object( a, _db ); } );
-         break;
-      }
+//      case( by_proxy ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, account_name_type > >();
+//         iterate_results< chain::account_index, chain::by_proxy >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.accounts,
+//            args.limit,
+//            [&]( const account_object& a ){ return api_account_object( a, _db ); } );
+//         break;
+//      }
       case( by_next_vesting_withdrawal ):
       {
          auto key = args.start.as< std::pair< fc::time_point_sec, account_name_type > >();
@@ -408,166 +408,166 @@ DEFINE_API_IMPL( database_api_impl, find_owner_histories )
 
 /* Account Recovery Requests */
 
-DEFINE_API_IMPL( database_api_impl, list_account_recovery_requests )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_account_recovery_requests_return result;
-   result.requests.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_account ):
-      {
-         iterate_results< chain::account_recovery_request_index, chain::by_account >(
-            args.start.as< account_name_type >(),
-            result.requests,
-            args.limit,
-            [&]( const account_recovery_request_object& a ){ return api_account_recovery_request_object( a ); } );
-         break;
-      }
-      case( by_expiration ):
-      {
-         auto key = args.start.as< std::pair< fc::time_point_sec, account_name_type > >();
-         iterate_results< chain::account_recovery_request_index, chain::by_expiration >(
-            boost::make_tuple( key.first, key.second ),
-            result.requests,
-            args.limit,
-            [&]( const account_recovery_request_object& a ){ return api_account_recovery_request_object( a ); } );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_account_recovery_requests )
-{
-   find_account_recovery_requests_return result;
-   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   for( auto& a : args.accounts )
-   {
-      auto request = _db.find< chain::account_recovery_request_object, chain::by_account >( a );
-
-      if( request != nullptr )
-         result.requests.push_back( api_account_recovery_request_object( *request ) );
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_account_recovery_requests )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_account_recovery_requests_return result;
+//   result.requests.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_account ):
+//      {
+//         iterate_results< chain::account_recovery_request_index, chain::by_account >(
+//            args.start.as< account_name_type >(),
+//            result.requests,
+//            args.limit,
+//            [&]( const account_recovery_request_object& a ){ return api_account_recovery_request_object( a ); } );
+//         break;
+//      }
+//      case( by_expiration ):
+//      {
+//         auto key = args.start.as< std::pair< fc::time_point_sec, account_name_type > >();
+//         iterate_results< chain::account_recovery_request_index, chain::by_expiration >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.requests,
+//            args.limit,
+//            [&]( const account_recovery_request_object& a ){ return api_account_recovery_request_object( a ); } );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_account_recovery_requests )
+//{
+//   find_account_recovery_requests_return result;
+//   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   for( auto& a : args.accounts )
+//   {
+//      auto request = _db.find< chain::account_recovery_request_object, chain::by_account >( a );
+//
+//      if( request != nullptr )
+//         result.requests.push_back( api_account_recovery_request_object( *request ) );
+//   }
+//
+//   return result;
+//}
 
 
 /* Change Recovery Account Requests */
 
-DEFINE_API_IMPL( database_api_impl, list_change_recovery_account_requests )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_change_recovery_account_requests_return result;
-   result.requests.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_account ):
-      {
-         iterate_results< chain::change_recovery_account_request_index, chain::by_account >(
-            args.start.as< account_name_type >(),
-            result.requests,
-            args.limit,
-            &database_api_impl::on_push_default< change_recovery_account_request_object > );
-         break;
-      }
-      case( by_effective_date ):
-      {
-         auto key = args.start.as< std::pair< fc::time_point_sec, account_name_type > >();
-         iterate_results< chain::change_recovery_account_request_index, chain::by_effective_date >(
-            boost::make_tuple( key.first, key.second ),
-            result.requests,
-            args.limit,
-            &database_api_impl::on_push_default< change_recovery_account_request_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_change_recovery_account_requests )
-{
-   find_change_recovery_account_requests_return result;
-   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   for( auto& a : args.accounts )
-   {
-      auto request = _db.find< chain::change_recovery_account_request_object, chain::by_account >( a );
-
-      if( request != nullptr )
-         result.requests.push_back( *request );
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_change_recovery_account_requests )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_change_recovery_account_requests_return result;
+//   result.requests.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_account ):
+//      {
+//         iterate_results< chain::change_recovery_account_request_index, chain::by_account >(
+//            args.start.as< account_name_type >(),
+//            result.requests,
+//            args.limit,
+//            &database_api_impl::on_push_default< change_recovery_account_request_object > );
+//         break;
+//      }
+//      case( by_effective_date ):
+//      {
+//         auto key = args.start.as< std::pair< fc::time_point_sec, account_name_type > >();
+//         iterate_results< chain::change_recovery_account_request_index, chain::by_effective_date >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.requests,
+//            args.limit,
+//            &database_api_impl::on_push_default< change_recovery_account_request_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_change_recovery_account_requests )
+//{
+//   find_change_recovery_account_requests_return result;
+//   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   for( auto& a : args.accounts )
+//   {
+//      auto request = _db.find< chain::change_recovery_account_request_object, chain::by_account >( a );
+//
+//      if( request != nullptr )
+//         result.requests.push_back( *request );
+//   }
+//
+//   return result;
+//}
 
 
 /* Escrows */
 
-DEFINE_API_IMPL( database_api_impl, list_escrows )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_escrows_return result;
-   result.escrows.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_from_id ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
-         iterate_results< chain::escrow_index, chain::by_from_id >(
-            boost::make_tuple( key.first, key.second ),
-            result.escrows,
-            args.limit,
-            &database_api_impl::on_push_default< escrow_object > );
-         break;
-      }
-      case( by_ratification_deadline ):
-      {
-         auto key = args.start.as< std::vector< fc::variant > >();
-         FC_ASSERT( key.size() == 3, "by_ratification_deadline start requires 3 values. (bool, time_point_sec, escrow_id_type)" );
-         iterate_results< chain::escrow_index, chain::by_ratification_deadline >(
-            boost::make_tuple( key[0].as< bool >(), key[1].as< fc::time_point_sec >(), key[2].as< escrow_id_type >() ),
-            result.escrows,
-            args.limit,
-            &database_api_impl::on_push_default< escrow_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_escrows )
-{
-   find_escrows_return result;
-
-   const auto& escrow_idx = _db.get_index< chain::escrow_index, chain::by_from_id >();
-   auto itr = escrow_idx.lower_bound( args.from );
-
-   while( itr != escrow_idx.end() && itr->from == args.from && result.escrows.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.escrows.push_back( *itr );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_escrows )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_escrows_return result;
+//   result.escrows.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_from_id ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
+//         iterate_results< chain::escrow_index, chain::by_from_id >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.escrows,
+//            args.limit,
+//            &database_api_impl::on_push_default< escrow_object > );
+//         break;
+//      }
+//      case( by_ratification_deadline ):
+//      {
+//         auto key = args.start.as< std::vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 3, "by_ratification_deadline start requires 3 values. (bool, time_point_sec, escrow_id_type)" );
+//         iterate_results< chain::escrow_index, chain::by_ratification_deadline >(
+//            boost::make_tuple( key[0].as< bool >(), key[1].as< fc::time_point_sec >(), key[2].as< escrow_id_type >() ),
+//            result.escrows,
+//            args.limit,
+//            &database_api_impl::on_push_default< escrow_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_escrows )
+//{
+//   find_escrows_return result;
+//
+//   const auto& escrow_idx = _db.get_index< chain::escrow_index, chain::by_from_id >();
+//   auto itr = escrow_idx.lower_bound( args.from );
+//
+//   while( itr != escrow_idx.end() && itr->from == args.from && result.escrows.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.escrows.push_back( *itr );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 /* Withdraw Vesting Routes */
@@ -650,167 +650,167 @@ DEFINE_API_IMPL( database_api_impl, find_withdraw_vesting_routes )
 
 /* Savings Withdrawals */
 
-DEFINE_API_IMPL( database_api_impl, list_savings_withdrawals )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_savings_withdrawals_return result;
-   result.withdrawals.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_from_id ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
-         iterate_results< chain::savings_withdraw_index, chain::by_from_rid >(
-            boost::make_tuple( key.first, key.second ),
-            result.withdrawals,
-            args.limit,
-            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
-         break;
-      }
-      case( by_complete_from_id ):
-      {
-         auto key = args.start.as< std::vector< fc::variant > >();
-         FC_ASSERT( key.size() == 3, "by_complete_from_id start requires 3 values. (time_point_sec, account_name_type, uint32_t)" );
-         iterate_results< chain::savings_withdraw_index, chain::by_complete_from_rid >(
-            boost::make_tuple( key[0].as< fc::time_point_sec >(), key[1].as< account_name_type >(), key[2].as< uint32_t >() ),
-            result.withdrawals,
-            args.limit,
-            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
-         break;
-      }
-      case( by_to_complete ):
-      {
-         auto key = args.start.as< std::vector< fc::variant > >();
-         FC_ASSERT( key.size() == 3, "by_to_complete start requires 3 values. (account_name_type, time_point_sec, savings_withdraw_id_type" );
-         iterate_results< chain::savings_withdraw_index, chain::by_to_complete >(
-            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), key[2].as< savings_withdraw_id_type >() ),
-            result.withdrawals,
-            args.limit,
-            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_savings_withdrawals )
-{
-   find_savings_withdrawals_return result;
-   const auto& withdraw_idx = _db.get_index< chain::savings_withdraw_index, chain::by_from_rid >();
-   auto itr = withdraw_idx.lower_bound( args.account );
-
-   while( itr != withdraw_idx.end() && itr->from == args.account && result.withdrawals.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.withdrawals.push_back( api_savings_withdraw_object( *itr ) );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_savings_withdrawals )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_savings_withdrawals_return result;
+//   result.withdrawals.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_from_id ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
+//         iterate_results< chain::savings_withdraw_index, chain::by_from_rid >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.withdrawals,
+//            args.limit,
+//            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
+//         break;
+//      }
+//      case( by_complete_from_id ):
+//      {
+//         auto key = args.start.as< std::vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 3, "by_complete_from_id start requires 3 values. (time_point_sec, account_name_type, uint32_t)" );
+//         iterate_results< chain::savings_withdraw_index, chain::by_complete_from_rid >(
+//            boost::make_tuple( key[0].as< fc::time_point_sec >(), key[1].as< account_name_type >(), key[2].as< uint32_t >() ),
+//            result.withdrawals,
+//            args.limit,
+//            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
+//         break;
+//      }
+//      case( by_to_complete ):
+//      {
+//         auto key = args.start.as< std::vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 3, "by_to_complete start requires 3 values. (account_name_type, time_point_sec, savings_withdraw_id_type" );
+//         iterate_results< chain::savings_withdraw_index, chain::by_to_complete >(
+//            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), key[2].as< savings_withdraw_id_type >() ),
+//            result.withdrawals,
+//            args.limit,
+//            [&]( const savings_withdraw_object& w ){ return api_savings_withdraw_object( w ); } );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_savings_withdrawals )
+//{
+//   find_savings_withdrawals_return result;
+//   const auto& withdraw_idx = _db.get_index< chain::savings_withdraw_index, chain::by_from_rid >();
+//   auto itr = withdraw_idx.lower_bound( args.account );
+//
+//   while( itr != withdraw_idx.end() && itr->from == args.account && result.withdrawals.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.withdrawals.push_back( api_savings_withdraw_object( *itr ) );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 /* Vesting Delegations */
 
-DEFINE_API_IMPL( database_api_impl, list_vesting_delegations )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_vesting_delegations_return result;
-   result.delegations.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_delegation ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, account_name_type > >();
-         iterate_results< chain::vesting_delegation_index, chain::by_delegation >(
-            boost::make_tuple( key.first, key.second ),
-            result.delegations,
-            args.limit,
-            &database_api_impl::on_push_default< api_vesting_delegation_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_vesting_delegations )
-{
-   find_vesting_delegations_return result;
-   const auto& delegation_idx = _db.get_index< chain::vesting_delegation_index, chain::by_delegation >();
-   auto itr = delegation_idx.lower_bound( args.account );
-
-   while( itr != delegation_idx.end() && itr->delegator == args.account && result.delegations.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.delegations.push_back( api_vesting_delegation_object( *itr ) );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_vesting_delegations )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_vesting_delegations_return result;
+//   result.delegations.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_delegation ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, account_name_type > >();
+//         iterate_results< chain::vesting_delegation_index, chain::by_delegation >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.delegations,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_vesting_delegation_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_vesting_delegations )
+//{
+//   find_vesting_delegations_return result;
+//   const auto& delegation_idx = _db.get_index< chain::vesting_delegation_index, chain::by_delegation >();
+//   auto itr = delegation_idx.lower_bound( args.account );
+//
+//   while( itr != delegation_idx.end() && itr->delegator == args.account && result.delegations.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.delegations.push_back( api_vesting_delegation_object( *itr ) );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 /* Vesting Delegation Expirations */
 
-DEFINE_API_IMPL( database_api_impl, list_vesting_delegation_expirations )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_vesting_delegation_expirations_return result;
-   result.delegations.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_expiration ):
-      {
-         auto key = args.start.as< std::pair< time_point_sec, vesting_delegation_expiration_id_type > >();
-         iterate_results< chain::vesting_delegation_expiration_index, chain::by_expiration >(
-            boost::make_tuple( key.first, key.second ),
-            result.delegations,
-            args.limit,
-            &database_api_impl::on_push_default< api_vesting_delegation_expiration_object > );
-         break;
-      }
-      case( by_account_expiration ):
-      {
-         auto key = args.start.as< std::vector< fc::variant > >();
-         FC_ASSERT( key.size() == 3, "by_account_expiration start requires 3 values. (account_name_type, time_point_sec, vesting_delegation_expiration_id_type" );
-         iterate_results< chain::vesting_delegation_expiration_index, chain::by_account_expiration >(
-            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< time_point_sec >(), key[2].as< vesting_delegation_expiration_id_type >() ),
-            result.delegations,
-            args.limit,
-            &database_api_impl::on_push_default< api_vesting_delegation_expiration_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_vesting_delegation_expirations )
-{
-   find_vesting_delegation_expirations_return result;
-   const auto& del_exp_idx = _db.get_index< chain::vesting_delegation_expiration_index, chain::by_account_expiration >();
-   auto itr = del_exp_idx.lower_bound( args.account );
-
-   while( itr != del_exp_idx.end() && itr->delegator == args.account && result.delegations.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.delegations.push_back( *itr );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_vesting_delegation_expirations )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_vesting_delegation_expirations_return result;
+//   result.delegations.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_expiration ):
+//      {
+//         auto key = args.start.as< std::pair< time_point_sec, vesting_delegation_expiration_id_type > >();
+//         iterate_results< chain::vesting_delegation_expiration_index, chain::by_expiration >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.delegations,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_vesting_delegation_expiration_object > );
+//         break;
+//      }
+//      case( by_account_expiration ):
+//      {
+//         auto key = args.start.as< std::vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 3, "by_account_expiration start requires 3 values. (account_name_type, time_point_sec, vesting_delegation_expiration_id_type" );
+//         iterate_results< chain::vesting_delegation_expiration_index, chain::by_account_expiration >(
+//            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< time_point_sec >(), key[2].as< vesting_delegation_expiration_id_type >() ),
+//            result.delegations,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_vesting_delegation_expiration_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_vesting_delegation_expirations )
+//{
+//   find_vesting_delegation_expirations_return result;
+//   const auto& del_exp_idx = _db.get_index< chain::vesting_delegation_expiration_index, chain::by_account_expiration >();
+//   auto itr = del_exp_idx.lower_bound( args.account );
+//
+//   while( itr != del_exp_idx.end() && itr->delegator == args.account && result.delegations.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.delegations.push_back( *itr );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 /* SBD Conversion Requests */
@@ -869,56 +869,56 @@ DEFINE_API_IMPL( database_api_impl, find_sbd_conversion_requests )
 
 /* Decline Voting Rights Requests */
 
-DEFINE_API_IMPL( database_api_impl, list_decline_voting_rights_requests )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_decline_voting_rights_requests_return result;
-   result.requests.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_account ):
-      {
-         iterate_results< chain::decline_voting_rights_request_index, chain::by_account >(
-            args.start.as< account_name_type >(),
-            result.requests,
-            args.limit,
-            &database_api_impl::on_push_default< api_decline_voting_rights_request_object > );
-         break;
-      }
-      case( by_effective_date ):
-      {
-         auto key = args.start.as< std::pair< time_point_sec, account_name_type > >();
-         iterate_results< chain::decline_voting_rights_request_index, chain::by_effective_date >(
-            boost::make_tuple( key.first, key.second ),
-            result.requests,
-            args.limit,
-            &database_api_impl::on_push_default< api_decline_voting_rights_request_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_decline_voting_rights_requests )
-{
-   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
-   find_decline_voting_rights_requests_return result;
-
-   for( auto& a : args.accounts )
-   {
-      auto request = _db.find< chain::decline_voting_rights_request_object, chain::by_account >( a );
-
-      if( request != nullptr )
-         result.requests.push_back( *request );
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_decline_voting_rights_requests )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_decline_voting_rights_requests_return result;
+//   result.requests.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_account ):
+//      {
+//         iterate_results< chain::decline_voting_rights_request_index, chain::by_account >(
+//            args.start.as< account_name_type >(),
+//            result.requests,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_decline_voting_rights_request_object > );
+//         break;
+//      }
+//      case( by_effective_date ):
+//      {
+//         auto key = args.start.as< std::pair< time_point_sec, account_name_type > >();
+//         iterate_results< chain::decline_voting_rights_request_index, chain::by_effective_date >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.requests,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_decline_voting_rights_request_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_decline_voting_rights_requests )
+//{
+//   FC_ASSERT( args.accounts.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//   find_decline_voting_rights_requests_return result;
+//
+//   for( auto& a : args.accounts )
+//   {
+//      auto request = _db.find< chain::decline_voting_rights_request_object, chain::by_account >( a );
+//
+//      if( request != nullptr )
+//         result.requests.push_back( *request );
+//   }
+//
+//   return result;
+//}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -929,176 +929,176 @@ DEFINE_API_IMPL( database_api_impl, find_decline_voting_rights_requests )
 
 /* Comments */
 
-DEFINE_API_IMPL( database_api_impl, list_comments )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_comments_return result;
-   result.comments.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_cashout_time ):
-      {
-         auto key = args.start.as< vector< fc::variant > >();
-         FC_ASSERT( key.size() == 3, "by_cashout_time start requires 3 values. (time_point_sec, account_name_type, string)" );
-
-         auto author = key[1].as< account_name_type >();
-         auto permlink = key[2].as< string >();
-         comment_id_type comment_id;
-
-         if( author != account_name_type() || permlink.size() )
-         {
-            auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
-            FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
-            comment_id = comment->id;
-         }
-
-         iterate_results< chain::comment_index, chain::by_cashout_time >(
-            boost::make_tuple( key[0].as< fc::time_point_sec >(), comment_id ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-      case( by_permlink ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, string > >();
-         iterate_results< chain::comment_index, chain::by_permlink >(
-            boost::make_tuple( key.first, key.second ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-      case( by_root ):
-      {
-         auto key = args.start.as< vector< fc::variant > >();
-         FC_ASSERT( key.size() == 4, "by_root start requires 4 values. (account_name_type, string, account_name_type, string)" );
-
-         auto root_author = key[0].as< account_name_type >();
-         auto root_permlink = key[1].as< string >();
-         comment_id_type root_id;
-
-         if( root_author != account_name_type() || root_permlink.size() )
-         {
-            auto root = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( root_author, root_permlink ) );
-            FC_ASSERT( root != nullptr, "Could not find comment ${a}/${p}.", ("a", root_author)("p", root_permlink) );
-            root_id = root->id;
-         }
-
-         auto child_author = key[2].as< account_name_type >();
-         auto child_permlink = key[3].as< string >();
-         comment_id_type child_id;
-
-         if( child_author != account_name_type() || child_permlink.size() )
-         {
-            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
-            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
-            child_id = child->id;
-         }
-
-         iterate_results< chain::comment_index, chain::by_root >(
-            boost::make_tuple( root_id, child_id ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-      case( by_parent ):
-      {
-         auto key = args.start.as< vector< fc::variant > >();
-         FC_ASSERT( key.size() == 4, "by_parent start requires 4 values. (account_name_type, string, account_name_type, string)" );
-
-         auto child_author = key[2].as< account_name_type >();
-         auto child_permlink = key[3].as< string >();
-         comment_id_type child_id;
-
-         if( child_author != account_name_type() || child_permlink.size() )
-         {
-            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
-            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
-            child_id = child->id;
-         }
-
-         iterate_results< chain::comment_index, chain::by_parent >(
-            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< string >(), child_id ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-#ifndef IS_LOW_MEM
-      case( by_last_update ):
-      {
-         auto key = args.start.as< vector< fc::variant > >();
-         FC_ASSERT( key.size() == 4, "by_last_update start requires 4 values. (account_name_type, time_point_sec, account_name_type, string)" );
-
-         auto child_author = key[2].as< account_name_type >();
-         auto child_permlink = key[3].as< string >();
-         comment_id_type child_id;
-
-         if( child_author != account_name_type() || child_permlink.size() )
-         {
-            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
-            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
-            child_id = child->id;
-         }
-
-         iterate_results< chain::comment_index, chain::by_last_update >(
-            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), child_id ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-      case( by_author_last_update ):
-      {
-         auto key = args.start.as< vector< fc::variant > >();
-         FC_ASSERT( key.size() == 4, "by_author_last_update start requires 4 values. (account_name_type, time_point_sec, account_name_type, string)" );
-
-         auto author = key[2].as< account_name_type >();
-         auto permlink = key[3].as< string >();
-         comment_id_type comment_id;
-
-         if( author != account_name_type() || permlink.size() )
-         {
-            auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
-            FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
-            comment_id = comment->id;
-         }
-
-         iterate_results< chain::comment_index, chain::by_last_update >(
-            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), comment_id ),
-            result.comments,
-            args.limit,
-            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
-         break;
-      }
-#endif
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_comments )
-{
-   FC_ASSERT( args.comments.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
-   find_comments_return result;
-   result.comments.reserve( args.comments.size() );
-
-   for( auto& key: args.comments )
-   {
-      auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( key.first, key.second ) );
-
-      if( comment != nullptr )
-         result.comments.push_back( api_comment_object( *comment, _db ) );
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_comments )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_comments_return result;
+//   result.comments.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_cashout_time ):
+//      {
+//         auto key = args.start.as< vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 3, "by_cashout_time start requires 3 values. (time_point_sec, account_name_type, string)" );
+//
+//         auto author = key[1].as< account_name_type >();
+//         auto permlink = key[2].as< string >();
+//         comment_id_type comment_id;
+//
+//         if( author != account_name_type() || permlink.size() )
+//         {
+//            auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
+//            FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
+//            comment_id = comment->id;
+//         }
+//
+//         iterate_results< chain::comment_index, chain::by_cashout_time >(
+//            boost::make_tuple( key[0].as< fc::time_point_sec >(), comment_id ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//      case( by_permlink ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, string > >();
+//         iterate_results< chain::comment_index, chain::by_permlink >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//      case( by_root ):
+//      {
+//         auto key = args.start.as< vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 4, "by_root start requires 4 values. (account_name_type, string, account_name_type, string)" );
+//
+//         auto root_author = key[0].as< account_name_type >();
+//         auto root_permlink = key[1].as< string >();
+//         comment_id_type root_id;
+//
+//         if( root_author != account_name_type() || root_permlink.size() )
+//         {
+//            auto root = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( root_author, root_permlink ) );
+//            FC_ASSERT( root != nullptr, "Could not find comment ${a}/${p}.", ("a", root_author)("p", root_permlink) );
+//            root_id = root->id;
+//         }
+//
+//         auto child_author = key[2].as< account_name_type >();
+//         auto child_permlink = key[3].as< string >();
+//         comment_id_type child_id;
+//
+//         if( child_author != account_name_type() || child_permlink.size() )
+//         {
+//            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
+//            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
+//            child_id = child->id;
+//         }
+//
+//         iterate_results< chain::comment_index, chain::by_root >(
+//            boost::make_tuple( root_id, child_id ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//      case( by_parent ):
+//      {
+//         auto key = args.start.as< vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 4, "by_parent start requires 4 values. (account_name_type, string, account_name_type, string)" );
+//
+//         auto child_author = key[2].as< account_name_type >();
+//         auto child_permlink = key[3].as< string >();
+//         comment_id_type child_id;
+//
+//         if( child_author != account_name_type() || child_permlink.size() )
+//         {
+//            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
+//            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
+//            child_id = child->id;
+//         }
+//
+//         iterate_results< chain::comment_index, chain::by_parent >(
+//            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< string >(), child_id ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//#ifndef IS_LOW_MEM
+//      case( by_last_update ):
+//      {
+//         auto key = args.start.as< vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 4, "by_last_update start requires 4 values. (account_name_type, time_point_sec, account_name_type, string)" );
+//
+//         auto child_author = key[2].as< account_name_type >();
+//         auto child_permlink = key[3].as< string >();
+//         comment_id_type child_id;
+//
+//         if( child_author != account_name_type() || child_permlink.size() )
+//         {
+//            auto child = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( child_author, child_permlink ) );
+//            FC_ASSERT( child != nullptr, "Could not find comment ${a}/${p}.", ("a", child_author)("p", child_permlink) );
+//            child_id = child->id;
+//         }
+//
+//         iterate_results< chain::comment_index, chain::by_last_update >(
+//            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), child_id ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//      case( by_author_last_update ):
+//      {
+//         auto key = args.start.as< vector< fc::variant > >();
+//         FC_ASSERT( key.size() == 4, "by_author_last_update start requires 4 values. (account_name_type, time_point_sec, account_name_type, string)" );
+//
+//         auto author = key[2].as< account_name_type >();
+//         auto permlink = key[3].as< string >();
+//         comment_id_type comment_id;
+//
+//         if( author != account_name_type() || permlink.size() )
+//         {
+//            auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
+//            FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
+//            comment_id = comment->id;
+//         }
+//
+//         iterate_results< chain::comment_index, chain::by_last_update >(
+//            boost::make_tuple( key[0].as< account_name_type >(), key[1].as< fc::time_point_sec >(), comment_id ),
+//            result.comments,
+//            args.limit,
+//            [&]( const comment_object& c ){ return api_comment_object( c, _db ); } );
+//         break;
+//      }
+//#endif
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_comments )
+//{
+//   FC_ASSERT( args.comments.size() <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//   find_comments_return result;
+//   result.comments.reserve( args.comments.size() );
+//
+//   for( auto& key: args.comments )
+//   {
+//      auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( key.first, key.second ) );
+//
+//      if( comment != nullptr )
+//         result.comments.push_back( api_comment_object( *comment, _db ) );
+//   }
+//
+//   return result;
+//}
 
 //====================================================last_votes_misc====================================================
 
@@ -1106,65 +1106,65 @@ namespace last_votes_misc
 {
 
    //====================================================votes_impl====================================================
-   template< sort_order_type SORTORDERTYPE >
-   void votes_impl( database_api_impl& _impl, vector< api_comment_vote_object >& c, size_t nr_args, uint32_t limit, vector< fc::variant >& key, fc::time_point_sec& timestamp, uint64_t weight )
-   {
-      if( SORTORDERTYPE == by_comment_voter )
-         FC_ASSERT( key.size() == nr_args, "by_comment_voter start requires ${nr_args} values. (account_name_type, string, account_name_type)", ("nr_args", nr_args ) );
-      else
-         FC_ASSERT( key.size() == nr_args, "by_comment_voter start requires ${nr_args} values. (account_name_type, ${desc}account_name_type, string)", ("nr_args", nr_args )("desc",( nr_args == 4 )?"time_point_sec, ":"" ) );
-
-      account_name_type voter;
-      account_name_type author;
-      string permlink;
-
-      account_id_type voter_id;
-      comment_id_type comment_id;
-
-      if( SORTORDERTYPE == by_comment_voter )
-      {
-         author = key[0].as< account_name_type >();
-         permlink = key[1].as< string >();
-         voter = key[ 2 ].as< account_name_type >();
-      }
-      else
-      {
-         author = key[ nr_args - 2 ].as< account_name_type >();
-         permlink = key[ nr_args - 1 ].as< string >();
-         voter = key[0].as< account_name_type >();
-      }
-
-      if( voter != account_name_type() )
-      {
-         auto account = _impl._db.find< chain::account_object, chain::by_name >( voter );
-         FC_ASSERT( account != nullptr, "Could not find voter ${v}.", ("v", voter ) );
-         voter_id = account->id;
-      }
-
-      if( author != account_name_type() || permlink.size() )
-      {
-         auto comment = _impl._db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
-         FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
-         comment_id = comment->id;
-      }
-
-      if( SORTORDERTYPE == by_comment_voter )
-      {
-         _impl.iterate_results< chain::comment_vote_index, chain::by_comment_voter >(
-         boost::make_tuple( comment_id, voter_id ),
-         c,
-         limit,
-         [&]( const comment_vote_object& cv ){ return api_comment_vote_object( cv, _impl._db ); } );
-      }
-      else if( SORTORDERTYPE == by_voter_comment )
-      {
-         _impl.iterate_results< chain::comment_vote_index, chain::by_voter_comment >(
-         boost::make_tuple( voter_id, comment_id ),
-         c,
-         limit,
-         [&]( const comment_vote_object& cv ){ return api_comment_vote_object( cv, _impl._db ); } );
-      }
-   }
+//   template< sort_order_type SORTORDERTYPE >
+//   void votes_impl( database_api_impl& _impl, vector< api_comment_vote_object >& c, size_t nr_args, uint32_t limit, vector< fc::variant >& key, fc::time_point_sec& timestamp, uint64_t weight )
+//   {
+//      if( SORTORDERTYPE == by_comment_voter )
+//         FC_ASSERT( key.size() == nr_args, "by_comment_voter start requires ${nr_args} values. (account_name_type, string, account_name_type)", ("nr_args", nr_args ) );
+//      else
+//         FC_ASSERT( key.size() == nr_args, "by_comment_voter start requires ${nr_args} values. (account_name_type, ${desc}account_name_type, string)", ("nr_args", nr_args )("desc",( nr_args == 4 )?"time_point_sec, ":"" ) );
+//
+//      account_name_type voter;
+//      account_name_type author;
+//      string permlink;
+//
+//      account_id_type voter_id;
+//      comment_id_type comment_id;
+//
+//      if( SORTORDERTYPE == by_comment_voter )
+//      {
+//         author = key[0].as< account_name_type >();
+//         permlink = key[1].as< string >();
+//         voter = key[ 2 ].as< account_name_type >();
+//      }
+//      else
+//      {
+//         author = key[ nr_args - 2 ].as< account_name_type >();
+//         permlink = key[ nr_args - 1 ].as< string >();
+//         voter = key[0].as< account_name_type >();
+//      }
+//
+//      if( voter != account_name_type() )
+//      {
+//         auto account = _impl._db.find< chain::account_object, chain::by_name >( voter );
+//         FC_ASSERT( account != nullptr, "Could not find voter ${v}.", ("v", voter ) );
+//         voter_id = account->id;
+//      }
+//
+//      if( author != account_name_type() || permlink.size() )
+//      {
+//         auto comment = _impl._db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( author, permlink ) );
+//         FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}.", ("a", author)("p", permlink) );
+//         comment_id = comment->id;
+//      }
+//
+//      if( SORTORDERTYPE == by_comment_voter )
+//      {
+//         _impl.iterate_results< chain::comment_vote_index, chain::by_comment_voter >(
+//         boost::make_tuple( comment_id, voter_id ),
+//         c,
+//         limit,
+//         [&]( const comment_vote_object& cv ){ return api_comment_vote_object( cv, _impl._db ); } );
+//      }
+//      else if( SORTORDERTYPE == by_voter_comment )
+//      {
+//         _impl.iterate_results< chain::comment_vote_index, chain::by_voter_comment >(
+//         boost::make_tuple( voter_id, comment_id ),
+//         c,
+//         limit,
+//         [&]( const comment_vote_object& cv ){ return api_comment_vote_object( cv, _impl._db ); } );
+//      }
+//   }
 
 }//namespace last_votes_misc
 
@@ -1172,54 +1172,54 @@ namespace last_votes_misc
 
 /* Votes */
 
-DEFINE_API_IMPL( database_api_impl, list_votes )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   auto key = args.start.as< vector< fc::variant > >();
-
-   list_votes_return result;
-   result.votes.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_comment_voter ):
-      {
-         static fc::time_point_sec t( -1 );
-         last_votes_misc::votes_impl< by_comment_voter >( *this, result.votes, 3/*nr_args*/, args.limit, key, t, 0 );
-         break;
-      }
-      case( by_voter_comment ):
-      {
-         static fc::time_point_sec t( -1 );
-         last_votes_misc::votes_impl< by_voter_comment >( *this, result.votes, 3/*nr_args*/, args.limit, key, t, 0 );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_votes )
-{
-   find_votes_return result;
-
-   auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( args.author, args.permlink ) );
-   FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}", ("a", args.author)("p", args.permlink ) );
-
-   const auto& vote_idx = _db.get_index< chain::comment_vote_index, chain::by_comment_voter >();
-   auto itr = vote_idx.lower_bound( comment->id );
-
-   while( itr != vote_idx.end() && itr->comment == comment->id && result.votes.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.votes.push_back( api_comment_vote_object( *itr, _db ) );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_votes )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   auto key = args.start.as< vector< fc::variant > >();
+//
+//   list_votes_return result;
+//   result.votes.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_comment_voter ):
+//      {
+//         static fc::time_point_sec t( -1 );
+//         last_votes_misc::votes_impl< by_comment_voter >( *this, result.votes, 3/*nr_args*/, args.limit, key, t, 0 );
+//         break;
+//      }
+//      case( by_voter_comment ):
+//      {
+//         static fc::time_point_sec t( -1 );
+//         last_votes_misc::votes_impl< by_voter_comment >( *this, result.votes, 3/*nr_args*/, args.limit, key, t, 0 );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_votes )
+//{
+//   find_votes_return result;
+//
+//   auto comment = _db.find< chain::comment_object, chain::by_permlink >( boost::make_tuple( args.author, args.permlink ) );
+//   FC_ASSERT( comment != nullptr, "Could not find comment ${a}/${p}", ("a", args.author)("p", args.permlink ) );
+//
+//   const auto& vote_idx = _db.get_index< chain::comment_vote_index, chain::by_comment_voter >();
+//   auto itr = vote_idx.lower_bound( comment->id );
+//
+//   while( itr != vote_idx.end() && itr->comment == comment->id && result.votes.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.votes.push_back( api_comment_vote_object( *itr, _db ) );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1230,102 +1230,102 @@ DEFINE_API_IMPL( database_api_impl, find_votes )
 
 /* Limit Orders */
 
-DEFINE_API_IMPL( database_api_impl, list_limit_orders )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-
-   list_limit_orders_return result;
-   result.orders.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_price ):
-      {
-         auto key = args.start.as< std::pair< price, limit_order_id_type > >();
-         iterate_results< chain::limit_order_index, chain::by_price >(
-            boost::make_tuple( key.first, key.second ),
-            result.orders,
-            args.limit,
-            &database_api_impl::on_push_default< api_limit_order_object > );
-         break;
-      }
-      case( by_account ):
-      {
-         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
-         iterate_results< chain::limit_order_index, chain::by_account >(
-            boost::make_tuple( key.first, key.second ),
-            result.orders,
-            args.limit,
-            &database_api_impl::on_push_default< api_limit_order_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_limit_orders )
-{
-   find_limit_orders_return result;
-   const auto& order_idx = _db.get_index< chain::limit_order_index, chain::by_account >();
-   auto itr = order_idx.lower_bound( args.account );
-
-   while( itr != order_idx.end() && itr->seller == args.account && result.orders.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.orders.push_back( *itr );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, list_limit_orders )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_limit_orders_return result;
+//   result.orders.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_price ):
+//      {
+//         auto key = args.start.as< std::pair< price, limit_order_id_type > >();
+//         iterate_results< chain::limit_order_index, chain::by_price >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.orders,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_limit_order_object > );
+//         break;
+//      }
+//      case( by_account ):
+//      {
+//         auto key = args.start.as< std::pair< account_name_type, uint32_t > >();
+//         iterate_results< chain::limit_order_index, chain::by_account >(
+//            boost::make_tuple( key.first, key.second ),
+//            result.orders,
+//            args.limit,
+//            &database_api_impl::on_push_default< api_limit_order_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
+//
+//DEFINE_API_IMPL( database_api_impl, find_limit_orders )
+//{
+//   find_limit_orders_return result;
+//   const auto& order_idx = _db.get_index< chain::limit_order_index, chain::by_account >();
+//   auto itr = order_idx.lower_bound( args.account );
+//
+//   while( itr != order_idx.end() && itr->seller == args.account && result.orders.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+//   {
+//      result.orders.push_back( *itr );
+//      ++itr;
+//   }
+//
+//   return result;
+//}
 
 
 /* Order Book */
 
-DEFINE_API_IMPL( database_api_impl, get_order_book )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
-   get_order_book_return result;
-
-   auto max_sell = price::max( SBD_SYMBOL, STEEM_SYMBOL );
-   auto max_buy = price::max( STEEM_SYMBOL, SBD_SYMBOL );
-
-   const auto& limit_price_idx = _db.get_index< chain::limit_order_index >().indices().get< chain::by_price >();
-   auto sell_itr = limit_price_idx.lower_bound( max_sell );
-   auto buy_itr  = limit_price_idx.lower_bound( max_buy );
-   auto end = limit_price_idx.end();
-
-   while( sell_itr != end && sell_itr->sell_price.base.symbol == SBD_SYMBOL && result.bids.size() < args.limit )
-   {
-      auto itr = sell_itr;
-      order cur;
-      cur.order_price = itr->sell_price;
-      cur.real_price  = 0.0;
-      // cur.real_price  = (cur.order_price).to_real();
-      cur.sbd = itr->for_sale;
-      cur.steem = ( asset( itr->for_sale, SBD_SYMBOL ) * cur.order_price ).amount;
-      cur.created = itr->created;
-      result.bids.push_back( cur );
-      ++sell_itr;
-   }
-   while( buy_itr != end && buy_itr->sell_price.base.symbol == STEEM_SYMBOL && result.asks.size() < args.limit )
-   {
-      auto itr = buy_itr;
-      order cur;
-      cur.order_price = itr->sell_price;
-      cur.real_price = 0.0;
-      // cur.real_price  = (~cur.order_price).to_real();
-      cur.steem   = itr->for_sale;
-      cur.sbd     = ( asset( itr->for_sale, STEEM_SYMBOL ) * cur.order_price ).amount;
-      cur.created = itr->created;
-      result.asks.push_back( cur );
-      ++buy_itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, get_order_book )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//   get_order_book_return result;
+//
+//   auto max_sell = price::max( SBD_SYMBOL, STEEM_SYMBOL );
+//   auto max_buy = price::max( STEEM_SYMBOL, SBD_SYMBOL );
+//
+//   const auto& limit_price_idx = _db.get_index< chain::limit_order_index >().indices().get< chain::by_price >();
+//   auto sell_itr = limit_price_idx.lower_bound( max_sell );
+//   auto buy_itr  = limit_price_idx.lower_bound( max_buy );
+//   auto end = limit_price_idx.end();
+//
+//   while( sell_itr != end && sell_itr->sell_price.base.symbol == SBD_SYMBOL && result.bids.size() < args.limit )
+//   {
+//      auto itr = sell_itr;
+//      order cur;
+//      cur.order_price = itr->sell_price;
+//      cur.real_price  = 0.0;
+//      // cur.real_price  = (cur.order_price).to_real();
+//      cur.sbd = itr->for_sale;
+//      cur.steem = ( asset( itr->for_sale, SBD_SYMBOL ) * cur.order_price ).amount;
+//      cur.created = itr->created;
+//      result.bids.push_back( cur );
+//      ++sell_itr;
+//   }
+//   while( buy_itr != end && buy_itr->sell_price.base.symbol == STEEM_SYMBOL && result.asks.size() < args.limit )
+//   {
+//      auto itr = buy_itr;
+//      order cur;
+//      cur.order_price = itr->sell_price;
+//      cur.real_price = 0.0;
+//      // cur.real_price  = (~cur.order_price).to_real();
+//      cur.steem   = itr->for_sale;
+//      cur.sbd     = ( asset( itr->for_sale, STEEM_SYMBOL ) * cur.order_price ).amount;
+//      cur.created = itr->created;
+//      result.asks.push_back( cur );
+//      ++buy_itr;
+//   }
+//
+//   return result;
+//}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1346,7 +1346,7 @@ DEFINE_API_IMPL( database_api_impl, get_required_signatures )
                                                    args.available_keys,
                                                    [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).active  ); },
                                                    [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).owner   ); },
-                                                   [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting ); },
+                                                   //[&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting ); },
                                                    STEEM_MAX_SIG_CHECK_DEPTH,
                                                    _db.has_hardfork( STEEM_HARDFORK_0_20__1944 ) ? fc::ecc::canonical_signature_type::bip_0062 : fc::ecc::canonical_signature_type::fc_canonical );
 
@@ -1373,13 +1373,13 @@ DEFINE_API_IMPL( database_api_impl, get_potential_signatures )
             result.keys.insert( k );
          return authority( auth );
       },
-      [&]( account_name_type account_name )
-      {
-         const auto& auth = _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting;
-         for( const auto& k : auth.get_keys() )
-            result.keys.insert( k );
-         return authority( auth );
-      },
+//      [&]( account_name_type account_name )
+//      {
+//         const auto& auth = _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting;
+//         for( const auto& k : auth.get_keys() )
+//            result.keys.insert( k );
+//         return authority( auth );
+//      },
       STEEM_MAX_SIG_CHECK_DEPTH,
       _db.has_hardfork( STEEM_HARDFORK_0_20__1944 ) ? fc::ecc::canonical_signature_type::bip_0062 : fc::ecc::canonical_signature_type::fc_canonical
    );
@@ -1392,7 +1392,7 @@ DEFINE_API_IMPL( database_api_impl, verify_authority )
    args.trx.verify_authority(_db.get_chain_id(),
                            [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).active  ); },
                            [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).owner   ); },
-                           [&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting ); },
+                           //[&]( string account_name ){ return authority( _db.get< chain::account_authority_object, chain::by_account >( account_name ).posting ); },
                            STEEM_MAX_SIG_CHECK_DEPTH,
                            STEEM_MAX_AUTHORITY_MEMBERSHIP,
                            STEEM_MAX_SIG_CHECK_ACCOUNTS,
@@ -1439,7 +1439,7 @@ DEFINE_API_IMPL( database_api_impl, verify_signatures )
          sig_keys,
          [this]( const string& name ) { return authority( _db.get< chain::account_authority_object, chain::by_account >( name ).owner ); },
          [this]( const string& name ) { return authority( _db.get< chain::account_authority_object, chain::by_account >( name ).active ); },
-         [this]( const string& name ) { return authority( _db.get< chain::account_authority_object, chain::by_account >( name ).posting ); },
+         //[this]( const string& name ) { return authority( _db.get< chain::account_authority_object, chain::by_account >( name ).posting ); },
          STEEM_MAX_SIG_CHECK_DEPTH );
    }
    catch( fc::exception& ) { result.valid = false; }
@@ -1537,55 +1537,55 @@ DEFINE_API_IMPL( database_api_impl, find_smt_tokens )
    return result;
 }
 
-DEFINE_API_IMPL( database_api_impl, list_smt_token_emissions )
-{
-   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//DEFINE_API_IMPL( database_api_impl, list_smt_token_emissions )
+//{
+//   FC_ASSERT( args.limit <= DATABASE_API_SINGLE_QUERY_LIMIT );
+//
+//   list_smt_token_emissions_return result;
+//   result.token_emissions.reserve( args.limit );
+//
+//   switch( args.order )
+//   {
+//      case( by_symbol_time ):
+//      {
+//         auto key = args.start.get_array();
+//         FC_ASSERT( key.size() == 0 || key.size() == 2, "The parameter 'start' must be an empty array or consist of asset_symbol_type and time_point_sec" );
+//
+//         boost::tuple< asset_symbol_type, time_point_sec > start;
+//         if ( key.size() == 0 )
+//            start = boost::make_tuple( asset_symbol_type(), time_point_sec() );
+//         else
+//            start = boost::make_tuple( key[ 0 ].as< asset_symbol_type >(), key[ 1 ].as< time_point_sec >() );
+//
+//         iterate_results< chain::smt_token_emissions_index, chain::by_symbol_time >(
+//            start,
+//            result.token_emissions,
+//            args.limit,
+//            &database_api_impl::on_push_default< chain::smt_token_emissions_object > );
+//         break;
+//      }
+//      default:
+//         FC_ASSERT( false, "Unknown or unsupported sort order" );
+//   }
+//
+//   return result;
+//}
 
-   list_smt_token_emissions_return result;
-   result.token_emissions.reserve( args.limit );
-
-   switch( args.order )
-   {
-      case( by_symbol_time ):
-      {
-         auto key = args.start.get_array();
-         FC_ASSERT( key.size() == 0 || key.size() == 2, "The parameter 'start' must be an empty array or consist of asset_symbol_type and time_point_sec" );
-
-         boost::tuple< asset_symbol_type, time_point_sec > start;
-         if ( key.size() == 0 )
-            start = boost::make_tuple( asset_symbol_type(), time_point_sec() );
-         else
-            start = boost::make_tuple( key[ 0 ].as< asset_symbol_type >(), key[ 1 ].as< time_point_sec >() );
-
-         iterate_results< chain::smt_token_emissions_index, chain::by_symbol_time >(
-            start,
-            result.token_emissions,
-            args.limit,
-            &database_api_impl::on_push_default< chain::smt_token_emissions_object > );
-         break;
-      }
-      default:
-         FC_ASSERT( false, "Unknown or unsupported sort order" );
-   }
-
-   return result;
-}
-
-DEFINE_API_IMPL( database_api_impl, find_smt_token_emissions )
-{
-   find_smt_token_emissions_return result;
-
-   const auto& idx = _db.get_index< chain::smt_token_emissions_index, chain::by_symbol_time >();
-   auto itr = idx.lower_bound( args.asset_symbol );
-
-   while( itr != idx.end() && itr->symbol == args.asset_symbol && result.token_emissions.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
-   {
-      result.token_emissions.push_back( *itr );
-      ++itr;
-   }
-
-   return result;
-}
+//DEFINE_API_IMPL( database_api_impl, find_smt_token_emissions )
+//{
+//   find_smt_token_emissions_return result;
+//
+////   const auto& idx = _db.get_index< chain::smt_token_emissions_index, chain::by_symbol_time >();
+////   auto itr = idx.lower_bound( args.asset_symbol );
+////
+////   while( itr != idx.end() && itr->symbol == args.asset_symbol && result.token_emissions.size() <= DATABASE_API_SINGLE_QUERY_LIMIT )
+////   {
+////      result.token_emissions.push_back( *itr );
+////      ++itr;
+////   }
+//
+//   return result;
+//}
 
 DEFINE_API_IMPL( database_api_impl, get_balance )
 {
@@ -1602,7 +1602,7 @@ DEFINE_READ_APIS( database_api,
    (get_dynamic_global_properties)
    (get_witness_schedule)
    (get_hardfork_properties)
-   (get_reward_funds)
+//   (get_reward_funds)
    (get_current_price_feed)
    (get_feed_history)
    (list_witnesses)
@@ -1613,31 +1613,31 @@ DEFINE_READ_APIS( database_api,
    (find_accounts)
    (list_owner_histories)
    (find_owner_histories)
-   (list_account_recovery_requests)
-   (find_account_recovery_requests)
-   (list_change_recovery_account_requests)
-   (find_change_recovery_account_requests)
-   (list_escrows)
-   (find_escrows)
+//   (list_account_recovery_requests)
+//   (find_account_recovery_requests)
+//   (list_change_recovery_account_requests)
+//   (find_change_recovery_account_requests)
+//   (list_escrows)
+//   (find_escrows)
    (list_withdraw_vesting_routes)
    (find_withdraw_vesting_routes)
-   (list_savings_withdrawals)
-   (find_savings_withdrawals)
-   (list_vesting_delegations)
-   (find_vesting_delegations)
-   (list_vesting_delegation_expirations)
-   (find_vesting_delegation_expirations)
+//   (list_savings_withdrawals)
+//   (find_savings_withdrawals)
+//   (list_vesting_delegations)
+//   (find_vesting_delegations)
+//   (list_vesting_delegation_expirations)
+//   (find_vesting_delegation_expirations)
    (list_sbd_conversion_requests)
    (find_sbd_conversion_requests)
-   (list_decline_voting_rights_requests)
-   (find_decline_voting_rights_requests)
-   (list_comments)
-   (find_comments)
-   (list_votes)
-   (find_votes)
-   (list_limit_orders)
-   (find_limit_orders)
-   (get_order_book)
+//   (list_decline_voting_rights_requests)
+//   (find_decline_voting_rights_requests)
+//   (list_comments)
+//   (find_comments)
+//   (list_votes)
+//   (find_votes)
+//   (list_limit_orders)
+//   (find_limit_orders)
+//   (get_order_book)
    (get_transaction_hex)
    (get_required_signatures)
    (get_potential_signatures)
@@ -1648,8 +1648,8 @@ DEFINE_READ_APIS( database_api,
    (get_nai_pool)
    (list_smt_tokens)
    (find_smt_tokens)
-   (list_smt_token_emissions)
-   (find_smt_token_emissions)
+//   (list_smt_token_emissions)
+//   (find_smt_token_emissions)
    (get_balance)
 //#endif
 )
