@@ -27,7 +27,7 @@ namespace steem { namespace protocol {
             convert_operation,
 
             account_create_operation,
-            //account_update_operation,
+            account_update_operation,
 
             witness_update_operation,
             account_witness_vote_operation,

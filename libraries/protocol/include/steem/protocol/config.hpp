@@ -69,7 +69,7 @@
 
 //#define STEEM_OWNER_AUTH_RECOVERY_PERIOD                  fc::days(30)
 //#define STEEM_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  fc::days(1)
-//#define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
+#define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
 #define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))

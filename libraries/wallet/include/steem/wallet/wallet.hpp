@@ -68,8 +68,8 @@ struct wallet_data
 enum authority_type
 {
    owner,
-   active,
-   posting
+   active
+//   posting
 };
 
 namespace detail {
@@ -486,14 +486,14 @@ class wallet_api
        * @param memo New public memo key for the account
        * @param broadcast true if you wish to broadcast the transaction
        */
-//      condenser_api::legacy_signed_transaction update_account(
-//         string accountname,
-//         string json_meta,
-//         public_key_type owner,
-//         public_key_type active,
+      condenser_api::legacy_signed_transaction update_account(
+         string accountname,
+         string json_meta,
+         public_key_type owner,
+         public_key_type active,
 //         public_key_type posting,
 //         public_key_type memo,
-//         bool broadcast )const;
+         bool broadcast )const;
 
       /**
        * This method updates the key of an authority for an exisiting account.
@@ -507,12 +507,12 @@ class wallet_api
        * @param weight The weight the key should have in the authority. A weight of 0 indicates the removal of the key.
        * @param broadcast true if you wish to broadcast the transaction.
        */
-//      condenser_api::legacy_signed_transaction update_account_auth_key(
-//         string account_name,
-//         authority_type type,
-//         public_key_type key,
-//         weight_type weight,
-//         bool broadcast );
+      condenser_api::legacy_signed_transaction update_account_auth_key(
+         string account_name,
+         authority_type type,
+         public_key_type key,
+         weight_type weight,
+         bool broadcast );
 
       /**
        * This method updates the account of an authority for an exisiting account.
@@ -526,12 +526,12 @@ class wallet_api
        * @param weight The weight the account should have in the authority. A weight of 0 indicates the removal of the account.
        * @param broadcast true if you wish to broadcast the transaction.
        */
-//      condenser_api::legacy_signed_transaction update_account_auth_account(
-//         string account_name,
-//         authority_type type,
-//         string auth_account,
-//         weight_type weight,
-//         bool broadcast );
+      condenser_api::legacy_signed_transaction update_account_auth_account(
+         string account_name,
+         authority_type type,
+         string auth_account,
+         weight_type weight,
+         bool broadcast );
 
       /**
        * This method updates the weight threshold of an authority for an account.
@@ -545,11 +545,11 @@ class wallet_api
        * @param threshold The weight threshold required for the authority to be met
        * @param broadcast true if you wish to broadcast the transaction
        */
-//      condenser_api::legacy_signed_transaction update_account_auth_threshold(
-//         string account_name,
-//         authority_type type,
-//         uint32_t threshold,
-//         bool broadcast );
+      condenser_api::legacy_signed_transaction update_account_auth_threshold(
+         string account_name,
+         authority_type type,
+         uint32_t threshold,
+         bool broadcast );
 
       /**
        * This method updates the account JSON metadata
@@ -558,10 +558,10 @@ class wallet_api
        * @param json_meta The new JSON metadata for the account. This overrides existing metadata
        * @param broadcast ture if you wish to broadcast the transaction
        */
-//      condenser_api::legacy_signed_transaction update_account_meta(
-//         string account_name,
-//         string json_meta,
-//         bool broadcast );
+      condenser_api::legacy_signed_transaction update_account_meta(
+         string account_name,
+         string json_meta,
+         bool broadcast );
 
       /**
        * This method updates the memo key of an account
@@ -1140,7 +1140,7 @@ FC_REFLECT( steem::wallet::brain_key_info, (brain_priv_key)(wif_priv_key) (pub_k
 
 FC_REFLECT( steem::wallet::plain_keys, (checksum)(keys) )
 
-FC_REFLECT_ENUM( steem::wallet::authority_type, (owner)(active)(posting) )
+FC_REFLECT_ENUM( steem::wallet::authority_type, (owner)(active) )
 
 FC_API( steem::wallet::wallet_api,
         /// wallet api

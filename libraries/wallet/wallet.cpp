@@ -1630,245 +1630,245 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             return my->_remote_api->get_owner_history(account);
         }
 
-//        condenser_api::legacy_signed_transaction wallet_api::update_account(
-//                string account_name,
-//                string json_meta,
-//                public_key_type owner,
-//                public_key_type active,
+        condenser_api::legacy_signed_transaction wallet_api::update_account(
+                string account_name,
+                string json_meta,
+                public_key_type owner,
+                public_key_type active,
 //                public_key_type posting,
 //                public_key_type memo,
-//                bool broadcast) const {
-//            try {
-//                FC_ASSERT(!is_locked());
-//
-//                account_update_operation op;
-//                op.account = account_name;
-//                op.owner = authority(1, owner, 1);
-//                op.active = authority(1, active, 1);
+                bool broadcast) const {
+            try {
+                FC_ASSERT(!is_locked());
+
+                account_update_operation op;
+                op.account = account_name;
+                op.owner = authority(1, owner, 1);
+                op.active = authority(1, active, 1);
 //                op.posting = authority(1, posting, 1);
 //                op.memo_key = memo;
-//                op.json_metadata = json_meta;
-//
-//                signed_transaction tx;
-//                tx.operations.push_back(op);
-//                tx.validate();
-//
-//                return my->sign_transaction(tx, broadcast);
-//            }
-//            FC_CAPTURE_AND_RETHROW((account_name)(json_meta)(owner)(active)(memo)(broadcast))
-//        }
+                op.json_metadata = json_meta;
 
-//        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_key(
-//                string account_name,
-//                authority_type type,
-//                public_key_type key,
-//                weight_type weight,
-//                bool broadcast) {
-//            FC_ASSERT(!is_locked());
-//
-//            auto accounts = my->_remote_api->get_accounts({account_name});
-//            FC_ASSERT(accounts.size() == 1, "Account does not exist");
-//            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
-//
-//            account_update_operation op;
-//            op.account = account_name;
+                signed_transaction tx;
+                tx.operations.push_back(op);
+                tx.validate();
+
+                return my->sign_transaction(tx, broadcast);
+            }
+            FC_CAPTURE_AND_RETHROW((account_name)(json_meta)(owner)(active)(broadcast))
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_key(
+                string account_name,
+                authority_type type,
+                public_key_type key,
+                weight_type weight,
+                bool broadcast) {
+            FC_ASSERT(!is_locked());
+
+            auto accounts = my->_remote_api->get_accounts({account_name});
+            FC_ASSERT(accounts.size() == 1, "Account does not exist");
+            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
+
+            account_update_operation op;
+            op.account = account_name;
 //            op.memo_key = accounts[0].memo_key;
-//            op.json_metadata = accounts[0].json_metadata;
-//
-//            authority new_auth;
-//
-//            switch (type) {
-//                case (owner):
-//                    new_auth = accounts[0].owner;
-//                    break;
-//                case (active):
-//                    new_auth = accounts[0].active;
-//                    break;
+            op.json_metadata = accounts[0].json_metadata;
+
+            authority new_auth;
+
+            switch (type) {
+                case (owner):
+                    new_auth = accounts[0].owner;
+                    break;
+                case (active):
+                    new_auth = accounts[0].active;
+                    break;
 //                case (posting):
 //                    new_auth = accounts[0].posting;
 //                    break;
-//            }
-//
-//            if (weight == 0) // Remove the key
-//            {
-//                new_auth.key_auths.erase(key);
-//            } else {
-//                new_auth.add_authority(key, weight);
-//            }
-//
-//            if (new_auth.is_impossible()) {
-//                if (type == owner) {
-//                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
-//                }
-//
-//                wlog("Authority is now impossible.");
-//            }
-//
-//            switch (type) {
-//                case (owner):
-//                    op.owner = new_auth;
-//                    break;
-//                case (active):
-//                    op.active = new_auth;
-//                    break;
+            }
+
+            if (weight == 0) // Remove the key
+            {
+                new_auth.key_auths.erase(key);
+            } else {
+                new_auth.add_authority(key, weight);
+            }
+
+            if (new_auth.is_impossible()) {
+                if (type == owner) {
+                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
+                }
+
+                wlog("Authority is now impossible.");
+            }
+
+            switch (type) {
+                case (owner):
+                    op.owner = new_auth;
+                    break;
+                case (active):
+                    op.active = new_auth;
+                    break;
 //                case (posting):
 //                    op.posting = new_auth;
 //                    break;
-//            }
-//
-//            signed_transaction tx;
-//            tx.operations.push_back(op);
-//            tx.validate();
-//
-//            return my->sign_transaction(tx, broadcast);
-//        }
+            }
 
-//        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_account(
-//                string account_name,
-//                authority_type type,
-//                string auth_account,
-//                weight_type weight,
-//                bool broadcast) {
-//            FC_ASSERT(!is_locked());
-//
-//            auto accounts = my->_remote_api->get_accounts({account_name});
-//            FC_ASSERT(accounts.size() == 1, "Account does not exist");
-//            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
-//
-//            account_update_operation op;
-//            op.account = account_name;
+            signed_transaction tx;
+            tx.operations.push_back(op);
+            tx.validate();
+
+            return my->sign_transaction(tx, broadcast);
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_account(
+                string account_name,
+                authority_type type,
+                string auth_account,
+                weight_type weight,
+                bool broadcast) {
+            FC_ASSERT(!is_locked());
+
+            auto accounts = my->_remote_api->get_accounts({account_name});
+            FC_ASSERT(accounts.size() == 1, "Account does not exist");
+            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
+
+            account_update_operation op;
+            op.account = account_name;
 //            op.memo_key = accounts[0].memo_key;
-//            op.json_metadata = accounts[0].json_metadata;
-//
-//            authority new_auth;
-//
-//            switch (type) {
-//                case (owner):
-//                    new_auth = accounts[0].owner;
-//                    break;
-//                case (active):
-//                    new_auth = accounts[0].active;
-//                    break;
+            op.json_metadata = accounts[0].json_metadata;
+
+            authority new_auth;
+
+            switch (type) {
+                case (owner):
+                    new_auth = accounts[0].owner;
+                    break;
+                case (active):
+                    new_auth = accounts[0].active;
+                    break;
 //                case (posting):
 //                    new_auth = accounts[0].posting;
 //                    break;
-//            }
-//
-//            if (weight == 0) // Remove the key
-//            {
-//                new_auth.account_auths.erase(auth_account);
-//            } else {
-//                new_auth.add_authority(auth_account, weight);
-//            }
-//
-//            if (new_auth.is_impossible()) {
-//                if (type == owner) {
-//                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
-//                }
-//
-//                wlog("Authority is now impossible.");
-//            }
-//
-//            switch (type) {
-//                case (owner):
-//                    op.owner = new_auth;
-//                    break;
-//                case (active):
-//                    op.active = new_auth;
-//                    break;
+            }
+
+            if (weight == 0) // Remove the key
+            {
+                new_auth.account_auths.erase(auth_account);
+            } else {
+                new_auth.add_authority(auth_account, weight);
+            }
+
+            if (new_auth.is_impossible()) {
+                if (type == owner) {
+                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
+                }
+
+                wlog("Authority is now impossible.");
+            }
+
+            switch (type) {
+                case (owner):
+                    op.owner = new_auth;
+                    break;
+                case (active):
+                    op.active = new_auth;
+                    break;
 //                case (posting):
 //                    op.posting = new_auth;
 //                    break;
-//            }
-//
-//            signed_transaction tx;
-//            tx.operations.push_back(op);
-//            tx.validate();
-//
-//            return my->sign_transaction(tx, broadcast);
-//        }
+            }
 
-//        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_threshold(
-//                string account_name,
-//                authority_type type,
-//                uint32_t threshold,
-//                bool broadcast) {
-//            FC_ASSERT(!is_locked());
-//
-//            auto accounts = my->_remote_api->get_accounts({account_name});
-//            FC_ASSERT(accounts.size() == 1, "Account does not exist");
-//            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
-//            FC_ASSERT(threshold != 0, "Authority is implicitly satisfied");
-//
-//            account_update_operation op;
-//            op.account = account_name;
+            signed_transaction tx;
+            tx.operations.push_back(op);
+            tx.validate();
+
+            return my->sign_transaction(tx, broadcast);
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::update_account_auth_threshold(
+                string account_name,
+                authority_type type,
+                uint32_t threshold,
+                bool broadcast) {
+            FC_ASSERT(!is_locked());
+
+            auto accounts = my->_remote_api->get_accounts({account_name});
+            FC_ASSERT(accounts.size() == 1, "Account does not exist");
+            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
+            FC_ASSERT(threshold != 0, "Authority is implicitly satisfied");
+
+            account_update_operation op;
+            op.account = account_name;
 //            op.memo_key = accounts[0].memo_key;
-//            op.json_metadata = accounts[0].json_metadata;
-//
-//            authority new_auth;
-//
-//            switch (type) {
-//                case (owner):
-//                    new_auth = accounts[0].owner;
-//                    break;
-//                case (active):
-//                    new_auth = accounts[0].active;
-//                    break;
+            op.json_metadata = accounts[0].json_metadata;
+
+            authority new_auth;
+
+            switch (type) {
+                case (owner):
+                    new_auth = accounts[0].owner;
+                    break;
+                case (active):
+                    new_auth = accounts[0].active;
+                    break;
 //                case (posting):
 //                    new_auth = accounts[0].posting;
 //                    break;
-//            }
-//
-//            new_auth.weight_threshold = threshold;
-//
-//            if (new_auth.is_impossible()) {
-//                if (type == owner) {
-//                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
-//                }
-//
-//                wlog("Authority is now impossible.");
-//            }
-//
-//            switch (type) {
-//                case (owner):
-//                    op.owner = new_auth;
-//                    break;
-//                case (active):
-//                    op.active = new_auth;
-//                    break;
+            }
+
+            new_auth.weight_threshold = threshold;
+
+            if (new_auth.is_impossible()) {
+                if (type == owner) {
+                    FC_ASSERT(false, "Owner authority change would render account irrecoverable.");
+                }
+
+                wlog("Authority is now impossible.");
+            }
+
+            switch (type) {
+                case (owner):
+                    op.owner = new_auth;
+                    break;
+                case (active):
+                    op.active = new_auth;
+                    break;
 //                case (posting):
 //                    op.posting = new_auth;
 //                    break;
-//            }
-//
-//            signed_transaction tx;
-//            tx.operations.push_back(op);
-//            tx.validate();
-//
-//            return my->sign_transaction(tx, broadcast);
-//        }
+            }
 
-//        condenser_api::legacy_signed_transaction wallet_api::update_account_meta(
-//                string account_name,
-//                string json_meta,
-//                bool broadcast) {
-//            FC_ASSERT(!is_locked());
-//
-//            auto accounts = my->_remote_api->get_accounts({account_name});
-//            FC_ASSERT(accounts.size() == 1, "Account does not exist");
-//            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
-//
-//            account_update_operation op;
-//            op.account = account_name;
+            signed_transaction tx;
+            tx.operations.push_back(op);
+            tx.validate();
+
+            return my->sign_transaction(tx, broadcast);
+        }
+
+        condenser_api::legacy_signed_transaction wallet_api::update_account_meta(
+                string account_name,
+                string json_meta,
+                bool broadcast) {
+            FC_ASSERT(!is_locked());
+
+            auto accounts = my->_remote_api->get_accounts({account_name});
+            FC_ASSERT(accounts.size() == 1, "Account does not exist");
+            FC_ASSERT(account_name == accounts[0].name, "Account name doesn't match?");
+
+            account_update_operation op;
+            op.account = account_name;
 //            op.memo_key = accounts[0].memo_key;
-//            op.json_metadata = json_meta;
-//
-//            signed_transaction tx;
-//            tx.operations.push_back(op);
-//            tx.validate();
-//
-//            return my->sign_transaction(tx, broadcast);
-//        }
+            op.json_metadata = json_meta;
+
+            signed_transaction tx;
+            tx.operations.push_back(op);
+            tx.validate();
+
+            return my->sign_transaction(tx, broadcast);
+        }
 
 //        condenser_api::legacy_signed_transaction wallet_api::update_account_memo_key(
 //                string account_name,

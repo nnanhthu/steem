@@ -36,7 +36,7 @@ namespace steem { namespace chain {
          shared_string     json_metadata;
 //         account_name_type proxy;
 
-//         time_point_sec    last_account_update;
+         time_point_sec    last_account_update;
 
          time_point_sec    created;
          bool              mined = true;

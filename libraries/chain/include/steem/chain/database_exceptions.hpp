@@ -98,9 +98,9 @@ namespace steem { namespace chain {
    STEEM_DECLARE_OP_EVALUATE_EXCEPTION( max_auth_exceeded, account_create, 1, "Exceeds max authority fan-out" )
    STEEM_DECLARE_OP_EVALUATE_EXCEPTION( auth_account_not_found, account_create, 2, "Auth account not found" )
 
-//   STEEM_DECLARE_OP_BASE_EXCEPTIONS( account_update );
-//   STEEM_DECLARE_OP_EVALUATE_EXCEPTION( max_auth_exceeded, account_update, 1, "Exceeds max authority fan-out" )
-//   STEEM_DECLARE_OP_EVALUATE_EXCEPTION( auth_account_not_found, account_update, 2, "Auth account not found" )
+   STEEM_DECLARE_OP_BASE_EXCEPTIONS( account_update );
+   STEEM_DECLARE_OP_EVALUATE_EXCEPTION( max_auth_exceeded, account_update, 1, "Exceeds max authority fan-out" )
+   STEEM_DECLARE_OP_EVALUATE_EXCEPTION( auth_account_not_found, account_update, 2, "Auth account not found" )
 
    FC_DECLARE_DERIVED_EXCEPTION( internal_exception, steem::chain::chain_exception, 4990000, "internal exception" )
 

@@ -288,7 +288,7 @@ namespace detail
                         //   eacnt.vote_history[item.first] =  item.second;
                            break;
                         case operation::tag<account_create_operation>::value:
-//                        case operation::tag<account_update_operation>::value:
+                        case operation::tag<account_update_operation>::value:
                         case operation::tag<witness_update_operation>::value:
 //                        case operation::tag<pow_operation>::value:
 //                        case operation::tag<custom_operation>::value:

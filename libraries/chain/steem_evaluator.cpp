@@ -498,62 +498,66 @@ namespace steem {
 //        }
 //
 //
-//        void account_update_evaluator::do_apply(const account_update_operation &o) {
-//            if (_db.has_hardfork(STEEM_HARDFORK_0_1))
-//                FC_ASSERT(o.account != STEEM_TEMP_ACCOUNT, "Cannot update temp account.");
-//
+        void account_update_evaluator::do_apply(const account_update_operation &o) {
+            if (_db.has_hardfork(STEEM_HARDFORK_0_1))
+                FC_ASSERT(o.account != STEEM_TEMP_ACCOUNT, "Cannot update temp account.");
 //            if ((_db.has_hardfork(STEEM_HARDFORK_0_15__465)) && o.posting)
 //                o.posting->validate();
-//
-//            const auto &account = _db.get_account(o.account);
-//            const auto &account_auth = _db.get<account_authority_object, by_account>(o.account);
-//
-//            if (_db.is_producing() || _db.has_hardfork(STEEM_HARDFORK_0_20)) {
-//                if (o.owner)
-//                    validate_auth_size(*o.owner);
-//                if (o.active)
-//                    validate_auth_size(*o.active);
+
+            const auto &account = _db.get_account(o.account);
+            const auto &account_auth = _db.get<account_authority_object, by_account>(o.account);
+
+            if (_db.is_producing() || _db.has_hardfork(STEEM_HARDFORK_0_20)) {
+                if (o.owner)
+                    validate_auth_size(*o.owner);
+                if (o.active)
+                    validate_auth_size(*o.active);
 //                if (o.posting)
 //                    validate_auth_size(*o.posting);
-//            }
-//
-//            if (o.owner) {
-//#ifndef IS_TEST_NET
-//                if (_db.has_hardfork(STEEM_HARDFORK_0_11))
-//                    FC_ASSERT(_db.head_block_time() - account_auth.last_owner_update > STEEM_OWNER_UPDATE_LIMIT,
-//                              "Owner authority can only be updated once an hour.");
-//#endif
-//
-//                if ((_db.has_hardfork(STEEM_HARDFORK_0_15__465)))
-//                    verify_authority_accounts_exist(_db, *o.owner, o.account, authority::owner);
-//
-//                _db.update_owner_authority(account, *o.owner);
-//            }
-//            if (o.active && (_db.has_hardfork(STEEM_HARDFORK_0_15__465)))
-//                verify_authority_accounts_exist(_db, *o.active, o.account, authority::active);
+            }
+
+            if (o.owner) {
+#ifndef IS_TEST_NET
+                if (_db.has_hardfork(STEEM_HARDFORK_0_11))
+                    FC_ASSERT(_db.head_block_time() - account_auth.last_owner_update > STEEM_OWNER_UPDATE_LIMIT,
+                              "Owner authority can only be updated once an hour.");
+#endif
+
+                if ((_db.has_hardfork(STEEM_HARDFORK_0_15__465)))
+                    verify_authority_accounts_exist(_db, *o.owner, o.account, authority::owner);
+
+                _db.update_owner_authority(account, *o.owner);
+            }
+            if (o.active && (_db.has_hardfork(STEEM_HARDFORK_0_15__465)))
+                verify_authority_accounts_exist(_db, *o.active, o.account, authority::active);
 //            if (o.posting && (_db.has_hardfork(STEEM_HARDFORK_0_15__465)))
 //                verify_authority_accounts_exist(_db, *o.posting, o.account, authority::posting);
-//
-//            _db.modify(account, [&](account_object &acc) {
+
+            _db.modify(account, [&](account_object &acc) {
 //                if (o.memo_key != public_key_type())
 //                    acc.memo_key = o.memo_key;
-//
-//                acc.last_account_update = _db.head_block_time();
-//
-//#ifndef IS_LOW_MEM
-//                if (o.json_metadata.size() > 0)
-//                    from_string(acc.json_metadata, o.json_metadata);
-//#endif
-//            });
-//
+
+                acc.last_account_update = _db.head_block_time();
+
+#ifndef IS_LOW_MEM
+                if (o.json_metadata.size() > 0)
+                    from_string(acc.json_metadata, o.json_metadata);
+#endif
+            });
+
 //            if (o.active || o.posting) {
 //                _db.modify(account_auth, [&](account_authority_object &auth) {
 //                    if (o.active) auth.active = *o.active;
 //                    if (o.posting) auth.posting = *o.posting;
 //                });
 //            }
-//
-//        }
+
+            if (o.active) {
+                _db.modify(account_auth, [&](account_authority_object &auth) {
+                    if (o.active) auth.active = *o.active;
+                });
+            }
+        }
 
 
 /**

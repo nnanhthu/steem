@@ -10,7 +10,7 @@ using namespace steem::protocol;
 
 STEEM_DEFINE_EVALUATOR( account_create )
 //STEEM_DEFINE_EVALUATOR( account_create_with_delegation )
-//STEEM_DEFINE_EVALUATOR( account_update )
+STEEM_DEFINE_EVALUATOR( account_update )
 STEEM_DEFINE_EVALUATOR( transfer )
 STEEM_DEFINE_EVALUATOR( transfer_to_vesting )
 STEEM_DEFINE_EVALUATOR( witness_update )

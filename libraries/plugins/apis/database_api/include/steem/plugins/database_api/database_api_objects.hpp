@@ -166,7 +166,7 @@ struct api_account_object
 //      memo_key( a.memo_key ),
       json_metadata( to_string( a.json_metadata ) ),
 //      proxy( a.proxy ),
-//      last_account_update( a.last_account_update ),
+      last_account_update( a.last_account_update ),
       created( a.created ),
       mined( a.mined ),
 //      recovery_account( a.recovery_account ),
@@ -240,7 +240,7 @@ struct api_account_object
 //   account_name_type proxy;
 
    time_point_sec    last_owner_update;
-//   time_point_sec    last_account_update;
+   time_point_sec    last_account_update;
 
    time_point_sec    created;
    bool              mined = false;
