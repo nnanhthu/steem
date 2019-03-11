@@ -2542,7 +2542,7 @@ asset database::get_liquidity_reward()const
 asset database::get_producer_reward()
 {
    const auto& props = get_dynamic_global_properties();
-   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+   static_assert( STEEM_BLOCK_INTERVAL == 10, "this code assumes a 3-second time interval" );
    asset percent( protocol::calc_percent_reward_per_block< STEEM_PRODUCER_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
    auto pay = std::max( percent, STEEM_MIN_PRODUCER_REWARD );
    const auto& witness_account = get_account( props.current_witness );
@@ -2572,6 +2572,7 @@ asset database::get_producer_reward()
    return pay;
 }
 
+
 //asset database::get_pow_reward()const
 //{
 //   const auto& props = get_dynamic_global_properties();
@@ -2587,7 +2588,6 @@ asset database::get_producer_reward()
 //   asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
 //   return std::max( percent, STEEM_MIN_POW_REWARD );
 //}
-
 
 void database::pay_liquidity_reward()
 {
