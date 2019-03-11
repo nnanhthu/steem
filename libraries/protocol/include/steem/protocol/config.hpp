@@ -86,7 +86,7 @@
 
 #define STEEM_BLOCKCHAIN_HARDFORK_VERSION     ( hardfork_version( STEEM_BLOCKCHAIN_VERSION ) )
 
-#define STEEM_BLOCK_INTERVAL                  3
+#define STEEM_BLOCK_INTERVAL                  10
 #define STEEM_BLOCKS_PER_YEAR                 (365*24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_BLOCKS_PER_DAY                  (24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_START_VESTING_BLOCK             (STEEM_BLOCKS_PER_DAY * 7)
@@ -108,7 +108,7 @@
 
 #define STEEM_HARDFORK_REQUIRED_WITNESSES     17 // 17 of the 21 dpos witnesses (20 elected and 1 virtual time) required for hardfork. This guarantees 75% participation on all subsequent rounds.
 #define STEEM_MAX_TIME_UNTIL_EXPIRATION       (60*60) // seconds,  aka: 1 hour
-#define STEEM_MAX_MEMO_SIZE                   512 //2048
+#define STEEM_MAX_MEMO_SIZE                   128 //2048
 #define STEEM_MAX_PROXY_RECURSION_DEPTH       4
 #define STEEM_VESTING_WITHDRAW_INTERVALS_PRE_HF_16 104
 #define STEEM_VESTING_WITHDRAW_INTERVALS      13
@@ -347,3 +347,5 @@
 
 #define ENABLE_CONVERSION_TO_SBD                 false
 #define ENABLE_CONVERSION_FROM_SBD               false
+#define STEEM_1_STEEM                            100000 //due to Precision = 5
+#define STEEM_1_VESTS                            1000000 //due to Precision = 6
