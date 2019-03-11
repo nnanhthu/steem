@@ -108,7 +108,7 @@
 
 #define STEEM_HARDFORK_REQUIRED_WITNESSES     4 // 17 of the 21 dpos witnesses (20 elected and 1 virtual time) required for hardfork. This guarantees 75% participation on all subsequent rounds.
 #define STEEM_MAX_TIME_UNTIL_EXPIRATION       (60*60) // seconds,  aka: 1 hour
-#define STEEM_MAX_MEMO_SIZE                   512 //2048
+#define STEEM_MAX_MEMO_SIZE                   128 //2048
 #define STEEM_MAX_PROXY_RECURSION_DEPTH       4
 #define STEEM_VESTING_WITHDRAW_INTERVALS_PRE_HF_16 104
 #define STEEM_VESTING_WITHDRAW_INTERVALS      13
