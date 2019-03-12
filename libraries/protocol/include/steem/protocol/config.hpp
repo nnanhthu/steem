@@ -345,7 +345,7 @@
 
 //#endif /// STEEM_ENABLE_SMT
 
-#define ENABLE_CONVERSION_TO_SBD                 false
-#define ENABLE_CONVERSION_FROM_SBD               false
+#define ENABLE_CONVERSION_TO_SBD                 true
+#define ENABLE_CONVERSION_FROM_SBD               true
 #define STEEM_1_STEEM                            100000 //due to Precision = 5
 #define STEEM_1_VESTS                            1000000 //due to Precision = 6

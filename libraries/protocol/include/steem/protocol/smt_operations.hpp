@@ -18,17 +18,17 @@ namespace steem { namespace protocol {
 /**
  * Base of all smt operations issued by token creator, holding what's needed by all of them.
  */
-struct smt_base_operation : public base_operation
-{
-   /// Account that controls the SMT.
-   account_name_type control_account;
-   /// The token's Numerical Asset Identifier (NAI) coupled with token's precision.
-   asset_symbol_type symbol;
-
-   void validate()const;
-   void get_required_active_authorities( flat_set<account_name_type>& a )const
-   { a.insert( control_account ); }
-};
+//struct smt_base_operation : public base_operation
+//{
+//   /// Account that controls the SMT.
+//   account_name_type control_account;
+//   /// The token's Numerical Asset Identifier (NAI) coupled with token's precision.
+//   asset_symbol_type symbol;
+//
+//   void validate()const;
+//   void get_required_active_authorities( flat_set<account_name_type>& a )const
+//   { a.insert( control_account ); }
+//};
 
 /**
  * Base of all smt operations issued any user (aka executor).
@@ -50,8 +50,12 @@ struct smt_base_operation : public base_operation
  * Numerical Asset Identifier (NAI). Also the SMT precision (decimal points)
  * is explicitly provided.
  */
-struct smt_create_operation : public smt_base_operation
+struct smt_create_operation : public base_operation
 {
+    /// Account that controls the SMT.
+    account_name_type control_account;
+    /// The token's Numerical Asset Identifier (NAI) coupled with token's precision.
+    asset_symbol_type symbol;
    /// The amount to be transfered from @account to null account as elevation fee.
    asset             smt_creation_fee;
    /// Separately provided precision for clarity and redundancy.
@@ -60,6 +64,8 @@ struct smt_create_operation : public smt_base_operation
    extensions_type   extensions;
 
    void validate()const;
+   void get_required_active_authorities( flat_set<account_name_type>& a )const
+   { a.insert( control_account ); }
 };
 
 //struct smt_generation_unit
@@ -124,8 +130,12 @@ struct smt_create_operation : public smt_base_operation
 //   smt_capped_generation_policy
 //   > smt_generation_policy;
 
-struct smt_setup_operation : public smt_base_operation
+struct smt_setup_operation : public base_operation
 {
+    /// Account that controls the SMT.
+    account_name_type control_account;
+    /// The token's Numerical Asset Identifier (NAI) coupled with token's precision.
+    asset_symbol_type symbol;
    uint8_t                 decimal_places = 0;
    uint64_t                 max_supply = STEEM_MAX_SHARE_SUPPLY;
 
@@ -139,6 +149,8 @@ struct smt_setup_operation : public smt_base_operation
    extensions_type         extensions;
 
    void validate()const;
+            void get_required_active_authorities( flat_set<account_name_type>& a )const
+            { a.insert( control_account ); }
 };
 
 //struct smt_revealed_cap
@@ -270,11 +282,11 @@ struct smt_setup_operation : public smt_base_operation
 
 } }
 
-FC_REFLECT(
-   steem::protocol::smt_base_operation,
-   (control_account)
-   (symbol)
-)
+//FC_REFLECT(
+//   steem::protocol::smt_base_operation,
+//   (control_account)
+//   (symbol)
+//)
 
 //FC_REFLECT(
 //   steem::protocol::smt_executor_base_operation,
@@ -282,24 +294,21 @@ FC_REFLECT(
 //   (symbol)
 //)
 
-FC_REFLECT_DERIVED(
+FC_REFLECT(
    steem::protocol::smt_create_operation,
-   (steem::protocol::smt_base_operation),
+   (control_account)
+   (symbol)
    (smt_creation_fee)
    (precision)
    (extensions)
 )
 
-FC_REFLECT_DERIVED(
+FC_REFLECT(
    steem::protocol::smt_setup_operation,
-   (steem::protocol::smt_base_operation),
+   (control_account)
+   (symbol)
    (decimal_places)
    (max_supply)
-//   (initial_generation_policy)
-//   (generation_begin_time)
-//   (generation_end_time)
-//   (announced_launch_time)
-//   (launch_expiration_time)
    (extensions)
    )
 

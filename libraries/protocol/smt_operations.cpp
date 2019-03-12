@@ -18,11 +18,11 @@ void common_symbol_validation( const asset_symbol_type& symbol )
    FC_ASSERT( symbol.is_vesting() == false, "liquid variant of NAI expected");
 }
 
-void smt_base_operation::validate()const
-{
-   validate_account_name( control_account );
-   common_symbol_validation( symbol );
-}
+//void smt_base_operation::validate()const
+//{
+//   validate_account_name( control_account );
+//   common_symbol_validation( symbol );
+//}
 
 //void smt_executor_base_operation::validate()const
 //{
@@ -32,7 +32,9 @@ void smt_base_operation::validate()const
 
 void smt_create_operation::validate()const
 {
-   smt_base_operation::validate();
+//   smt_base_operation::validate();
+   validate_account_name( control_account );
+   common_symbol_validation( symbol );
    FC_ASSERT( smt_creation_fee.amount >= 0, "fee cannot be negative" );
    FC_ASSERT( smt_creation_fee.amount <= STEEM_MAX_SHARE_SUPPLY, "Fee must be smaller than STEEM_MAX_SHARE_SUPPLY" );
    //FC_ASSERT( is_asset_type( smt_creation_fee, STEEM_SYMBOL ) || is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be STEEM or SBD" );
@@ -265,7 +267,9 @@ struct validate_visitor
 
 void smt_setup_operation::validate()const
 {
-   smt_base_operation::validate();
+//   smt_base_operation::validate();
+   validate_account_name( control_account );
+   common_symbol_validation( symbol );
    FC_ASSERT( decimal_places >= 0);
    FC_ASSERT( decimal_places <= SMT_MAX_DECIMAL_PLACES );
    FC_ASSERT( max_supply > 0 );

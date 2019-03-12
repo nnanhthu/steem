@@ -996,29 +996,28 @@ namespace steem { namespace plugins { namespace condenser_api {
             {
                 legacy_smt_create_operation() {}
                 legacy_smt_create_operation( const smt_create_operation& op ) :
-                        smt_creation_fee( legacy_asset::from_asset( op.smt_creation_fee ) ),
-                        precision( op.precision ),
-                        extensions( op.extensions ),
                         control_account( op.control_account ),
-                        symbol( op.symbol )
+                        symbol( op.symbol ),
+                smt_creation_fee( legacy_asset::from_asset( op.smt_creation_fee ) ),
+                        precision( op.precision ),
+                        extensions( op.extensions )
                 {}
 
                 operator smt_create_operation()const
                 {
                    smt_create_operation op;
+                    op.control_account = control_account;
+                    op.symbol = symbol;
                    op.smt_creation_fee = smt_creation_fee;
                    op.precision = precision;
                    op.extensions = extensions;
-                   op.control_account = control_account;
-                   op.symbol = symbol;
                    return op;
                 }
-
+                account_name_type control_account;
+                asset_symbol_type symbol;
                 legacy_asset      smt_creation_fee;
                 uint8_t           precision;
                 extensions_type   extensions;
-                account_name_type control_account;
-                asset_symbol_type symbol;
             };
 
             struct legacy_smt_setup_operation
@@ -1243,6 +1242,12 @@ namespace steem { namespace plugins { namespace condenser_api {
 //            legacy_delegate_vesting_shares_operation,
 //            legacy_account_create_with_delegation_operation,
             legacy_witness_set_properties_operation,
+            legacy_smt_create_operation,
+            legacy_smt_setup_operation,
+//            legacy_smt_setup_emissions_operation,
+//            legacy_smt_set_setup_parameters_operation,
+//            legacy_smt_set_runtime_parameters_operation,
+            legacy_convert_to_sbd_operation,
             legacy_fill_convert_request_operation,
 //            legacy_author_reward_operation,
 //            legacy_curation_reward_operation,
@@ -1257,13 +1262,7 @@ namespace steem { namespace plugins { namespace condenser_api {
             //           legacy_comment_payout_update_operation,
 //            legacy_return_vesting_delegation_operation,
             //           legacy_comment_benefactor_reward_operation,
-            legacy_producer_reward_operation,
-            legacy_smt_create_operation,
-            legacy_smt_setup_operation,
-//            legacy_smt_setup_emissions_operation,
-//            legacy_smt_set_setup_parameters_operation,
-//            legacy_smt_set_runtime_parameters_operation,
-            legacy_convert_to_sbd_operation
+            legacy_producer_reward_operation
             > legacy_operation;
 
             struct legacy_operation_conversion_visitor
@@ -1845,12 +1844,15 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_fill_vesting_withdraw_operatio
 FC_REFLECT( steem::plugins::condenser_api::legacy_producer_reward_operation, (producer)(vesting_shares) )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_claim_account_operation, (creator)(fee)(extensions) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_smt_create_operation,
+            (control_account)
+                    (symbol)
 (smt_creation_fee)
         (precision)
         (extensions)
-        (control_account)
-(symbol) )
+         )
 FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_operation,
+            (control_account)
+                    (symbol)
 (decimal_places)
         (max_supply)
 //        (initial_generation_policy)
@@ -1859,8 +1861,7 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_operation,
 //        (announced_launch_time)
 //        (launch_expiration_time)
         (extensions)
-        (control_account)
-(symbol) )
+         )
 //FC_REFLECT( steem::plugins::condenser_api::legacy_smt_setup_emissions_operation,
 //(schedule_time)
 //        (emissions_unit)
