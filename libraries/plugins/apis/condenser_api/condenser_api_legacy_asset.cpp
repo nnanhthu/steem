@@ -102,7 +102,7 @@ std::string asset_num_to_string( uint32_t asset_num )
          return "W";
 #endif
       case STEEM_ASSET_NUM_VESTS:
-         return "VESTS";
+         return "S";
       default:
          //return "UNKN"; // SMTs will return this symbol if returned as a legacy asset
          return std::to_string(asset_num);

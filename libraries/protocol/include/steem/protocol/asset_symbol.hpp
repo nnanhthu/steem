@@ -39,7 +39,7 @@
 
 #else
 
-#define VESTS_SYMBOL_U64  (uint64_t('V') | (uint64_t('E') << 8) | (uint64_t('S') << 16) | (uint64_t('T') << 24)| (uint64_t('S') << 32)) //VESTS
+#define VESTS_SYMBOL_U64  (uint64_t('S')) //S
 #define STEEM_SYMBOL_U64  (uint64_t('B') | (uint64_t('W') << 8) | (uint64_t('F') << 16)) //BWF
 #define SBD_SYMBOL_U64    (uint64_t('W')) //W
 
