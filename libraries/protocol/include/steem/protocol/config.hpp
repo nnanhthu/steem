@@ -85,7 +85,7 @@
 
 #define STEEM_BLOCKCHAIN_HARDFORK_VERSION     ( hardfork_version( STEEM_BLOCKCHAIN_VERSION ) )
 
-#define STEEM_BLOCK_INTERVAL                  10
+#define STEEM_BLOCK_INTERVAL                  5
 #define STEEM_BLOCKS_PER_YEAR                 (365*24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_BLOCKS_PER_DAY                  (24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_START_VESTING_BLOCK             (STEEM_BLOCKS_PER_DAY * 7)
