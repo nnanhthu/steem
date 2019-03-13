@@ -6,7 +6,7 @@ echo "Removed old build foler."
 mkdir -p build_test
 cd build 
 cmake -DCMAKE_BUILD_TYPE=Release -DLOW_MEMORY_NODE=ON ..
-make -j$(nproc) steemd
+make -j$(nproc) beowulfd
 make -j$(nproc) cli_wallet
 cd ..
 echo "Built complete..."

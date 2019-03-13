@@ -1,8 +1,8 @@
-#include <steem/plugins/rc_api/rc_api_plugin.hpp>
-#include <steem/plugins/rc_api/rc_api.hpp>
+#include <beowulf/plugins/rc_api/rc_api_plugin.hpp>
+#include <beowulf/plugins/rc_api/rc_api.hpp>
 
 
-namespace steem { namespace plugins { namespace rc {
+namespace beowulf { namespace plugins { namespace rc {
 
 rc_api_plugin::rc_api_plugin() {}
 rc_api_plugin::~rc_api_plugin() {}
@@ -17,4 +17,4 @@ void rc_api_plugin::plugin_initialize( const variables_map& options )
 void rc_api_plugin::plugin_startup() {}
 void rc_api_plugin::plugin_shutdown() {}
 
-} } } // steem::plugins::rc
+} } } // beowulf::plugins::rc

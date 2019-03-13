@@ -1,6 +1,6 @@
-#include <steem/protocol/authority.hpp>
+#include <beowulf/protocol/authority.hpp>
 
-#include <steem/chain/util/impacted.hpp>
+#include <beowulf/chain/util/impacted.hpp>
 
 #include <fc/utility.hpp>
 #include <iostream>
@@ -12,36 +12,36 @@
 #include <fc/reflect/reflect.hpp>
 #include <fc/variant.hpp>
 
-#include <steem/utilities/key_conversion.hpp>
+#include <beowulf/utilities/key_conversion.hpp>
 
-#include <steem/protocol/steem_operations.hpp>
-#include <steem/protocol/transaction.hpp>
-#include <steem/protocol/types.hpp>
-#include <steem/protocol/asset.hpp>
+#include <beowulf/protocol/beowulf_operations.hpp>
+#include <beowulf/protocol/transaction.hpp>
+#include <beowulf/protocol/types.hpp>
+#include <beowulf/protocol/asset.hpp>
 
-#include <steem/chain/database.hpp>
+#include <beowulf/chain/database.hpp>
 #include <chainbase/chainbase.hpp>
 
 #define CHAIN_ID_PARAM "--chain-id"
 using namespace fc;
-using namespace steem::protocol;
+using namespace beowulf::protocol;
 using namespace std;
-using namespace steem::chain;
+using namespace beowulf::chain;
 using namespace chainbase;
 
 struct tx_signing_request
 {
-   steem::protocol::transaction     tx;
+   beowulf::protocol::transaction     tx;
    std::string                      wif;
 };
 
 struct tx_signing_result
 {
-   steem::protocol::transaction     tx;
+   beowulf::protocol::transaction     tx;
    fc::sha256                       digest;
    fc::sha256                       sig_digest;
-   steem::protocol::public_key_type key;
-   steem::protocol::signature_type  sig;
+   beowulf::protocol::public_key_type key;
+   beowulf::protocol::signature_type  sig;
 };
 
 struct error_result
@@ -57,7 +57,7 @@ int main(int argc, char** argv, char** envp)
 {
    fc::sha256 chainId;
 
-   chainId = STEEM_CHAIN_ID;
+   chainId = BEOWULF_CHAIN_ID;
 
    const size_t chainIdLen = strlen(CHAIN_ID_PARAM);
 
@@ -134,12 +134,12 @@ int main(int argc, char** argv, char** envp)
          sres.digest = sreq.tx.digest();
          sres.sig_digest = sreq.tx.sig_digest(chainId);
 
-         auto priv_key = steem::utilities::wif_to_key( sreq.wif );
+         auto priv_key = beowulf::utilities::wif_to_key( sreq.wif );
 
          if(priv_key)
          {
             sres.sig = priv_key->sign_compact( sres.sig_digest );
-            sres.key = steem::protocol::public_key_type( priv_key->get_public_key() );
+            sres.key = beowulf::protocol::public_key_type( priv_key->get_public_key() );
             std::string sres_str = fc::json::to_string( sres );
             std::cout << "{\"result\":" << sres_str << "}" << std::endl;
          }
@@ -311,36 +311,36 @@ int main(int argc, char** argv, char** envp)
 //
 //int main(int argc, char** argv, char** envp){
 //   std::cout << "Start new code to test";
-//   steem::protocol::transfer_operation op;
+//   beowulf::protocol::transfer_operation op;
 //   op.from = "alice";
 //   op.to = "bob";
-//   op.amount = steem::protocol::asset(100, STEEM_SYMBOL);
-//   op.fee = steem::protocol::asset(1, SBD_SYMBOL);
+//   op.amount = beowulf::protocol::asset(100, BEOWULF_SYMBOL);
+//   op.fee = beowulf::protocol::asset(1, SBD_SYMBOL);
 //
-//    steem::protocol::transfer_operation op1;
+//    beowulf::protocol::transfer_operation op1;
 //    op1.from = "alice";
 //    op1.to = "bob";
-//    op1.amount = steem::protocol::asset(100, STEEM_SYMBOL);
-//    op1.fee = steem::protocol::asset(2, SBD_SYMBOL);
+//    op1.amount = beowulf::protocol::asset(100, BEOWULF_SYMBOL);
+//    op1.fee = beowulf::protocol::asset(2, SBD_SYMBOL);
 //
-//    steem::protocol::transfer_operation op2;
+//    beowulf::protocol::transfer_operation op2;
 //    op2.from = "alice";
 //    op2.to = "bob";
-//    op2.amount = steem::protocol::asset(100, STEEM_SYMBOL);
-//    //op1.fee = steem::protocol::asset(2, STEEM_SYMBOL);
+//    op2.amount = beowulf::protocol::asset(100, BEOWULF_SYMBOL);
+//    //op1.fee = beowulf::protocol::asset(2, BEOWULF_SYMBOL);
 //
-//    steem::protocol::transfer_to_vesting_operation op3;
+//    beowulf::protocol::transfer_to_vesting_operation op3;
 //    op3.from = "alice";
 //    op3.to = "bob";
-//    op3.amount= steem::protocol::asset(100, STEEM_SYMBOL);
+//    op3.amount= beowulf::protocol::asset(100, BEOWULF_SYMBOL);
 //
-//    steem::protocol::transfer_operation op4;
+//    beowulf::protocol::transfer_operation op4;
 //    op4.from = "alice";
 //    op4.to = "bob";
-//    op4.amount= steem::protocol::asset(100, STEEM_SYMBOL);
-//    op4.fee = steem::protocol::asset(2, VESTS_SYMBOL);
+//    op4.amount= beowulf::protocol::asset(100, BEOWULF_SYMBOL);
+//    op4.fee = beowulf::protocol::asset(2, VESTS_SYMBOL);
 //
-//   steem::protocol::transaction trx;
+//   beowulf::protocol::transaction trx;
 //
 //   //trx.operations.push_back( op );
 //    //trx.operations.push_back( op1 );
@@ -349,26 +349,26 @@ int main(int argc, char** argv, char** envp)
 //    //trx.operations.push_back( op4 );
 //    //trx.validate();
 //    asset totalFeeInSBD = asset(0, SBD_SYMBOL);
-//    asset totalFeeInSteem = asset(0, STEEM_SYMBOL);
+//    asset totalFeeInSteem = asset(0, BEOWULF_SYMBOL);
 //
 //        for (const operation &op : trx.operations) {
 //            asset fee;
 //            operation_get_impacted_fee(op, fee);
 //            if(fee.symbol == SBD_SYMBOL){
 //                totalFeeInSBD += fee;
-//            }else if(fee.symbol == STEEM_SYMBOL) {
+//            }else if(fee.symbol == BEOWULF_SYMBOL) {
 //                totalFeeInSteem += fee;
 //            }
 //        }
 //    if(totalFeeInSBD > asset(0,SBD_SYMBOL)){
 //        std::cout<<"SBD have value";
 //    }
-//    if(totalFeeInSteem > asset(0,STEEM_SYMBOL)){
+//    if(totalFeeInSteem > asset(0,BEOWULF_SYMBOL)){
 //        std::cout<<"Steem have value";
 //    }
-////    steem::plugins::rc::get_resource_user_visitor vtor;
+////    beowulf::plugins::rc::get_resource_user_visitor vtor;
 ////
-////    for( const steem::protocol::operation& op : trx.operations )
+////    for( const beowulf::protocol::operation& op : trx.operations )
 ////    {
 ////        account_name_type resource_user = op.visit( vtor );
 ////        if( resource_user != account_name_type() )
@@ -383,7 +383,7 @@ int main(int argc, char** argv, char** envp)
 ////    }
 //   //trx.validate();
 ////    auto packed = fc::raw::pack_to_vector( trx );
-////    steem::protocol::signed_transaction unpacked = fc::raw::unpack_from_vector<steem::protocol::signed_transaction>(packed);
+////    beowulf::protocol::signed_transaction unpacked = fc::raw::unpack_from_vector<beowulf::protocol::signed_transaction>(packed);
 ////    unpacked.validate();
 ////    if(trx.digest() == unpacked.digest()){
 ////        return 0;

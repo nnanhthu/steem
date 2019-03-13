@@ -1,9 +1,9 @@
 
-#include <steem/schema/schema.hpp>
+#include <beowulf/schema/schema.hpp>
 
 #include <set>
 
-namespace steem { namespace schema {
+namespace beowulf { namespace schema {
 
 namespace detail {
 

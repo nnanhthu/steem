@@ -1,17 +1,17 @@
 
-#include <steem/chain/steem_evaluator.hpp>
-#include <steem/chain/database.hpp>
-#include <steem/chain/steem_objects.hpp>
-#include <steem/chain/smt_objects.hpp>
+#include <beowulf/chain/beowulf_evaluator.hpp>
+#include <beowulf/chain/database.hpp>
+#include <beowulf/chain/beowulf_objects.hpp>
+#include <beowulf/chain/smt_objects.hpp>
 
-#include <steem/chain/util/reward.hpp>
-#include <steem/chain/util/smt_token.hpp>
+#include <beowulf/chain/util/reward.hpp>
+#include <beowulf/chain/util/smt_token.hpp>
 
-#include <steem/protocol/smt_operations.hpp>
+#include <beowulf/protocol/smt_operations.hpp>
 
-#include <steem/protocol/smt_operations.hpp>
-//#ifdef STEEM_ENABLE_SMT
-namespace steem { namespace chain {
+#include <beowulf/protocol/smt_operations.hpp>
+//#ifdef BEOWULF_ENABLE_SMT
+namespace beowulf { namespace chain {
 
 namespace {
 
@@ -62,7 +62,7 @@ inline const smt_token_object& get_controlled_smt( const database& db, const acc
 
 void smt_create_evaluator::do_apply( const smt_create_operation& o )
 {
-   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
    const dynamic_global_property_object& dgpo = _db.get_dynamic_global_properties();
 
    FC_ASSERT( util::smt::find_token( _db, o.symbol, true ) == nullptr, "SMT ${nai} has already been created.", ("nai", o.symbol.to_nai() ) );
@@ -79,8 +79,8 @@ void smt_create_evaluator::do_apply( const smt_create_operation& o )
       const auto& fhistory = _db.get_feed_history();
       FC_ASSERT( !fhistory.current_median_history.is_null(), "Cannot pay the fee using different asset symbol because there is no price feed." );
 
-      if( dgpo.smt_creation_fee.symbol == STEEM_SYMBOL )
-         creation_fee = _db.to_steem( o.smt_creation_fee );
+      if( dgpo.smt_creation_fee.symbol == BEOWULF_SYMBOL )
+         creation_fee = _db.to_beowulf( o.smt_creation_fee );
       else
          creation_fee = _db.to_sbd( o.smt_creation_fee );
    }
@@ -92,7 +92,7 @@ void smt_create_evaluator::do_apply( const smt_create_operation& o )
       "Account does not have sufficient funds for specified fee of ${of}", ("of", o.smt_creation_fee) );
 
    _db.adjust_balance( o.control_account , -o.smt_creation_fee );
-   //_db.adjust_balance( STEEM_NULL_ACCOUNT,  o.smt_creation_fee );
+   //_db.adjust_balance( BEOWULF_NULL_ACCOUNT,  o.smt_creation_fee );
 
    // Create SMT object common to both liquid and vesting variants of SMT.
    _db.create< smt_token_object >( [&]( smt_token_object& token )
@@ -128,7 +128,7 @@ void smt_create_evaluator::do_apply( const smt_create_operation& o )
 
 void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
 {
-   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 #pragma message ("TODO: Adjust assertion below and add/modify negative tests appropriately.")
    const auto* _token = _db.find< smt_token_object, by_symbol >( o.symbol );
    FC_ASSERT( _token, "SMT ${ac} not elevated yet.",("ac", o.control_account) );
@@ -167,7 +167,7 @@ void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
 
 //void smt_cap_reveal_evaluator::do_apply( const smt_cap_reveal_operation& o )
 //{
-//   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+//   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 //
 //   const smt_token_object& smt = get_controlled_smt( _db, o.control_account, o.symbol );
 //   // Check whether it's not too early to reveal a cap.
@@ -177,40 +177,40 @@ void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
 //
 //   // As there's no information in cap reveal operation about which cap it reveals,
 //   // we'll check both, unless they are already revealed.
-//   FC_ASSERT( smt.steem_units_min_cap < 0 || smt.steem_units_hard_cap < 0, "Both min cap and max hard cap have already been revealed" );
+//   FC_ASSERT( smt.beowulf_units_min_cap < 0 || smt.beowulf_units_hard_cap < 0, "Both min cap and max hard cap have already been revealed" );
 //
-//   if( smt.steem_units_min_cap < 0 )
+//   if( smt.beowulf_units_min_cap < 0 )
 //      try
 //      {
-//         o.cap.validate( smt.capped_generation_policy.min_steem_units_commitment );
+//         o.cap.validate( smt.capped_generation_policy.min_beowulf_units_commitment );
 //         _db.modify( smt, [&]( smt_token_object& smt_object )
 //         {
-//            smt_object.steem_units_min_cap = o.cap.amount;
+//            smt_object.beowulf_units_min_cap = o.cap.amount;
 //         });
 //         return;
 //      }
 //      catch( const fc::exception& e )
 //      {
-//         if( smt.steem_units_hard_cap >= 0 )
+//         if( smt.beowulf_units_hard_cap >= 0 )
 //            throw;
 //      }
 //
-//   o.cap.validate( smt.capped_generation_policy.hard_cap_steem_units_commitment );
+//   o.cap.validate( smt.capped_generation_policy.hard_cap_beowulf_units_commitment );
 //   _db.modify( smt, [&]( smt_token_object& smt_object )
 //   {
-//      smt_object.steem_units_hard_cap = o.cap.amount;
+//      smt_object.beowulf_units_hard_cap = o.cap.amount;
 //   });
 //}
 //
 //void smt_refund_evaluator::do_apply( const smt_refund_operation& o )
 //{
-//   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+//   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 //   // TODO: Check whether some impostor tries to hijack SMT operation.
 //}
 //
 //void smt_setup_emissions_evaluator::do_apply( const smt_setup_emissions_operation& o )
 //{
-//   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+//   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 //
 //   const smt_token_object& smt = common_pre_setup_evaluation( _db, o.symbol, o.control_account );
 //
@@ -244,7 +244,7 @@ void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
 //
 //void smt_set_setup_parameters_evaluator::do_apply( const smt_set_setup_parameters_operation& o )
 //{
-//   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+//   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 //
 //   const smt_token_object& smt_token = common_pre_setup_evaluation( _db, o.symbol, o.control_account );
 //
@@ -293,7 +293,7 @@ void smt_setup_evaluator::do_apply( const smt_setup_operation& o )
 //
 //void smt_set_runtime_parameters_evaluator::do_apply( const smt_set_runtime_parameters_operation& o )
 //{
-//   FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", STEEM_SMT_HARDFORK) );
+//   FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "SMT functionality not enabled until hardfork ${hf}", ("hf", BEOWULF_SMT_HARDFORK) );
 //
 //   const smt_token_object& token = common_pre_setup_evaluation(_db, o.symbol, o.control_account);
 //

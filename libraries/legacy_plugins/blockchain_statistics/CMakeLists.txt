@@ -1,16 +1,16 @@
-file(GLOB HEADERS "include/steem/blockchain_statistics/*.hpp")
+file(GLOB HEADERS "include/beowulf/blockchain_statistics/*.hpp")
 
-add_library( steem_blockchain_statistics
+add_library( beowulf_blockchain_statistics
              blockchain_statistics_plugin.cpp
              blockchain_statistics_api.cpp
            )
 
-target_link_libraries( steem_blockchain_statistics steem_chain steem_protocol steem_app )
-target_include_directories( steem_blockchain_statistics
+target_link_libraries( beowulf_blockchain_statistics beowulf_chain beowulf_protocol beowulf_app )
+target_include_directories( beowulf_blockchain_statistics
                             PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
 install( TARGETS
-   steem_blockchain_statistics
+   beowulf_blockchain_statistics
 
    RUNTIME DESTINATION bin
    LIBRARY DESTINATION lib

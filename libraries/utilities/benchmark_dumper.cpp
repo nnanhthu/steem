@@ -1,7 +1,7 @@
 
-#include <steem/utilities/benchmark_dumper.hpp>
+#include <beowulf/utilities/benchmark_dumper.hpp>
 
-namespace steem { namespace utilities {
+namespace beowulf { namespace utilities {
 
 #define PROC_STATUS_LINE_LENGTH 1028
 

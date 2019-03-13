@@ -22,18 +22,18 @@
  * THE SOFTWARE.
  */
 
-#include <steem/utilities/tempdir.hpp>
+#include <beowulf/utilities/tempdir.hpp>
 
 #include <cstdlib>
 
-namespace steem { namespace utilities {
+namespace beowulf { namespace utilities {
 
 fc::path temp_directory_path()
 {
-   const char* steemit_tempdir = getenv("STEEM_TEMPDIR");
-   if( steemit_tempdir != nullptr )
-      return fc::path( steemit_tempdir );
-   return fc::temp_directory_path() / "steem-tmp";
+   const char* beowulfit_tempdir = getenv("BEOWULF_TEMPDIR");
+   if( beowulfit_tempdir != nullptr )
+      return fc::path( beowulfit_tempdir );
+   return fc::temp_directory_path() / "beowulf-tmp";
 }
 
-} } // steem::utilities
+} } // beowulf::utilities

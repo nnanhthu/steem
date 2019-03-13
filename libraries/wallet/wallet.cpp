@@ -1,12 +1,12 @@
-#include <steem/utilities/git_revision.hpp>
-#include <steem/utilities/key_conversion.hpp>
-#include <steem/utilities/words.hpp>
+#include <beowulf/utilities/git_revision.hpp>
+#include <beowulf/utilities/key_conversion.hpp>
+#include <beowulf/utilities/words.hpp>
 
-#include <steem/protocol/base.hpp>
-#include <steem/wallet/wallet.hpp>
-#include <steem/wallet/api_documentation.hpp>
-#include <steem/wallet/reflect_util.hpp>
-#include <steem/wallet/remote_node_api.hpp>
+#include <beowulf/protocol/base.hpp>
+#include <beowulf/wallet/wallet.hpp>
+#include <beowulf/wallet/api_documentation.hpp>
+#include <beowulf/wallet/reflect_util.hpp>
+#include <beowulf/wallet/remote_node_api.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -59,10 +59,10 @@
 
 #define BRAIN_KEY_WORD_COUNT 16
 
-namespace steem {
+namespace beowulf {
     namespace wallet {
 
-        using steem::plugins::condenser_api::legacy_asset;
+        using beowulf::plugins::condenser_api::legacy_asset;
 
         namespace detail {
 
@@ -265,13 +265,13 @@ namespace steem {
                 wallet_api &self;
 
                 wallet_api_impl(wallet_api &s, const wallet_data &initial_data,
-                                const steem::protocol::chain_id_type &_steem_chain_id, fc::api <remote_node_api> rapi)
+                                const beowulf::protocol::chain_id_type &_beowulf_chain_id, fc::api <remote_node_api> rapi)
                         : self(s),
                           _remote_api(rapi) {
                     init_prototype_ops();
 
                     _wallet.ws_server = initial_data.ws_server;
-                    steem_chain_id = _steem_chain_id;
+                    beowulf_chain_id = _beowulf_chain_id;
                 }
 
                 virtual ~wallet_api_impl() {}
@@ -335,22 +335,22 @@ namespace steem {
                     result["median_sbd_price"] = _remote_api->get_current_median_history_price();
                     result["account_creation_fee"] = _remote_api->get_chain_properties().account_creation_fee;
 //                    result["post_reward_fund"] = fc::variant(
-//                            _remote_api->get_reward_fund(STEEM_POST_REWARD_FUND_NAME)).get_object();
+//                            _remote_api->get_reward_fund(BEOWULF_POST_REWARD_FUND_NAME)).get_object();
                     return result;
                 }
 
                 variant_object about() const {
-                    string client_version(steem::utilities::git_revision_description);
+                    string client_version(beowulf::utilities::git_revision_description);
                     const size_t pos = client_version.find('/');
                     if (pos != string::npos && client_version.size() > pos)
                         client_version = client_version.substr(pos + 1);
 
                     fc::mutable_variant_object result;
-                    result["blockchain_version"] = STEEM_BLOCKCHAIN_VERSION;
+                    result["blockchain_version"] = BEOWULF_BLOCKCHAIN_VERSION;
                     result["client_version"] = client_version;
-                    result["steem_revision"] = steem::utilities::git_revision_sha;
-                    result["steem_revision_age"] = fc::get_approximate_relative_time_string(
-                            fc::time_point_sec(steem::utilities::git_revision_unix_timestamp));
+                    result["beowulf_revision"] = beowulf::utilities::git_revision_sha;
+                    result["beowulf_revision_age"] = fc::get_approximate_relative_time_string(
+                            fc::time_point_sec(beowulf::utilities::git_revision_unix_timestamp));
                     result["fc_revision"] = fc::git_revision_sha;
                     result["fc_revision_age"] = fc::get_approximate_relative_time_string(
                             fc::time_point_sec(fc::git_revision_unix_timestamp));
@@ -373,7 +373,7 @@ namespace steem {
                     try {
                         auto v = _remote_api->get_version();
                         result["server_blockchain_version"] = v.blockchain_version;
-                        result["server_steem_revision"] = v.steem_revision;
+                        result["server_beowulf_revision"] = v.beowulf_revision;
                         result["server_fc_revision"] = v.fc_revision;
                     }
                     catch (fc::exception &) {
@@ -421,7 +421,7 @@ namespace steem {
                     fc::optional <fc::ecc::private_key> optional_private_key = wif_to_key(wif_key);
                     if (!optional_private_key)
                         FC_THROW("Invalid private key");
-                    steem::chain::public_key_type wif_pub_key = optional_private_key->get_public_key();
+                    beowulf::chain::public_key_type wif_pub_key = optional_private_key->get_public_key();
 
                     _keys[wif_pub_key] = wif_key;
                     return true;
@@ -487,7 +487,7 @@ namespace steem {
                     for (int key_index = 0;; ++key_index) {
                         fc::ecc::private_key derived_private_key = derive_private_key(key_to_wif(parent_key),
                                                                                       key_index);
-                        steem::chain::public_key_type derived_public_key = derived_private_key.get_public_key();
+                        beowulf::chain::public_key_type derived_public_key = derived_private_key.get_public_key();
                         if (_keys.find(derived_public_key) == _keys.end()) {
                             if (number_of_consecutive_unused_keys) {
                                 ++number_of_consecutive_unused_keys;
@@ -519,9 +519,9 @@ namespace steem {
                         fc::ecc::private_key memo_privkey = derive_private_key(key_to_wif(active_privkey),
                                                                                memo_key_index);
 
-                        steem::chain::public_key_type owner_pubkey = owner_privkey.get_public_key();
-                        steem::chain::public_key_type active_pubkey = active_privkey.get_public_key();
-//                        steem::chain::public_key_type memo_pubkey = memo_privkey.get_public_key();
+                        beowulf::chain::public_key_type owner_pubkey = owner_privkey.get_public_key();
+                        beowulf::chain::public_key_type active_pubkey = active_privkey.get_public_key();
+//                        beowulf::chain::public_key_type memo_pubkey = memo_privkey.get_public_key();
 
                         account_create_operation account_create_op;
 
@@ -571,7 +571,7 @@ namespace steem {
                 }
 
                 void set_transaction_expiration(uint32_t tx_expiration_seconds) {
-                    FC_ASSERT(tx_expiration_seconds < STEEM_MAX_TIME_UNTIL_EXPIRATION);
+                    FC_ASSERT(tx_expiration_seconds < BEOWULF_MAX_TIME_UNTIL_EXPIRATION);
                     _tx_expiration_seconds = tx_expiration_seconds;
                 }
 
@@ -701,7 +701,7 @@ namespace steem {
                     }
 
                     auto minimal_signing_keys = tx.minimize_required_signatures(
-                            steem_chain_id,
+                            beowulf_chain_id,
                             available_keys,
                             [&](const string &account_name) -> const authority & {
                                 auto maybe_account = get_account_from_lut(account_name);
@@ -724,16 +724,16 @@ namespace steem {
 //
 //                                return null_auth;
 //                            },
-                            STEEM_MAX_SIG_CHECK_DEPTH,
-                            STEEM_MAX_AUTHORITY_MEMBERSHIP,
-                            STEEM_MAX_SIG_CHECK_ACCOUNTS,
+                            BEOWULF_MAX_SIG_CHECK_DEPTH,
+                            BEOWULF_MAX_AUTHORITY_MEMBERSHIP,
+                            BEOWULF_MAX_SIG_CHECK_ACCOUNTS,
                             fc::ecc::fc_canonical
                     );
 
                     for (const public_key_type &k : minimal_signing_keys) {
                         auto it = available_private_keys.find(k);
                         FC_ASSERT(it != available_private_keys.end());
-                        tx.sign(it->second, steem_chain_id, fc::ecc::fc_canonical);
+                        tx.sign(it->second, beowulf_chain_id, fc::ecc::fc_canonical);
                     }
 
                     if (broadcast) {
@@ -773,11 +773,11 @@ namespace steem {
                         std::stringstream out;
 
                         auto accounts = result.as < vector < condenser_api::api_account_object >> ();
-                        asset total_steem;
+                        asset total_beowulf;
                         asset total_vest(0, VESTS_SYMBOL);
                         asset total_sbd(0, SBD_SYMBOL);
                         for (const auto &a : accounts) {
-                            total_steem += a.balance.to_asset();
+                            total_beowulf += a.balance.to_asset();
                             total_vest += a.vesting_shares.to_asset();
                             total_sbd += a.sbd_balance.to_asset();
                             out << std::left << std::setw(17) << std::string(a.name)
@@ -787,7 +787,7 @@ namespace steem {
                         }
                         out << "-------------------------------------------------------------------------\n";
                         out << std::left << std::setw(17) << "TOTAL"
-                            << std::right << std::setw(18) << legacy_asset::from_asset(total_steem).to_string() << " "
+                            << std::right << std::setw(18) << legacy_asset::from_asset(total_beowulf).to_string() << " "
                             << std::right << std::setw(26) << legacy_asset::from_asset(total_vest).to_string() << " "
                             << std::right << std::setw(16) << legacy_asset::from_asset(total_sbd).to_string() << "\n";
                         return out.str();
@@ -829,7 +829,7 @@ namespace steem {
 //                            ss << ' ' << setw(10) << o.real_price;
 //                            ss << ' ' << setw(10)
 //                               << fc::variant(asset(o.for_sale, o.sell_price.base.symbol)).as_string();
-//                            ss << ' ' << setw(10) << (o.sell_price.base.symbol == STEEM_SYMBOL ? "SELL" : "BUY");
+//                            ss << ' ' << setw(10) << (o.sell_price.base.symbol == BEOWULF_SYMBOL ? "SELL" : "BUY");
 //                            ss << "\n";
 //                        }
 //                        return ss.str();
@@ -847,10 +847,10 @@ namespace steem {
 //                           << ' '
 //                           << setw(spacing + 3) << "Sum(SBD)"
 //                           << setw(spacing + 1) << "SBD"
-//                           << setw(spacing + 1) << "STEEM"
+//                           << setw(spacing + 1) << "BEOWULF"
 //                           << setw(spacing + 1) << "Price"
 //                           << setw(spacing + 1) << "Price"
-//                           << setw(spacing + 1) << "STEEM "
+//                           << setw(spacing + 1) << "BEOWULF "
 //                           << setw(spacing + 1) << "SBD " << "Sum(SBD)"
 //                           << "\n====================================================================================================="
 //                           << "|=====================================================================================================\n";
@@ -863,7 +863,7 @@ namespace steem {
 //                                        << ' ' << setw(spacing)
 //                                        << legacy_asset::from_asset(asset(orders.bids[i].sbd, SBD_SYMBOL)).to_string()
 //                                        << ' ' << setw(spacing) << legacy_asset::from_asset(
-//                                        asset(orders.bids[i].steem, STEEM_SYMBOL)).to_string()
+//                                        asset(orders.bids[i].beowulf, BEOWULF_SYMBOL)).to_string()
 //                                        << ' ' << setw(spacing) << orders.bids[i].real_price;
 //                            } else {
 //                                ss << setw((spacing * 4) + 5) << ' ';
@@ -875,7 +875,7 @@ namespace steem {
 //                                ask_sum += asset(orders.asks[i].sbd, SBD_SYMBOL);
 //                                ss << ' ' << setw(spacing) << orders.asks[i].real_price
 //                                   << ' ' << setw(spacing)
-//                                   << legacy_asset::from_asset(asset(orders.asks[i].steem, STEEM_SYMBOL)).to_string()
+//                                   << legacy_asset::from_asset(asset(orders.asks[i].beowulf, BEOWULF_SYMBOL)).to_string()
 //                                   << ' ' << setw(spacing)
 //                                   << legacy_asset::from_asset(asset(orders.asks[i].sbd, SBD_SYMBOL)).to_string()
 //                                   << ' ' << setw(spacing) << legacy_asset::from_asset(ask_sum).to_string();
@@ -923,7 +923,7 @@ namespace steem {
 
                 string _wallet_filename;
                 wallet_data _wallet;
-                steem::protocol::chain_id_type steem_chain_id;
+                beowulf::protocol::chain_id_type beowulf_chain_id;
 
                 map <public_key_type, string> _keys;
                 fc::sha512 _checksum;
@@ -942,16 +942,16 @@ namespace steem {
 
         }
     }
-} // steem::wallet::detail
+} // beowulf::wallet::detail
 
 
 
-namespace steem {
+namespace beowulf {
     namespace wallet {
 
-        wallet_api::wallet_api(const wallet_data &initial_data, const steem::protocol::chain_id_type &_steem_chain_id,
+        wallet_api::wallet_api(const wallet_data &initial_data, const beowulf::protocol::chain_id_type &_beowulf_chain_id,
                                fc::api <remote_node_api> rapi)
-                : my(new detail::wallet_api_impl(*this, initial_data, _steem_chain_id, rapi)) {}
+                : my(new detail::wallet_api_impl(*this, initial_data, _beowulf_chain_id, rapi)) {}
 
         wallet_api::~wallet_api() {}
 
@@ -1013,11 +1013,11 @@ namespace steem {
             string brain_key = "";
 
             for (int i = 0; i < BRAIN_KEY_WORD_COUNT; i++) {
-                fc::bigint choice = entropy % steem::words::word_list_size;
-                entropy /= steem::words::word_list_size;
+                fc::bigint choice = entropy % beowulf::words::word_list_size;
+                entropy /= beowulf::words::word_list_size;
                 if (i > 0)
                     brain_key += " ";
-                brain_key += steem::words::word_list[choice.to_int64()];
+                brain_key += beowulf::words::word_list[choice.to_int64()];
             }
 
             brain_key = normalize_brain_key(brain_key);
@@ -1288,12 +1288,12 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             FC_CAPTURE_AND_RETHROW((control_account_name)(decimals))
         }
 
-//        smt_generation_unit get_generation_unit( const flat_map< account_name_type, uint16_t >& steem_unit = flat_map< account_name_type, uint16_t >(),
+//        smt_generation_unit get_generation_unit( const flat_map< account_name_type, uint16_t >& beowulf_unit = flat_map< account_name_type, uint16_t >(),
 //                const flat_map< account_name_type, uint16_t >& token_unit = flat_map< account_name_type, uint16_t >())
 //        {
 //            smt_generation_unit ret;
 //
-//            ret.steem_unit = steem_unit;
+//            ret.beowulf_unit = beowulf_unit;
 //            ret.token_unit = token_unit;
 //
 //            return ret;
@@ -1311,8 +1311,8 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //                reveal.nonce = nonce;
 //
 //                ret.hash = fc::sha256::hash( reveal );
-//                ret.lower_bound = SMT_MIN_HARD_CAP_STEEM_UNITS; // See smt_capped_generation_policy::validate
-//                ret.upper_bound = STEEM_MAX_SHARE_SUPPLY/10;    // See smt_capped_generation_policy::validate
+//                ret.lower_bound = SMT_MIN_HARD_CAP_BEOWULF_UNITS; // See smt_capped_generation_policy::validate
+//                ret.upper_bound = BEOWULF_MAX_SHARE_SUPPLY/10;    // See smt_capped_generation_policy::validate
 //            }
 //
 //            return ret;
@@ -1322,8 +1322,8 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //                (
 //                        const smt_generation_unit& pre_soft_cap_unit = smt_generation_unit(),
 //                        const smt_generation_unit& post_soft_cap_unit = smt_generation_unit(),
-//                        const smt_cap_commitment& min_steem_units_commitment = smt_cap_commitment(),
-//                        const smt_cap_commitment& hard_cap_steem_units_commitment = smt_cap_commitment(),
+//                        const smt_cap_commitment& min_beowulf_units_commitment = smt_cap_commitment(),
+//                        const smt_cap_commitment& hard_cap_beowulf_units_commitment = smt_cap_commitment(),
 //                        uint16_t soft_cap_percent = 0,
 //                        uint32_t min_unit_ratio = 0,
 //                        uint32_t max_unit_ratio = 0
@@ -1333,8 +1333,8 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //            ret.pre_soft_cap_unit = pre_soft_cap_unit;
 //            ret.post_soft_cap_unit = post_soft_cap_unit;
 //
-//            ret.min_steem_units_commitment = min_steem_units_commitment;
-//            ret.hard_cap_steem_units_commitment = hard_cap_steem_units_commitment;
+//            ret.min_beowulf_units_commitment = min_beowulf_units_commitment;
+//            ret.hard_cap_beowulf_units_commitment = hard_cap_beowulf_units_commitment;
 //
 //            ret.soft_cap_percent = soft_cap_percent;
 //
@@ -1361,11 +1361,11 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 
 //                smt_capped_generation_policy gp = get_capped_generation_policy
 //                        (
-//                                get_generation_unit( { { control_account_name, 1 } }, { { control_account_name, 1 },{ "$from", 1 } } )/*pre_soft_cap_unit, including steem_unit and token_unit*/,
+//                                get_generation_unit( { { control_account_name, 1 } }, { { control_account_name, 1 },{ "$from", 1 } } )/*pre_soft_cap_unit, including beowulf_unit and token_unit*/,
 //                                get_generation_unit()/*post_soft_cap_unit*/,
-//                                get_cap_commitment( 1 )/*min_steem_units_commitment*/,
-//                                get_cap_commitment( SMT_MIN_HARD_CAP_STEEM_UNITS + 1 )/*hard_cap_steem_units_commitment*/,
-//                                STEEM_100_PERCENT/*soft_cap_percent*/,
+//                                get_cap_commitment( 1 )/*min_beowulf_units_commitment*/,
+//                                get_cap_commitment( SMT_MIN_HARD_CAP_BEOWULF_UNITS + 1 )/*hard_cap_beowulf_units_commitment*/,
+//                                BEOWULF_100_PERCENT/*soft_cap_percent*/,
 //                                1/*min_unit_ratio*/,
 //                                2/*max_unit_ratio*/
 //                        );
@@ -1547,7 +1547,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
  */
 //        condenser_api::legacy_signed_transaction wallet_api::create_account_with_keys_delegated(
 //                string creator,
-//                condenser_api::legacy_asset steem_fee,
+//                condenser_api::legacy_asset beowulf_fee,
 //                condenser_api::legacy_asset delegated_vests,
 //                string new_account_name,
 //                string json_meta,
@@ -1566,7 +1566,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //                op.posting = authority(1, posting, 1);
 //                op.memo_key = memo;
 //                op.json_metadata = json_meta;
-//                op.fee = steem_fee.to_asset();
+//                op.fee = beowulf_fee.to_asset();
 //                op.delegation = delegated_vests.to_asset();
 //
 //                signed_transaction tx;
@@ -1947,7 +1947,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
  */
 //        condenser_api::legacy_signed_transaction wallet_api::create_account_delegated(
 //                string creator,
-//                condenser_api::legacy_asset steem_fee,
+//                condenser_api::legacy_asset beowulf_fee,
 //                condenser_api::legacy_asset delegated_vests,
 //                string new_account_name,
 //                string json_meta,
@@ -1962,7 +1962,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //                import_key(active.wif_priv_key);
 //                import_key(posting.wif_priv_key);
 //                import_key(memo.wif_priv_key);
-//                return create_account_with_keys_delegated(creator, steem_fee, delegated_vests, new_account_name,
+//                return create_account_with_keys_delegated(creator, beowulf_fee, delegated_vests, new_account_name,
 //                                                          json_meta, owner.pub_key, active.pub_key, posting.pub_key,
 //                                                          memo.pub_key, broadcast);
 //            }
@@ -2142,7 +2142,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //   string agent,
 //   uint32_t escrow_id,
 //   condenser_api::legacy_asset sbd_amount,
-//   condenser_api::legacy_asset steem_amount,
+//   condenser_api::legacy_asset beowulf_amount,
 //   condenser_api::legacy_asset fee,
 //   time_point_sec ratification_deadline,
 //   time_point_sec escrow_expiration,
@@ -2156,7 +2156,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //   op.agent = agent;
 //   op.escrow_id = escrow_id;
 //   op.sbd_amount = sbd_amount.to_asset();
-//   op.steem_amount = steem_amount.to_asset();
+//   op.beowulf_amount = beowulf_amount.to_asset();
 //   op.fee = fee.to_asset();
 //   op.ratification_deadline = ratification_deadline;
 //   op.escrow_expiration = escrow_expiration;
@@ -2224,7 +2224,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //   string receiver,
 //   uint32_t escrow_id,
 //   condenser_api::legacy_asset sbd_amount,
-//   condenser_api::legacy_asset steem_amount,
+//   condenser_api::legacy_asset beowulf_amount,
 //   bool broadcast )
 //{
 //   FC_ASSERT( !is_locked() );
@@ -2236,7 +2236,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //   op.receiver = receiver;
 //   op.escrow_id = escrow_id;
 //   op.sbd_amount = sbd_amount.to_asset();
-//   op.steem_amount = steem_amount.to_asset();
+//   op.beowulf_amount = beowulf_amount.to_asset();
 //
 //   signed_transaction tx;
 //   tx.operations.push_back( op );
@@ -2457,14 +2457,14 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 
 //        condenser_api::legacy_signed_transaction wallet_api::claim_reward_balance(
 //                string account,
-//                condenser_api::legacy_asset reward_steem,
+//                condenser_api::legacy_asset reward_beowulf,
 //                condenser_api::legacy_asset reward_sbd,
 //                condenser_api::legacy_asset reward_vests,
 //                bool broadcast) {
 //            FC_ASSERT(!is_locked());
 //            claim_reward_balance_operation op;
 //            op.account = account;
-//            op.reward_steem = reward_steem.to_asset();
+//            op.reward_beowulf = reward_beowulf.to_asset();
 //            op.reward_sbd = reward_sbd.to_asset();
 //            op.reward_vests = reward_vests.to_asset();
 //
@@ -2616,7 +2616,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //   op.voter = voter;
 //   op.author = author;
 //   op.permlink = permlink;
-//   op.weight = weight * STEEM_1_PERCENT;
+//   op.weight = weight * BEOWULF_1_PERCENT;
 //
 //   signed_transaction tx;
 //   tx.operations.push_back( op );
@@ -2664,4 +2664,4 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
 //        }
 
     }
-} // steem::wallet
+} // beowulf::wallet

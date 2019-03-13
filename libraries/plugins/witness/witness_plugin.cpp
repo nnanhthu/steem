@@ -1,14 +1,14 @@
-#include <steem/plugins/witness/witness_plugin.hpp>
+#include <beowulf/plugins/witness/witness_plugin.hpp>
 
-#include <steem/chain/database_exceptions.hpp>
-#include <steem/chain/account_object.hpp>
-#include <steem/chain/comment_object.hpp>
-#include <steem/chain/witness_objects.hpp>
-#include <steem/chain/index.hpp>
-#include <steem/chain/util/impacted.hpp>
+#include <beowulf/chain/database_exceptions.hpp>
+#include <beowulf/chain/account_object.hpp>
+#include <beowulf/chain/comment_object.hpp>
+#include <beowulf/chain/witness_objects.hpp>
+#include <beowulf/chain/index.hpp>
+#include <beowulf/chain/util/impacted.hpp>
 
-#include <steem/utilities/key_conversion.hpp>
-#include <steem/utilities/plugin_utilities.hpp>
+#include <beowulf/utilities/key_conversion.hpp>
+#include <beowulf/utilities/plugin_utilities.hpp>
 
 #include <fc/io/json.hpp>
 #include <fc/macros.hpp>
@@ -25,9 +25,9 @@
 #define BLOCK_PRODUCTION_LOOP_SLEEP_TIME (200000)
 
 
-namespace steem { namespace plugins { namespace witness {
+namespace beowulf { namespace plugins { namespace witness {
 
-using namespace steem::chain;
+using namespace beowulf::chain;
 
 using std::string;
 using std::vector;
@@ -41,7 +41,7 @@ void new_chain_banner( const chain::database& db )
       "********************************\n"
       "*                              *\n"
       "*   ------- NEW CHAIN ------   *\n"
-      "*   -   Welcome to Steem!  -   *\n"
+      "*   -   Welcome to Beowulf!  -   *\n"
       "*   ------------------------   *\n"
       "*                              *\n"
       "********************************\n"
@@ -55,8 +55,8 @@ namespace detail {
    public:
       witness_plugin_impl( boost::asio::io_service& io ) :
          _timer(io),
-         _chain_plugin( appbase::app().get_plugin< steem::plugins::chain::chain_plugin >() ),
-         _db( appbase::app().get_plugin< steem::plugins::chain::chain_plugin >().db() )
+         _chain_plugin( appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >() ),
+         _db( appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >().db() )
          {}
 
       void on_pre_apply_block( const chain::block_notification& note );
@@ -69,14 +69,14 @@ namespace detail {
       block_production_condition::block_production_condition_enum maybe_produce_block(fc::mutable_variant_object& capture);
 
       bool     _production_enabled              = false;
-      uint32_t _required_witness_participation  = 33 * STEEM_1_PERCENT;
+      uint32_t _required_witness_participation  = 33 * BEOWULF_1_PERCENT;
       uint32_t _production_skip_flags           = chain::database::skip_nothing;
 
-      std::map< steem::protocol::public_key_type, fc::ecc::private_key > _private_keys;
-      std::set< steem::protocol::account_name_type >                     _witnesses;
+      std::map< beowulf::protocol::public_key_type, fc::ecc::private_key > _private_keys;
+      std::set< beowulf::protocol::account_name_type >                     _witnesses;
       boost::asio::deadline_timer                                        _timer;
 
-      std::set< steem::protocol::account_name_type >                     _dupe_customs;
+      std::set< beowulf::protocol::account_name_type >                     _dupe_customs;
 
       plugins::chain::chain_plugin& _chain_plugin;
       chain::database&              _db;
@@ -95,7 +95,7 @@ namespace detail {
 //      const comment_object& _c;
 //      const database& _db;
 //
-////#ifdef STEEM_ENABLE_SMT
+////#ifdef BEOWULF_ENABLE_SMT
 //      void operator()( const allowed_vote_assets& va) const
 //      {
 //         FC_TODO("To be implemented  support for allowed_vote_assets");
@@ -104,7 +104,7 @@ namespace detail {
 //
 //      void operator()( const comment_payout_beneficiaries& cpb )const
 //      {
-//         STEEM_ASSERT( cpb.beneficiaries.size() <= 8,
+//         BEOWULF_ASSERT( cpb.beneficiaries.size() <= 8,
 //            plugin_exception,
 //            "Cannot specify more than 8 beneficiaries." );
 //      }
@@ -139,27 +139,27 @@ namespace detail {
       for( auto& key_weight_pair : auth.owner.key_auths )
       {
          for( auto& key : keys )
-            STEEM_ASSERT( key_weight_pair.first != key,  plugin_exception,
+            BEOWULF_ASSERT( key_weight_pair.first != key,  plugin_exception,
                "Detected private owner key in memo field. You should change your owner keys." );
       }
 
       for( auto& key_weight_pair : auth.active.key_auths )
       {
          for( auto& key : keys )
-            STEEM_ASSERT( key_weight_pair.first != key,  plugin_exception,
+            BEOWULF_ASSERT( key_weight_pair.first != key,  plugin_exception,
                "Detected private active key in memo field. You should change your active keys." );
       }
 
 //      for( auto& key_weight_pair : auth.posting.key_auths )
 //      {
 //         for( auto& key : keys )
-//            STEEM_ASSERT( key_weight_pair.first != key,  plugin_exception,
+//            BEOWULF_ASSERT( key_weight_pair.first != key,  plugin_exception,
 //               "Detected private posting key in memo field. You should change your posting keys." );
 //      }
 
 //      const auto& memo_key = account.memo_key;
 //      for( auto& key : keys )
-//         STEEM_ASSERT( memo_key != key,  plugin_exception,
+//         BEOWULF_ASSERT( memo_key != key,  plugin_exception,
 //            "Detected private memo key in memo field. You should change your memo key." );
    }
 
@@ -188,14 +188,14 @@ namespace detail {
 //
 //      void operator()( const comment_operation& o )const
 //      {
-//         if( o.parent_author != STEEM_ROOT_POST_PARENT )
+//         if( o.parent_author != BEOWULF_ROOT_POST_PARENT )
 //         {
 //            const auto& parent = _db.find_comment( o.parent_author, o.parent_permlink );
 //
 //            if( parent != nullptr )
-//            STEEM_ASSERT( parent->depth < STEEM_SOFT_MAX_COMMENT_DEPTH,
+//            BEOWULF_ASSERT( parent->depth < BEOWULF_SOFT_MAX_COMMENT_DEPTH,
 //               plugin_exception,
-//               "Comment is nested ${x} posts deep, maximum depth is ${y}.", ("x",parent->depth)("y",STEEM_SOFT_MAX_COMMENT_DEPTH) );
+//               "Comment is nested ${x} posts deep, maximum depth is ${y}.", ("x",parent->depth)("y",BEOWULF_SOFT_MAX_COMMENT_DEPTH) );
 //         }
 //      }
 
@@ -250,7 +250,7 @@ namespace detail {
 //
 //            for( auto& account : impacted )
 //               if( _db.is_producing() )
-//                  STEEM_ASSERT( _dupe_customs.insert( account ).second, plugin_exception,
+//                  BEOWULF_ASSERT( _dupe_customs.insert( account ).second, plugin_exception,
 //                     "Account ${a} already submitted a custom json operation this block.",
 //                     ("a", account) );
 //         }
@@ -278,9 +278,9 @@ namespace detail {
 
    block_production_condition::block_production_condition_enum witness_plugin_impl::block_production_loop()
    {
-      if( fc::time_point::now() < fc::time_point(STEEM_GENESIS_TIME) )
+      if( fc::time_point::now() < fc::time_point(BEOWULF_GENESIS_TIME) )
       {
-         wlog( "waiting until genesis time to produce block: ${t}", ("t",STEEM_GENESIS_TIME) );
+         wlog( "waiting until genesis time to produce block: ${t}", ("t",BEOWULF_GENESIS_TIME) );
          schedule_production_loop();
          return block_production_condition::wait_for_genesis;
       }
@@ -399,7 +399,7 @@ namespace detail {
       uint32_t prate = _db.witness_participation_rate();
       if( prate < _required_witness_participation )
       {
-         capture("pct", uint32_t(100*uint64_t(prate) / STEEM_1_PERCENT));
+         capture("pct", uint32_t(100*uint64_t(prate) / BEOWULF_1_PERCENT));
          return block_production_condition::low_participation;
       }
 
@@ -417,7 +417,7 @@ namespace detail {
          );
       capture("n", block.block_num())("t", block.timestamp)("c", now);
 
-      appbase::app().get_plugin< steem::plugins::p2p::p2p_plugin >().broadcast_block( block );
+      appbase::app().get_plugin< beowulf::plugins::p2p::p2p_plugin >().broadcast_block( block );
       return block_production_condition::produced;
    }
 
@@ -451,14 +451,14 @@ void witness_plugin::plugin_initialize(const boost::program_options::variables_m
    ilog( "Initializing witness plugin" );
    my = std::make_unique< detail::witness_plugin_impl >( appbase::app().get_io_service() );
 
-   STEEM_LOAD_VALUE_SET( options, "witness", my->_witnesses, steem::protocol::account_name_type )
+   BEOWULF_LOAD_VALUE_SET( options, "witness", my->_witnesses, beowulf::protocol::account_name_type )
 
    if( options.count("private-key") )
    {
       const std::vector<std::string> keys = options["private-key"].as<std::vector<std::string>>();
       for (const std::string& wif_key : keys )
       {
-         fc::optional<fc::ecc::private_key> private_key = steem::utilities::wif_to_key(wif_key);
+         fc::optional<fc::ecc::private_key> private_key = beowulf::utilities::wif_to_key(wif_key);
          FC_ASSERT( private_key.valid(), "unable to parse private key" );
          my->_private_keys[private_key->get_public_key()] = *private_key;
       }
@@ -475,7 +475,7 @@ void witness_plugin::plugin_initialize(const boost::program_options::variables_m
 
    if( options.count( "required-participation" ) )
    {
-      my->_required_witness_participation = STEEM_1_PERCENT * options.at( "required-participation" ).as< uint32_t >();
+      my->_required_witness_participation = BEOWULF_1_PERCENT * options.at( "required-participation" ).as< uint32_t >();
    }
 
    my->_pre_apply_block_conn = my->_db.add_post_apply_block_handler(
@@ -494,12 +494,12 @@ void witness_plugin::plugin_initialize(const boost::program_options::variables_m
 void witness_plugin::plugin_startup()
 { try {
    ilog("witness plugin:  plugin_startup() begin" );
-   chain::database& d = appbase::app().get_plugin< steem::plugins::chain::chain_plugin >().db();
+   chain::database& d = appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >().db();
 
    if( !my->_witnesses.empty() )
    {
       ilog( "Launching block production for ${n} witnesses.", ("n", my->_witnesses.size()) );
-      appbase::app().get_plugin< steem::plugins::p2p::p2p_plugin >().set_block_production( true );
+      appbase::app().get_plugin< beowulf::plugins::p2p::p2p_plugin >().set_block_production( true );
       if( my->_production_enabled )
       {
          if( d.head_block_num() == 0 )
@@ -529,4 +529,4 @@ void witness_plugin::plugin_shutdown()
    }
 }
 
-} } } // steem::plugins::witness
+} } } // beowulf::plugins::witness

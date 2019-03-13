@@ -1,20 +1,20 @@
-#include <steem/blockchain_statistics/blockchain_statistics_api.hpp>
+#include <beowulf/blockchain_statistics/blockchain_statistics_api.hpp>
 
-#include <steem/app/impacted.hpp>
-#include <steem/chain/account_object.hpp>
-#include <steem/chain/comment_object.hpp>
-#include <steem/chain/history_object.hpp>
+#include <beowulf/app/impacted.hpp>
+#include <beowulf/chain/account_object.hpp>
+#include <beowulf/chain/comment_object.hpp>
+#include <beowulf/chain/history_object.hpp>
 
-#include <steem/chain/database.hpp>
-#include <steem/chain/index.hpp>
-#include <steem/chain/operation_notification.hpp>
+#include <beowulf/chain/database.hpp>
+#include <beowulf/chain/index.hpp>
+#include <beowulf/chain/operation_notification.hpp>
 
-namespace steem { namespace blockchain_statistics {
+namespace beowulf { namespace blockchain_statistics {
 
 namespace detail
 {
 
-using namespace steem::protocol;
+using namespace beowulf::protocol;
 
 class blockchain_statistics_plugin_impl
 {
@@ -53,8 +53,8 @@ struct operation_process
       {
          b.transfers++;
 
-         if( op.amount.symbol == STEEM_SYMBOL )
-            b.steem_transferred += op.amount.amount;
+         if( op.amount.symbol == BEOWULF_SYMBOL )
+            b.beowulf_transferred += op.amount.amount;
          else
             b.sbd_transferred += op.amount.amount;
       });
@@ -180,7 +180,7 @@ struct operation_process
       _db.modify( _bucket, [&]( bucket_object& b )
       {
          b.transfers_to_vesting++;
-         b.steem_vested += op.amount.amount;
+         b.beowulf_vested += op.amount.amount;
       });
    }
 
@@ -191,7 +191,7 @@ struct operation_process
       _db.modify( _bucket, [&]( bucket_object& b )
       {
          b.vesting_withdrawals_processed++;
-         if( op.deposited.symbol == STEEM_SYMBOL )
+         if( op.deposited.symbol == BEOWULF_SYMBOL )
             b.vests_withdrawn += op.withdrawn.amount;
          else
             b.vests_transferred += op.withdrawn.amount;
@@ -239,7 +239,7 @@ struct operation_process
       _db.modify( _bucket, [&]( bucket_object& b )
       {
          b.sbd_conversion_requests_filled++;
-         b.steem_converted += op.amount_out.amount;
+         b.beowulf_converted += op.amount_out.amount;
       });
    }
 };
@@ -357,11 +357,11 @@ void blockchain_statistics_plugin_impl::pre_operation( const operation_notificat
          auto& account = db.get_account( op.account );
          const auto& bucket = db.get(bucket_id);
 
-         auto new_vesting_withdrawal_rate = op.vesting_shares.amount / STEEM_VESTING_WITHDRAW_INTERVALS;
+         auto new_vesting_withdrawal_rate = op.vesting_shares.amount / BEOWULF_VESTING_WITHDRAW_INTERVALS;
          if( op.vesting_shares.amount > 0 && new_vesting_withdrawal_rate == 0 )
             new_vesting_withdrawal_rate = 1;
 
-         if( !db.has_hardfork( STEEM_HARDFORK_0_1 ) )
+         if( !db.has_hardfork( BEOWULF_HARDFORK_0_1 ) )
             new_vesting_withdrawal_rate *= 1000000;
 
          db.modify( bucket, [&]( bucket_object& b )
@@ -468,6 +468,6 @@ uint32_t blockchain_statistics_plugin::get_max_history_per_bucket() const
    return _my->_maximum_history_per_bucket_size;
 }
 
-} } // steem::blockchain_statistics
+} } // beowulf::blockchain_statistics
 
-STEEM_DEFINE_PLUGIN( blockchain_statistics, steem::blockchain_statistics::blockchain_statistics_plugin );
+BEOWULF_DEFINE_PLUGIN( blockchain_statistics, beowulf::blockchain_statistics::blockchain_statistics_plugin );

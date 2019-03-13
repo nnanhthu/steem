@@ -1,8 +1,8 @@
-#include <steem/chain/util/smt_token.hpp>
+#include <beowulf/chain/util/smt_token.hpp>
 #include <boost/range/adaptor/reversed.hpp>
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 
-namespace steem { namespace chain { namespace util { namespace smt {
+namespace beowulf { namespace chain { namespace util { namespace smt {
 
 const smt_token_object* find_token( const database& db, uint32_t nai )
 {
@@ -10,7 +10,7 @@ const smt_token_object* find_token( const database& db, uint32_t nai )
 
    auto range = idx.range(
       [nai] ( const asset_symbol_type& a ) { return a >= asset_symbol_type::from_nai( nai, 0 ); },
-      [nai] ( const asset_symbol_type& a ) { return a <= asset_symbol_type::from_nai( nai, STEEM_ASSET_MAX_DECIMALS ); }
+      [nai] ( const asset_symbol_type& a ) { return a <= asset_symbol_type::from_nai( nai, BEOWULF_ASSET_MAX_DECIMALS ); }
    );
 
    /*
@@ -57,6 +57,6 @@ const smt_token_object* find_token( const database& db, asset_symbol_type symbol
 //   return {};
 //}
 
-} } } } // steem::chain::util::smt
+} } } } // beowulf::chain::util::smt
 
 //#endif

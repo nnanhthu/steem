@@ -1,16 +1,16 @@
-#include <steem/plugins/condenser_api/condenser_api.hpp>
-#include <steem/plugins/condenser_api/condenser_api_plugin.hpp>
+#include <beowulf/plugins/condenser_api/condenser_api.hpp>
+#include <beowulf/plugins/condenser_api/condenser_api_plugin.hpp>
 
-#include <steem/plugins/database_api/database_api_plugin.hpp>
-#include <steem/plugins/block_api/block_api_plugin.hpp>
-#include <steem/plugins/account_history_api/account_history_api_plugin.hpp>
-#include <steem/plugins/account_by_key_api/account_by_key_api_plugin.hpp>
-#include <steem/plugins/network_broadcast_api/network_broadcast_api_plugin.hpp>
+#include <beowulf/plugins/database_api/database_api_plugin.hpp>
+#include <beowulf/plugins/block_api/block_api_plugin.hpp>
+#include <beowulf/plugins/account_history_api/account_history_api_plugin.hpp>
+#include <beowulf/plugins/account_by_key_api/account_by_key_api_plugin.hpp>
+#include <beowulf/plugins/network_broadcast_api/network_broadcast_api_plugin.hpp>
 
-#include <steem/utilities/git_revision.hpp>
+#include <beowulf/utilities/git_revision.hpp>
 
-#include <steem/chain/util/reward.hpp>
-#include <steem/chain/util/uint256.hpp>
+#include <beowulf/chain/util/reward.hpp>
+#include <beowulf/chain/util/uint256.hpp>
 
 #include <fc/git_revision.hpp>
 
@@ -23,7 +23,7 @@
 #define CHECK_ARG_SIZE( s ) \
    FC_ASSERT( args.size() == s, "Expected #s argument(s), was ${n}", ("n", args.size()) );
 
-namespace steem { namespace plugins { namespace condenser_api {
+namespace beowulf { namespace plugins { namespace condenser_api {
 
 namespace detail
 {
@@ -33,12 +33,12 @@ namespace detail
    {
       public:
          condenser_api_impl() :
-            _chain( appbase::app().get_plugin< steem::plugins::chain::chain_plugin >() ),
+            _chain( appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >() ),
             _db( _chain.db() )
          {
             _on_post_apply_block_conn = _db.add_post_apply_block_handler(
                [&]( const block_notification& note ){ on_post_apply_block( note.block ); },
-               appbase::app().get_plugin< steem::plugins::condenser_api::condenser_api_plugin >(),
+               appbase::app().get_plugin< beowulf::plugins::condenser_api::condenser_api_plugin >(),
                0 );
          }
 
@@ -138,7 +138,7 @@ namespace detail
 
          void on_post_apply_block( const signed_block& b );
 
-         steem::plugins::chain::chain_plugin&                              _chain;
+         beowulf::plugins::chain::chain_plugin&                              _chain;
 
          chain::database&                                                  _db;
 
@@ -165,8 +165,8 @@ namespace detail
       CHECK_ARG_SIZE( 0 )
       return get_version_return
       (
-         fc::string( STEEM_BLOCKCHAIN_VERSION ),
-         fc::string( steem::utilities::git_revision_sha ),
+         fc::string( BEOWULF_BLOCKCHAIN_VERSION ),
+         fc::string( beowulf::utilities::git_revision_sha ),
          fc::string( fc::git_revision_sha )
       );
    }
@@ -888,7 +888,7 @@ namespace detail
 
    DEFINE_API_IMPL( condenser_api_impl, get_account_references )
    {
-      FC_ASSERT( false, "condenser_api::get_account_references --- Needs to be refactored for Steem." );
+      FC_ASSERT( false, "condenser_api::get_account_references --- Needs to be refactored for Beowulf." );
    }
 
    DEFINE_API_IMPL( condenser_api_impl, lookup_account_names )
@@ -1207,7 +1207,7 @@ namespace detail
 //      {
 //         result.push_back( *itr );
 //
-//         // if( itr->sell_price.base.symbol == STEEM_SYMBOL )
+//         // if( itr->sell_price.base.symbol == BEOWULF_SYMBOL )
 //         //    result.back().real_price = (~result.back().sell_price).to_real();
 //         // else
 //         //    result.back().real_price = (result.back().sell_price).to_real();
@@ -1984,15 +1984,15 @@ namespace detail
 //      const auto& hist  = _db.get_feed_history();
 //
 //      asset pot;
-//      if( _db.has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//      if( _db.has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //         pot = _db.get_reward_fund( _db.get_comment( d.author, d.permlink ) ).reward_balance;
 //      else
-//         pot = props.total_reward_fund_steem;
+//         pot = props.total_reward_fund_beowulf;
 //
 //      if( !hist.current_median_history.is_null() ) pot = pot * hist.current_median_history;
 //
 //      u256 total_r2 = 0;
-//      if( _db.has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//      if( _db.has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //         total_r2 = chain::util::to256( _db.get_reward_fund( _db.get_comment( d.author, d.permlink ) ).recent_claims );
 //      else
 //         total_r2 = chain::util::to256( props.total_reward_shares2 );
@@ -2000,7 +2000,7 @@ namespace detail
 //      if( total_r2 > 0 )
 //      {
 //         uint128_t vshares;
-//         if( _db.has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//         if( _db.has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //         {
 //            const auto& rf = _db.get_reward_fund( _db.get_comment( d.author, d.permlink ) );
 //            vshares = d.net_rshares.value > 0 ? chain::util::evaluate_reward_curve( d.net_rshares.value, rf.author_reward_curve, rf.content_constant ) : 0;
@@ -2024,7 +2024,7 @@ namespace detail
 //         }
 //      }
 //
-//      if( d.parent_author != STEEM_ROOT_POST_PARENT )
+//      if( d.parent_author != BEOWULF_ROOT_POST_PARENT )
 //         d.cashout_time = _db.calculate_discussion_payout_time( _db.get< chain::comment_object >( d.id ) );
 //
 //      if( d.body.size() > 1024*128 )
@@ -2085,7 +2085,7 @@ namespace detail
 
 //uint16_t api_account_object::_compute_voting_power( const database_api::api_account_object& a )
 //{
-//   if( a.voting_manabar.last_update_time < STEEM_HARDFORK_0_20_TIME )
+//   if( a.voting_manabar.last_update_time < BEOWULF_HARDFORK_0_20_TIME )
 //      return (uint16_t) a.voting_manabar.current_mana;
 //
 //   auto vests = chain::util::get_effective_vesting_shares( a );
@@ -2094,24 +2094,24 @@ namespace detail
 //
 //   //
 //   // Let t1 = last_vote_time, t2 = last_update_time
-//   // vp_t2 = STEEM_100_PERCENT * current_mana / vests
-//   // vp_t1 = vp_t2 - STEEM_100_PERCENT * (t2 - t1) / STEEM_VOTING_MANA_REGENERATION_SECONDS
+//   // vp_t2 = BEOWULF_100_PERCENT * current_mana / vests
+//   // vp_t1 = vp_t2 - BEOWULF_100_PERCENT * (t2 - t1) / BEOWULF_VOTING_MANA_REGENERATION_SECONDS
 //   //
 //
 //   uint32_t t1 = a.last_vote_time.sec_since_epoch();
 //   uint32_t t2 = a.voting_manabar.last_update_time;
 //   uint64_t dt = (t2 > t1) ? (t2 - t1) : 0;
-//   uint64_t vp_dt = STEEM_100_PERCENT * dt / STEEM_VOTING_MANA_REGENERATION_SECONDS;
+//   uint64_t vp_dt = BEOWULF_100_PERCENT * dt / BEOWULF_VOTING_MANA_REGENERATION_SECONDS;
 //
-//   uint128_t vp_t2 = STEEM_100_PERCENT;
+//   uint128_t vp_t2 = BEOWULF_100_PERCENT;
 //   vp_t2 *= a.voting_manabar.current_mana;
 //   vp_t2 /= vests;
 //
 //   uint64_t vp_t2u = vp_t2.to_uint64();
-//   if( vp_t2u >= STEEM_100_PERCENT )
+//   if( vp_t2u >= BEOWULF_100_PERCENT )
 //   {
-//      wlog( "Truncated vp_t2u to STEEM_100_PERCENT for account ${a}", ("a", a.name) );
-//      vp_t2u = STEEM_100_PERCENT;
+//      wlog( "Truncated vp_t2u to BEOWULF_100_PERCENT for account ${a}", ("a", a.name) );
+//      vp_t2u = BEOWULF_100_PERCENT;
 //   }
 //   uint16_t vp_t1 = uint16_t( vp_t2u ) - uint16_t( std::min( vp_t2u, vp_dt ) );
 //
@@ -2121,7 +2121,7 @@ namespace detail
 condenser_api::condenser_api()
    : my( new detail::condenser_api_impl() )
 {
-   JSON_RPC_REGISTER_API( STEEM_CONDENSER_API_PLUGIN_NAME );
+   JSON_RPC_REGISTER_API( BEOWULF_CONDENSER_API_PLUGIN_NAME );
 }
 
 condenser_api::~condenser_api() {}
@@ -2283,4 +2283,4 @@ DEFINE_READ_APIS( condenser_api,
 //(update_balance)
 )
 
-} } } // steem::plugins::condenser_api
+} } } // beowulf::plugins::condenser_api

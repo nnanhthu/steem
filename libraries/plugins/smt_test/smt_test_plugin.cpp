@@ -1,23 +1,23 @@
-#include <steem/plugins/smt_test/smt_test_plugin.hpp>
-#include <steem/plugins/smt_test/smt_test_objects.hpp>
+#include <beowulf/plugins/smt_test/smt_test_plugin.hpp>
+#include <beowulf/plugins/smt_test/smt_test_objects.hpp>
 
-#include <steem/chain/account_object.hpp>
-#include <steem/chain/database.hpp>
-#include <steem/chain/index.hpp>
+#include <beowulf/chain/account_object.hpp>
+#include <beowulf/chain/database.hpp>
+#include <beowulf/chain/index.hpp>
 
-#include <steem/protocol/smt_operations.hpp>
+#include <beowulf/protocol/smt_operations.hpp>
 
 #define SMT_TEST_PLUGIN_NAI (SMT_MIN_NON_RESERVED_NAI * 10 + 6)
 
-namespace steem { namespace plugins { namespace smt_test {
+namespace beowulf { namespace plugins { namespace smt_test {
 
-using namespace steem::protocol;
+using namespace beowulf::protocol;
 
 class smt_test_plugin_impl
 {
    public:
       smt_test_plugin_impl( smt_test_plugin& _plugin ) :
-         _db( appbase::app().get_plugin< steem::plugins::chain::chain_plugin >().db() ),
+         _db( appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >().db() ),
          _self( _plugin ) {}
 
       void on_pre_apply_operation( const operation_notification& op_obj );
@@ -65,34 +65,34 @@ void smt_test_plugin_impl::on_post_apply_operation( const operation_notification
    note.op.visit( post_operation_visitor( *this ) );
 }
 
-#ifdef STEEM_ENABLE_SMT
+#ifdef BEOWULF_ENABLE_SMT
 
 void test_alpha()
 {
    vector<operation>  operations;
 
    smt_capped_generation_policy gpolicy;
-   uint64_t max_supply = STEEM_MAX_SHARE_SUPPLY / 6000;
+   uint64_t max_supply = BEOWULF_MAX_SHARE_SUPPLY / 6000;
 
-   // set steem unit, total is 100 STEEM-satoshis = 0.1 STEEM
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "founder-a",   7 );
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "founder-b",  23 );
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "founder-c",  70 );
+   // set beowulf unit, total is 100 BEOWULF-satoshis = 0.1 BEOWULF
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "founder-a",   7 );
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "founder-b",  23 );
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "founder-c",  70 );
 
    // set token unit, total is 6 token-satoshis = 0.0006 ALPHA
    gpolicy.pre_soft_cap_unit.token_unit.emplace( "$from", 5 );
    gpolicy.pre_soft_cap_unit.token_unit.emplace( "founder-d", 1 );
 
    // no soft cap -> no soft cap unit
-   gpolicy.post_soft_cap_unit.steem_unit.clear();
+   gpolicy.post_soft_cap_unit.beowulf_unit.clear();
    gpolicy.post_soft_cap_unit.token_unit.clear();
 
-   gpolicy.min_steem_units_commitment.fillin_nonhidden_value( 1 );
-   gpolicy.hard_cap_steem_units_commitment.fillin_nonhidden_value( max_supply );
+   gpolicy.min_beowulf_units_commitment.fillin_nonhidden_value( 1 );
+   gpolicy.hard_cap_beowulf_units_commitment.fillin_nonhidden_value( max_supply );
 
-   gpolicy.soft_cap_percent = STEEM_100_PERCENT;
+   gpolicy.soft_cap_percent = BEOWULF_100_PERCENT;
 
-   // .0006 ALPHA / 0.1 STEEM -> 1000 token-units / steem-unit
+   // .0006 ALPHA / 0.1 BEOWULF -> 1000 token-units / beowulf-unit
    gpolicy.min_unit_ratio = 1000;
    gpolicy.max_unit_ratio = 1000;
 
@@ -133,9 +133,9 @@ void test_beta()
 
    smt_capped_generation_policy gpolicy;
 
-   // set steem unit, total is 100 STEEM-satoshis = 0.1 STEEM
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "fred"  , 3 );
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "george", 2 );
+   // set beowulf unit, total is 100 BEOWULF-satoshis = 0.1 BEOWULF
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "fred"  , 3 );
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "george", 2 );
 
    // set token unit, total is 6 token-satoshis = 0.0006 ALPHA
    gpolicy.pre_soft_cap_unit.token_unit.emplace( "$from" , 7 );
@@ -143,15 +143,15 @@ void test_beta()
    gpolicy.pre_soft_cap_unit.token_unit.emplace( "henry" , 2 );
 
    // no soft cap -> no soft cap unit
-   gpolicy.post_soft_cap_unit.steem_unit.clear();
+   gpolicy.post_soft_cap_unit.beowulf_unit.clear();
    gpolicy.post_soft_cap_unit.token_unit.clear();
 
-   gpolicy.min_steem_units_commitment.fillin_nonhidden_value( 5000000 );
-   gpolicy.hard_cap_steem_units_commitment.fillin_nonhidden_value( 30000000 );
+   gpolicy.min_beowulf_units_commitment.fillin_nonhidden_value( 5000000 );
+   gpolicy.hard_cap_beowulf_units_commitment.fillin_nonhidden_value( 30000000 );
 
-   gpolicy.soft_cap_percent = STEEM_100_PERCENT;
+   gpolicy.soft_cap_percent = BEOWULF_100_PERCENT;
 
-   // .0006 ALPHA / 0.1 STEEM -> 1000 token-units / steem-unit
+   // .0006 ALPHA / 0.1 BEOWULF -> 1000 token-units / beowulf-unit
    gpolicy.min_unit_ratio = 50;
    gpolicy.max_unit_ratio = 100;
 
@@ -191,22 +191,22 @@ void test_delta()
 
    smt_capped_generation_policy gpolicy;
 
-   // set steem unit, total is 1 STEEM-satoshi = 0.001 STEEM
-   gpolicy.pre_soft_cap_unit.steem_unit.emplace( "founder", 1 );
+   // set beowulf unit, total is 1 BEOWULF-satoshi = 0.001 BEOWULF
+   gpolicy.pre_soft_cap_unit.beowulf_unit.emplace( "founder", 1 );
 
    // set token unit, total is 10,000 token-satoshis = 0.10000 DELTA
    gpolicy.pre_soft_cap_unit.token_unit.emplace( "founder" , 10000 );
 
    // no soft cap -> no soft cap unit
-   gpolicy.post_soft_cap_unit.steem_unit.clear();
+   gpolicy.post_soft_cap_unit.beowulf_unit.clear();
    gpolicy.post_soft_cap_unit.token_unit.clear();
 
-   gpolicy.min_steem_units_commitment.fillin_nonhidden_value(      10000000 );
-   gpolicy.hard_cap_steem_units_commitment.fillin_nonhidden_value( 10000000 );
+   gpolicy.min_beowulf_units_commitment.fillin_nonhidden_value(      10000000 );
+   gpolicy.hard_cap_beowulf_units_commitment.fillin_nonhidden_value( 10000000 );
 
-   gpolicy.soft_cap_percent = STEEM_100_PERCENT;
+   gpolicy.soft_cap_percent = BEOWULF_100_PERCENT;
 
-   // .001 STEEM / .100000 DELTA -> 100 DELTA / STEEM
+   // .001 BEOWULF / .100000 DELTA -> 100 DELTA / BEOWULF
    gpolicy.min_unit_ratio = 1000;
    gpolicy.max_unit_ratio = 1000;
 
@@ -274,7 +274,7 @@ void smt_test_plugin::plugin_initialize( const boost::program_options::variables
    try
    {
       ilog( "Initializing smt_test plugin" );
-      chain::database& db = appbase::app().get_plugin< steem::plugins::chain::chain_plugin >().db();
+      chain::database& db = appbase::app().get_plugin< beowulf::plugins::chain::chain_plugin >().db();
 
       db.add_pre_apply_operation_handler( [&]( const operation_notification& note ){ my->on_pre_apply_operation( note ); }, *this, 0 );
       db.add_post_apply_operation_handler( [&]( const operation_notification& note ){ my->on_post_apply_operation( note ); }, *this, 0 );
@@ -288,4 +288,4 @@ void smt_test_plugin::plugin_startup() {}
 
 void smt_test_plugin::plugin_shutdown() {}
 
-} } } // steem::plugins::smt_test
+} } } // beowulf::plugins::smt_test

@@ -1,7 +1,7 @@
 
-#include <steem/protocol/smt_operations.hpp>
-#include <steem/protocol/validation.hpp>
-//#ifdef STEEM_ENABLE_SMT
+#include <beowulf/protocol/smt_operations.hpp>
+#include <beowulf/protocol/validation.hpp>
+//#ifdef BEOWULF_ENABLE_SMT
 
 #define SMT_DESTINATION_FROM          account_name_type( "$from" )
 #define SMT_DESTINATION_FROM_VESTING  account_name_type( "$from.vesting" )
@@ -9,7 +9,7 @@
 #define SMT_DESTINATION_REWARDS       account_name_type( "$rewards" )
 #define SMT_DESTINATION_VESTING       account_name_type( "$vesting" )
 
-namespace steem { namespace protocol {
+namespace beowulf { namespace protocol {
 
 void common_symbol_validation( const asset_symbol_type& symbol )
 {
@@ -34,8 +34,8 @@ void smt_create_operation::validate()const
 {
    smt_base_operation::validate();
    FC_ASSERT( smt_creation_fee.amount >= 0, "fee cannot be negative" );
-   FC_ASSERT( smt_creation_fee.amount <= STEEM_MAX_SHARE_SUPPLY, "Fee must be smaller than STEEM_MAX_SHARE_SUPPLY" );
-   //FC_ASSERT( is_asset_type( smt_creation_fee, STEEM_SYMBOL ) || is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be STEEM or SBD" );
+   FC_ASSERT( smt_creation_fee.amount <= BEOWULF_MAX_SHARE_SUPPLY, "Fee must be smaller than BEOWULF_MAX_SHARE_SUPPLY" );
+   //FC_ASSERT( is_asset_type( smt_creation_fee, BEOWULF_SYMBOL ) || is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be BEOWULF or SBD" );
    FC_ASSERT( is_asset_type( smt_creation_fee, SBD_SYMBOL ), "Fee must be W" );
    FC_ASSERT( symbol.decimals() >= 0);
    FC_ASSERT( symbol.decimals() <= SMT_MAX_DECIMAL_PLACES );
@@ -67,10 +67,10 @@ void smt_create_operation::validate()const
 //   return false;
 //}
 //
-//uint32_t smt_generation_unit::steem_unit_sum()const
+//uint32_t smt_generation_unit::beowulf_unit_sum()const
 //{
 //   uint32_t result = 0;
-//   for(const std::pair< account_name_type, uint16_t >& e : steem_unit )
+//   for(const std::pair< account_name_type, uint16_t >& e : beowulf_unit )
 //      result += e.second;
 //   return result;
 //}
@@ -85,8 +85,8 @@ void smt_create_operation::validate()const
 //
 //void smt_generation_unit::validate()const
 //{
-//   FC_ASSERT( steem_unit.size() <= SMT_MAX_UNIT_ROUTES );
-//   for(const std::pair< account_name_type, uint16_t >& e : steem_unit )
+//   FC_ASSERT( beowulf_unit.size() <= SMT_MAX_UNIT_ROUTES );
+//   for(const std::pair< account_name_type, uint16_t >& e : beowulf_unit )
 //   {
 //      FC_ASSERT( is_valid_unit_target( e.first ) );
 //      FC_ASSERT( e.second > 0 );
@@ -116,7 +116,7 @@ void smt_create_operation::validate()const
 //void smt_cap_commitment::validate()const
 //{
 //   FC_ASSERT( lower_bound > 0 );
-//   FC_ASSERT( upper_bound <= STEEM_MAX_SHARE_SUPPLY );
+//   FC_ASSERT( upper_bound <= BEOWULF_MAX_SHARE_SUPPLY );
 //   FC_ASSERT( lower_bound <= upper_bound );
 //   if( lower_bound == upper_bound )
 //   {
@@ -140,67 +140,67 @@ void smt_create_operation::validate()const
 //   post_soft_cap_unit.validate();
 //
 //   FC_ASSERT( soft_cap_percent > 0 );
-//   FC_ASSERT( soft_cap_percent <= STEEM_100_PERCENT );
+//   FC_ASSERT( soft_cap_percent <= BEOWULF_100_PERCENT );
 //
-//   FC_ASSERT( pre_soft_cap_unit.steem_unit.size() > 0 );
+//   FC_ASSERT( pre_soft_cap_unit.beowulf_unit.size() > 0 );
 //   FC_ASSERT( pre_soft_cap_unit.token_unit.size() > 0 );
 //
-//   FC_ASSERT( pre_soft_cap_unit.steem_unit.size() <= SMT_MAX_UNIT_COUNT );
+//   FC_ASSERT( pre_soft_cap_unit.beowulf_unit.size() <= SMT_MAX_UNIT_COUNT );
 //   FC_ASSERT( pre_soft_cap_unit.token_unit.size() <= SMT_MAX_UNIT_COUNT );
-//   FC_ASSERT( post_soft_cap_unit.steem_unit.size() <= SMT_MAX_UNIT_COUNT );
+//   FC_ASSERT( post_soft_cap_unit.beowulf_unit.size() <= SMT_MAX_UNIT_COUNT );
 //   FC_ASSERT( post_soft_cap_unit.token_unit.size() <= SMT_MAX_UNIT_COUNT );
 //
 //   // TODO : Check account name
 //
-//   if( soft_cap_percent == STEEM_100_PERCENT )
+//   if( soft_cap_percent == BEOWULF_100_PERCENT )
 //   {
-//      FC_ASSERT( post_soft_cap_unit.steem_unit.size() == 0 );
+//      FC_ASSERT( post_soft_cap_unit.beowulf_unit.size() == 0 );
 //      FC_ASSERT( post_soft_cap_unit.token_unit.size() == 0 );
 //   }
 //   else
 //   {
-//      FC_ASSERT( post_soft_cap_unit.steem_unit.size() > 0 );
+//      FC_ASSERT( post_soft_cap_unit.beowulf_unit.size() > 0 );
 //   }
 //
-//   min_steem_units_commitment.validate();
-//   hard_cap_steem_units_commitment.validate();
+//   min_beowulf_units_commitment.validate();
+//   hard_cap_beowulf_units_commitment.validate();
 //
-//   FC_ASSERT( min_steem_units_commitment.lower_bound <= hard_cap_steem_units_commitment.lower_bound );
-//   FC_ASSERT( min_steem_units_commitment.upper_bound <= hard_cap_steem_units_commitment.upper_bound );
+//   FC_ASSERT( min_beowulf_units_commitment.lower_bound <= hard_cap_beowulf_units_commitment.lower_bound );
+//   FC_ASSERT( min_beowulf_units_commitment.upper_bound <= hard_cap_beowulf_units_commitment.upper_bound );
 //
 //   // Following are non-trivial numerical bounds
 //   // TODO:  Discuss these restrictions in the whitepaper
 //
 //   // we want hard cap to be large enough we don't see quantization effects
-//   FC_ASSERT( hard_cap_steem_units_commitment.lower_bound >= SMT_MIN_HARD_CAP_STEEM_UNITS );
+//   FC_ASSERT( hard_cap_beowulf_units_commitment.lower_bound >= SMT_MIN_HARD_CAP_BEOWULF_UNITS );
 //
 //   // we want saturation point to be large enough we don't see quantization effects
-//   FC_ASSERT( hard_cap_steem_units_commitment.lower_bound >= SMT_MIN_SATURATION_STEEM_UNITS * uint64_t( max_unit_ratio ) );
+//   FC_ASSERT( hard_cap_beowulf_units_commitment.lower_bound >= SMT_MIN_SATURATION_BEOWULF_UNITS * uint64_t( max_unit_ratio ) );
 //
 //   // this static_assert checks to be sure min_soft_cap / max_soft_cap computation can't overflow uint64_t
-//   //static_assert( uint64_t( STEEM_MAX_SHARE_SUPPLY ) < (std::numeric_limits< uint64_t >::max() / STEEM_100_PERCENT), "Overflow check failed" );
-//   uint64_t min_soft_cap = (uint64_t( hard_cap_steem_units_commitment.lower_bound.value ) * soft_cap_percent) / STEEM_100_PERCENT;
-//   uint64_t max_soft_cap = (uint64_t( hard_cap_steem_units_commitment.upper_bound.value ) * soft_cap_percent) / STEEM_100_PERCENT;
+//   //static_assert( uint64_t( BEOWULF_MAX_SHARE_SUPPLY ) < (std::numeric_limits< uint64_t >::max() / BEOWULF_100_PERCENT), "Overflow check failed" );
+//   uint64_t min_soft_cap = (uint64_t( hard_cap_beowulf_units_commitment.lower_bound.value ) * soft_cap_percent) / BEOWULF_100_PERCENT;
+//   uint64_t max_soft_cap = (uint64_t( hard_cap_beowulf_units_commitment.upper_bound.value ) * soft_cap_percent) / BEOWULF_100_PERCENT;
 //
 //   // we want soft cap to be large enough we don't see quantization effects
-//   FC_ASSERT( min_soft_cap >= SMT_MIN_SOFT_CAP_STEEM_UNITS );
+//   FC_ASSERT( min_soft_cap >= SMT_MIN_SOFT_CAP_BEOWULF_UNITS );
 //
-//   // We want to prevent the following from overflowing STEEM_MAX_SHARE_SUPPLY:
+//   // We want to prevent the following from overflowing BEOWULF_MAX_SHARE_SUPPLY:
 //   // max_tokens_created = (u1.tt * sc + u2.tt * (hc-sc)) * min_unit_ratio
-//   // max_steem_accepted =  u1.st * sc + u2.st * (hc-sc)
+//   // max_beowulf_accepted =  u1.st * sc + u2.st * (hc-sc)
 //
 //   // hc / max_unit_ratio is the saturation point
 //
 //   uint128_t sc = max_soft_cap;
-//   uint128_t hc_sc = hard_cap_steem_units_commitment.upper_bound.value - max_soft_cap;
+//   uint128_t hc_sc = hard_cap_beowulf_units_commitment.upper_bound.value - max_soft_cap;
 //
 //   uint128_t max_tokens_created = (pre_soft_cap_unit.token_unit_sum() * sc + post_soft_cap_unit.token_unit_sum() * hc_sc) * min_unit_ratio;
-//   uint128_t max_share_supply_u128 = uint128_t( STEEM_MAX_SHARE_SUPPLY );
+//   uint128_t max_share_supply_u128 = uint128_t( BEOWULF_MAX_SHARE_SUPPLY );
 //
 //   FC_ASSERT( max_tokens_created <= max_share_supply_u128 );
 //
-//   uint128_t max_steem_accepted = (pre_soft_cap_unit.steem_unit_sum() * sc + post_soft_cap_unit.steem_unit_sum() * hc_sc);
-//   FC_ASSERT( max_steem_accepted <= max_share_supply_u128 );
+//   uint128_t max_beowulf_accepted = (pre_soft_cap_unit.beowulf_unit_sum() * sc + post_soft_cap_unit.beowulf_unit_sum() * hc_sc);
+//   FC_ASSERT( max_beowulf_accepted <= max_share_supply_u128 );
 //}
 
 struct validate_visitor
@@ -218,7 +218,7 @@ struct validate_visitor
 //{
 //   smt_base_operation::validate();
 //
-//   FC_ASSERT( schedule_time > STEEM_GENESIS_TIME );
+//   FC_ASSERT( schedule_time > BEOWULF_GENESIS_TIME );
 //   FC_ASSERT( emissions_unit.token_unit.empty() == false, "Emissions token unit cannot be empty" );
 //
 //   for ( const auto& e : emissions_unit.token_unit )
@@ -269,10 +269,10 @@ void smt_setup_operation::validate()const
    FC_ASSERT( decimal_places >= 0);
    FC_ASSERT( decimal_places <= SMT_MAX_DECIMAL_PLACES );
    FC_ASSERT( max_supply > 0 );
-   FC_ASSERT( max_supply <= STEEM_MAX_SHARE_SUPPLY );
+   FC_ASSERT( max_supply <= BEOWULF_MAX_SHARE_SUPPLY );
 //   validate_visitor vtor;
 //   initial_generation_policy.visit( vtor );
-//   FC_ASSERT( generation_begin_time > STEEM_GENESIS_TIME );
+//   FC_ASSERT( generation_begin_time > BEOWULF_GENESIS_TIME );
 //   FC_ASSERT( generation_end_time > generation_begin_time );
 //   FC_ASSERT( announced_launch_time >= generation_end_time );
 //   FC_ASSERT( launch_expiration_time >= announced_launch_time );
@@ -328,7 +328,7 @@ void smt_setup_operation::validate()const
 //
 //   void operator()( const smt_param_rewards_v1& param_rewards )const
 //   {
-////      FC_ASSERT( param_rewards.percent_curation_rewards <= STEEM_100_PERCENT,
+////      FC_ASSERT( param_rewards.percent_curation_rewards <= BEOWULF_100_PERCENT,
 ////         "Percent Curation Rewards must not exceed 10000. Was ${n}",
 ////         ("n", param_rewards.percent_curation_rewards) );
 ////
@@ -372,7 +372,7 @@ void smt_setup_operation::validate()const
 //{
 //   smt_executor_base_operation::validate();
 //   FC_ASSERT( is_valid_account_name( contributor ) );
-//   FC_ASSERT( amount.symbol == STEEM_SYMBOL );
+//   FC_ASSERT( amount.symbol == BEOWULF_SYMBOL );
 //}
 //
 //void smt_cap_reveal_operation::validate()const

@@ -1,8 +1,8 @@
 
-#include <steem/chain/util/reward.hpp>
-#include <steem/chain/util/uint256.hpp>
+#include <beowulf/chain/util/reward.hpp>
+#include <beowulf/chain/util/uint256.hpp>
 
-namespace steem { namespace chain { namespace util {
+namespace beowulf { namespace chain { namespace util {
 
 uint8_t find_msb( const uint128_t& u )
 {
@@ -42,24 +42,24 @@ uint64_t approx_sqrt( const uint128_t& x )
 //   FC_ASSERT( ctx.rshares > 0 );
 //   FC_ASSERT( ctx.total_reward_shares2 > 0 );
 //
-//   u256 rf(ctx.total_reward_fund_steem.amount.value);
+//   u256 rf(ctx.total_reward_fund_beowulf.amount.value);
 //   u256 total_claims = to256( ctx.total_reward_shares2 );
 //
 //   //idump( (ctx) );
 //
 //   u256 claim = to256( evaluate_reward_curve( ctx.rshares.value, ctx.reward_curve, ctx.content_constant ) );
-//   claim = ( claim * ctx.reward_weight ) / STEEM_100_PERCENT;
+//   claim = ( claim * ctx.reward_weight ) / BEOWULF_100_PERCENT;
 //
 //   u256 payout_u256 = ( rf * claim ) / total_claims;
 //   FC_ASSERT( payout_u256 <= u256( uint64_t( std::numeric_limits<int64_t>::max() ) ) );
 //   uint64_t payout = static_cast< uint64_t >( payout_u256 );
 //
-//   if( is_comment_payout_dust( ctx.current_steem_price, payout ) )
+//   if( is_comment_payout_dust( ctx.current_beowulf_price, payout ) )
 //      payout = 0;
 //
-//   asset max_steem = to_steem( ctx.current_steem_price, ctx.max_sbd );
+//   asset max_beowulf = to_beowulf( ctx.current_beowulf_price, ctx.max_sbd );
 //
-//   payout = std::min( payout, uint64_t( max_steem.amount.value ) );
+//   payout = std::min( payout, uint64_t( max_beowulf.amount.value ) );
 //
 //   return payout;
 //   } FC_CAPTURE_AND_RETHROW( (ctx) )
@@ -94,4 +94,4 @@ uint128_t evaluate_reward_curve( const uint128_t& rshares, const protocol::curve
    return result;
 }
 
-} } } // steem::chain::util
+} } } // beowulf::chain::util

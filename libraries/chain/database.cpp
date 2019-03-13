@@ -1,31 +1,31 @@
-#include <steem/protocol/steem_operations.hpp>
+#include <beowulf/protocol/beowulf_operations.hpp>
 
-#include <steem/chain/block_summary_object.hpp>
-#include <steem/chain/compound.hpp>
-#include <steem/chain/custom_operation_interpreter.hpp>
-#include <steem/chain/database.hpp>
-#include <steem/chain/database_exceptions.hpp>
-#include <steem/chain/db_with.hpp>
-#include <steem/chain/evaluator_registry.hpp>
-#include <steem/chain/global_property_object.hpp>
-#include <steem/chain/history_object.hpp>
-#include <steem/chain/index.hpp>
-#include <steem/chain/pending_required_action_object.hpp>
-#include <steem/chain/pending_optional_action_object.hpp>
-#include <steem/chain/smt_objects.hpp>
-#include <steem/chain/steem_evaluator.hpp>
-#include <steem/chain/steem_objects.hpp>
-#include <steem/chain/transaction_object.hpp>
-#include <steem/chain/shared_db_merkle.hpp>
-#include <steem/chain/witness_schedule.hpp>
+#include <beowulf/chain/block_summary_object.hpp>
+#include <beowulf/chain/compound.hpp>
+#include <beowulf/chain/custom_operation_interpreter.hpp>
+#include <beowulf/chain/database.hpp>
+#include <beowulf/chain/database_exceptions.hpp>
+#include <beowulf/chain/db_with.hpp>
+#include <beowulf/chain/evaluator_registry.hpp>
+#include <beowulf/chain/global_property_object.hpp>
+#include <beowulf/chain/history_object.hpp>
+#include <beowulf/chain/index.hpp>
+#include <beowulf/chain/pending_required_action_object.hpp>
+#include <beowulf/chain/pending_optional_action_object.hpp>
+#include <beowulf/chain/smt_objects.hpp>
+#include <beowulf/chain/beowulf_evaluator.hpp>
+#include <beowulf/chain/beowulf_objects.hpp>
+#include <beowulf/chain/transaction_object.hpp>
+#include <beowulf/chain/shared_db_merkle.hpp>
+#include <beowulf/chain/witness_schedule.hpp>
 
-#include <steem/chain/util/asset.hpp>
-#include <steem/chain/util/reward.hpp>
-#include <steem/chain/util/uint256.hpp>
-#include <steem/chain/util/reward.hpp>
-#include <steem/chain/util/manabar.hpp>
-#include <steem/chain/util/rd_setup.hpp>
-#include <steem/chain/util/nai_generator.hpp>
+#include <beowulf/chain/util/asset.hpp>
+#include <beowulf/chain/util/reward.hpp>
+#include <beowulf/chain/util/uint256.hpp>
+#include <beowulf/chain/util/reward.hpp>
+#include <beowulf/chain/util/manabar.hpp>
+#include <beowulf/chain/util/rd_setup.hpp>
+#include <beowulf/chain/util/nai_generator.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 #include <fc/uint128.hpp>
@@ -41,7 +41,7 @@
 #include <fstream>
 #include <functional>
 
-namespace steem { namespace chain {
+namespace beowulf { namespace chain {
 
 struct object_schema_repr
 {
@@ -65,11 +65,11 @@ struct db_schema
 
 } }
 
-FC_REFLECT( steem::chain::object_schema_repr, (space_type)(type) )
-FC_REFLECT( steem::chain::operation_schema_repr, (id)(type) )
-FC_REFLECT( steem::chain::db_schema, (types)(object_types)(operation_type)(custom_operation_types) )
+FC_REFLECT( beowulf::chain::object_schema_repr, (space_type)(type) )
+FC_REFLECT( beowulf::chain::operation_schema_repr, (id)(type) )
+FC_REFLECT( beowulf::chain::db_schema, (types)(object_types)(operation_type)(custom_operation_types) )
 
-namespace steem { namespace chain {
+namespace beowulf { namespace chain {
 
 using boost::container::flat_set;
 
@@ -228,8 +228,8 @@ struct get_impacted_fee {
 //struct reward_fund_context
 //{
 //   uint128_t   recent_claims = 0;
-//   asset       reward_balance = asset( 0, STEEM_SYMBOL );
-//   share_type  steem_awarded = 0;
+//   asset       reward_balance = asset( 0, BEOWULF_SYMBOL );
+//   share_type  beowulf_awarded = 0;
 //};
 
 class database_impl
@@ -333,12 +333,12 @@ uint32_t database::reindex( const open_args& args )
    reindex_notification note;
 
    BOOST_SCOPE_EXIT(this_,&note) {
-      STEEM_TRY_NOTIFY(this_->_post_reindex_signal, note);
+      BEOWULF_TRY_NOTIFY(this_->_post_reindex_signal, note);
    } BOOST_SCOPE_EXIT_END
 
    try
    {
-      STEEM_TRY_NOTIFY(_pre_reindex_signal, note);
+      BEOWULF_TRY_NOTIFY(_pre_reindex_signal, note);
 
       ilog( "Reindexing Blockchain" );
       wipe( args.data_dir, args.shared_mem_dir, false );
@@ -346,7 +346,7 @@ uint32_t database::reindex( const open_args& args )
       _fork_db.reset();    // override effect of _fork_db.start_block() call in open()
 
       auto start = fc::time_point::now();
-      STEEM_ASSERT( _block_log.head(), block_log_exception, "No blocks in block log. Cannot reindex an empty chain." );
+      BEOWULF_ASSERT( _block_log.head(), block_log_exception, "No blocks in block log. Cannot reindex an empty chain." );
 
       ilog( "Replaying blocks..." );
 
@@ -556,14 +556,14 @@ std::vector< block_id_type > database::get_block_ids_on_fork( block_id_type head
 
 chain_id_type database::get_chain_id() const
 {
-   return steem_chain_id;
+   return beowulf_chain_id;
 }
 
 void database::set_chain_id( const chain_id_type& chain_id )
 {
-   steem_chain_id = chain_id;
+   beowulf_chain_id = chain_id;
 
-   idump( (steem_chain_id) );
+   idump( (beowulf_chain_id) );
 }
 
 void database::foreach_block(std::function<bool(const signed_block_header&, const signed_block&)> processor) const
@@ -679,7 +679,7 @@ const account_object* database::find_account( const account_name_type& name )con
 //
 //const limit_order_object& database::get_limit_order( const account_name_type& name, uint32_t orderid )const
 //{ try {
-//   if( !has_hardfork( STEEM_HARDFORK_0_6__127 ) )
+//   if( !has_hardfork( BEOWULF_HARDFORK_0_6__127 ) )
 //      orderid = orderid & 0x0000FFFF;
 //
 //   return get< limit_order_object, by_account >( boost::make_tuple( name, orderid ) );
@@ -687,7 +687,7 @@ const account_object* database::find_account( const account_name_type& name )con
 //
 //const limit_order_object* database::find_limit_order( const account_name_type& name, uint32_t orderid )const
 //{
-//   if( !has_hardfork( STEEM_HARDFORK_0_6__127 ) )
+//   if( !has_hardfork( BEOWULF_HARDFORK_0_6__127 ) )
 //      orderid = orderid & 0x0000FFFF;
 //
 //   return find< limit_order_object, by_account >( boost::make_tuple( name, orderid ) );
@@ -730,7 +730,7 @@ const hardfork_property_object& database::get_hardfork_property_object()const
 
 //const time_point_sec database::calculate_discussion_payout_time( const comment_object& comment )const
 //{
-//   if( has_hardfork( STEEM_HARDFORK_0_17__769 ) || comment.parent_author == STEEM_ROOT_POST_PARENT )
+//   if( has_hardfork( BEOWULF_HARDFORK_0_17__769 ) || comment.parent_author == BEOWULF_ROOT_POST_PARENT )
 //      return comment.cashout_time;
 //   else
 //      return get< comment_object >( comment.root_comment ).cashout_time;
@@ -746,7 +746,7 @@ asset database::get_effective_vesting_shares( const account_object& account, ass
    if( vested_symbol == VESTS_SYMBOL )
       return account.vesting_shares;// - account.delegated_vesting_shares + account.received_vesting_shares;
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    FC_ASSERT( vested_symbol.space() == asset_symbol_type::smt_nai_space );
    FC_ASSERT( vested_symbol.is_vesting() );
 
@@ -765,7 +765,7 @@ asset database::get_effective_vesting_shares( const account_object& account, ass
 uint32_t database::witness_participation_rate()const
 {
    const dynamic_global_property_object& dpo = get_dynamic_global_properties();
-   return uint64_t(STEEM_100_PERCENT) * dpo.recent_slots_filled.popcount() / 128;
+   return uint64_t(BEOWULF_100_PERCENT) * dpo.recent_slots_filled.popcount() / 128;
 }
 
 void database::add_checkpoints( const flat_map< uint32_t, block_id_type >& checkpts )
@@ -1039,23 +1039,23 @@ signed_block database::_generate_block(
    pending_block.timestamp = when;
    pending_block.witness = witness_owner;
 
-   if( has_hardfork( STEEM_HARDFORK_0_5__54 ) )
+   if( has_hardfork( BEOWULF_HARDFORK_0_5__54 ) )
    {
       const auto& witness = get_witness( witness_owner );
 
-      if( witness.running_version != STEEM_BLOCKCHAIN_VERSION )
-         pending_block.extensions.insert( block_header_extensions( STEEM_BLOCKCHAIN_VERSION ) );
+      if( witness.running_version != BEOWULF_BLOCKCHAIN_VERSION )
+         pending_block.extensions.insert( block_header_extensions( BEOWULF_BLOCKCHAIN_VERSION ) );
 
       const auto& hfp = get_hardfork_property_object();
 
-      if( hfp.current_hardfork_version < STEEM_BLOCKCHAIN_VERSION // Binary is newer hardfork than has been applied
+      if( hfp.current_hardfork_version < BEOWULF_BLOCKCHAIN_VERSION // Binary is newer hardfork than has been applied
          && ( witness.hardfork_version_vote != _hardfork_versions[ hfp.last_hardfork + 1 ] || witness.hardfork_time_vote != _hardfork_times[ hfp.last_hardfork + 1 ] ) ) // Witness vote does not match binary configuration
       {
          // Make vote match binary configuration
          pending_block.extensions.insert( block_header_extensions( hardfork_version_vote( _hardfork_versions[ hfp.last_hardfork + 1 ], _hardfork_times[ hfp.last_hardfork + 1 ] ) ) );
       }
-      else if( hfp.current_hardfork_version == STEEM_BLOCKCHAIN_VERSION // Binary does not know of a new hardfork
-         && witness.hardfork_version_vote > STEEM_BLOCKCHAIN_VERSION ) // Voting for hardfork in the future, that we do not know of...
+      else if( hfp.current_hardfork_version == BEOWULF_BLOCKCHAIN_VERSION // Binary does not know of a new hardfork
+         && witness.hardfork_version_vote > BEOWULF_BLOCKCHAIN_VERSION ) // Voting for hardfork in the future, that we do not know of...
       {
          // Make vote match binary configuration. This is vote to not apply the new hardfork.
          pending_block.extensions.insert( block_header_extensions( hardfork_version_vote( _hardfork_versions[ hfp.last_hardfork ], _hardfork_times[ hfp.last_hardfork ] ) ) );
@@ -1064,7 +1064,7 @@ signed_block database::_generate_block(
 
    // The 4 is for the max size of the transaction vector length
    size_t total_block_size = fc::raw::pack_size( pending_block ) + 4;
-   auto maximum_block_size = get_dynamic_global_properties().maximum_block_size; //STEEM_MAX_BLOCK_SIZE;
+   auto maximum_block_size = get_dynamic_global_properties().maximum_block_size; //BEOWULF_MAX_BLOCK_SIZE;
 
    //
    // The following code throws away existing pending_tx_session and
@@ -1081,7 +1081,7 @@ signed_block database::_generate_block(
    _pending_tx_session = start_undo_session();
 
    FC_TODO( "Safe to remove after HF20 occurs because no more pre HF20 blocks will be generated" );
-   if( has_hardfork( STEEM_HARDFORK_0_20 ) )
+   if( has_hardfork( BEOWULF_HARDFORK_0_20 ) )
    {
       /// modify current witness so transaction evaluators can know who included the transaction
       modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& dgp )
@@ -1141,12 +1141,12 @@ signed_block database::_generate_block(
    pending_block.transaction_merkle_root = pending_block.calculate_merkle_root();
 
    if( !(skip & skip_witness_signature) )
-      pending_block.sign( block_signing_private_key, has_hardfork( STEEM_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical );
+      pending_block.sign( block_signing_private_key, has_hardfork( BEOWULF_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical );
 
    // TODO:  Move this to _push_block() so session is restored.
    if( !(skip & skip_block_size_check) )
    {
-      FC_ASSERT( fc::raw::pack_size(pending_block) <= STEEM_MAX_BLOCK_SIZE );
+      FC_ASSERT( fc::raw::pack_size(pending_block) <= BEOWULF_MAX_BLOCK_SIZE );
    }
 
    push_block( pending_block, skip );
@@ -1167,7 +1167,7 @@ void database::pop_block()
 
       /// save the head block so we can recover its transactions
       optional<signed_block> head_block = fetch_block_by_id( head_id );
-      STEEM_ASSERT( head_block.valid(), pop_empty_chain, "there are no blocks to pop" );
+      BEOWULF_ASSERT( head_block.valid(), pop_empty_chain, "there are no blocks to pop" );
 
       _fork_db.pop_block();
       undo();
@@ -1218,7 +1218,7 @@ void database::post_push_virtual_operation( const operation& op )
 
 void database::notify_pre_apply_operation( const operation_notification& note )
 {
-   STEEM_TRY_NOTIFY( _pre_apply_operation_signal, note )
+   BEOWULF_TRY_NOTIFY( _pre_apply_operation_signal, note )
 }
 
 void database::push_required_action( const required_automated_action& a )
@@ -1239,52 +1239,52 @@ void database::push_optional_action( const optional_automated_action& a )
 
 void database::notify_pre_apply_required_action( const required_action_notification& note )
 {
-   STEEM_TRY_NOTIFY( _pre_apply_required_action_signal, note );
+   BEOWULF_TRY_NOTIFY( _pre_apply_required_action_signal, note );
 }
 
 void database::notify_post_apply_required_action( const required_action_notification& note )
 {
-   STEEM_TRY_NOTIFY( _post_apply_required_action_signal, note );
+   BEOWULF_TRY_NOTIFY( _post_apply_required_action_signal, note );
 }
 
 void database::notify_pre_apply_optional_action( const optional_action_notification& note )
 {
-   STEEM_TRY_NOTIFY( _pre_apply_optional_action_signal, note );
+   BEOWULF_TRY_NOTIFY( _pre_apply_optional_action_signal, note );
 }
 
 void database::notify_post_apply_optional_action( const optional_action_notification& note )
 {
-   STEEM_TRY_NOTIFY( _post_apply_optional_action_signal, note );
+   BEOWULF_TRY_NOTIFY( _post_apply_optional_action_signal, note );
 }
 
 void database::notify_post_apply_operation( const operation_notification& note )
 {
-   STEEM_TRY_NOTIFY( _post_apply_operation_signal, note )
+   BEOWULF_TRY_NOTIFY( _post_apply_operation_signal, note )
 }
 
 void database::notify_pre_apply_block( const block_notification& note )
 {
-   STEEM_TRY_NOTIFY( _pre_apply_block_signal, note )
+   BEOWULF_TRY_NOTIFY( _pre_apply_block_signal, note )
 }
 
 void database::notify_irreversible_block( uint32_t block_num )
 {
-   STEEM_TRY_NOTIFY( _on_irreversible_block, block_num )
+   BEOWULF_TRY_NOTIFY( _on_irreversible_block, block_num )
 }
 
 void database::notify_post_apply_block( const block_notification& note )
 {
-   STEEM_TRY_NOTIFY( _post_apply_block_signal, note )
+   BEOWULF_TRY_NOTIFY( _post_apply_block_signal, note )
 }
 
 void database::notify_pre_apply_transaction( const transaction_notification& note )
 {
-   STEEM_TRY_NOTIFY( _pre_apply_transaction_signal, note )
+   BEOWULF_TRY_NOTIFY( _pre_apply_transaction_signal, note )
 }
 
 void database::notify_post_apply_transaction( const transaction_notification& note )
 {
-   STEEM_TRY_NOTIFY( _post_apply_transaction_signal, note )
+   BEOWULF_TRY_NOTIFY( _post_apply_transaction_signal, note )
 }
 
 account_name_type database::get_scheduled_witness( uint32_t slot_num )const
@@ -1300,7 +1300,7 @@ fc::time_point_sec database::get_slot_time(uint32_t slot_num)const
    if( slot_num == 0 )
       return fc::time_point_sec();
 
-   auto interval = STEEM_BLOCK_INTERVAL;
+   auto interval = BEOWULF_BLOCK_INTERVAL;
    const dynamic_global_property_object& dpo = get_dynamic_global_properties();
 
    if( head_block_num() == 0 )
@@ -1325,20 +1325,20 @@ uint32_t database::get_slot_at_time(fc::time_point_sec when)const
    fc::time_point_sec first_slot_time = get_slot_time( 1 );
    if( when < first_slot_time )
       return 0;
-   return (when - first_slot_time).to_seconds() / STEEM_BLOCK_INTERVAL + 1;
+   return (when - first_slot_time).to_seconds() / BEOWULF_BLOCK_INTERVAL + 1;
 }
 
 /**
- *  Converts STEEM into sbd and adds it to to_account while reducing the STEEM supply
- *  by STEEM and increasing the sbd supply by the specified amount.
+ *  Converts BEOWULF into sbd and adds it to to_account while reducing the BEOWULF supply
+ *  by BEOWULF and increasing the sbd supply by the specified amount.
  */
-std::pair< asset, asset > database::create_sbd( const account_object& to_account, asset steem, bool to_reward_balance )
+std::pair< asset, asset > database::create_sbd( const account_object& to_account, asset beowulf, bool to_reward_balance )
 {
-   std::pair< asset, asset > assets( asset( 0, SBD_SYMBOL ), asset( 0, STEEM_SYMBOL ) );
+   std::pair< asset, asset > assets( asset( 0, SBD_SYMBOL ), asset( 0, BEOWULF_SYMBOL ) );
 
    try
    {
-      if( steem.amount == 0 )
+      if( beowulf.amount == 0 )
          return assets;
 
       const auto& median_price = get_feed_history().current_median_history;
@@ -1346,34 +1346,34 @@ std::pair< asset, asset > database::create_sbd( const account_object& to_account
 
       if( !median_price.is_null() )
       {
-         auto to_sbd = ( gpo.sbd_print_rate * steem.amount ) / STEEM_100_PERCENT;
-         auto to_steem = steem.amount - to_sbd;
+         auto to_sbd = ( gpo.sbd_print_rate * beowulf.amount ) / BEOWULF_100_PERCENT;
+         auto to_beowulf = beowulf.amount - to_sbd;
 
-         auto sbd = asset( to_sbd, STEEM_SYMBOL ) * median_price;
+         auto sbd = asset( to_sbd, BEOWULF_SYMBOL ) * median_price;
 
          if( to_reward_balance )
          {
             adjust_reward_balance( to_account, sbd );
-            adjust_reward_balance( to_account, asset( to_steem, STEEM_SYMBOL ) );
+            adjust_reward_balance( to_account, asset( to_beowulf, BEOWULF_SYMBOL ) );
          }
          else
          {
             adjust_balance( to_account, sbd );
-            adjust_balance( to_account, asset( to_steem, STEEM_SYMBOL ) );
+            adjust_balance( to_account, asset( to_beowulf, BEOWULF_SYMBOL ) );
          }
 
-         adjust_supply( asset( -to_sbd, STEEM_SYMBOL ) );
+         adjust_supply( asset( -to_sbd, BEOWULF_SYMBOL ) );
          adjust_supply( sbd );
          assets.first = sbd;
-         assets.second = asset( to_steem, STEEM_SYMBOL );
+         assets.second = asset( to_beowulf, BEOWULF_SYMBOL );
       }
       else
       {
-         adjust_balance( to_account, steem );
-         assets.second = steem;
+         adjust_balance( to_account, beowulf );
+         assets.second = beowulf;
       }
    }
-   FC_CAPTURE_LOG_AND_RETHROW( (to_account.name)(steem) )
+   FC_CAPTURE_LOG_AND_RETHROW( (to_account.name)(beowulf) )
 
    return assets;
 }
@@ -1390,7 +1390,7 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
       auto calculate_new_vesting = [ liquid ] ( price vesting_share_price ) -> asset
          {
          /**
-          *  The ratio of total_vesting_shares / total_vesting_fund_steem should not
+          *  The ratio of total_vesting_shares / total_vesting_fund_beowulf should not
           *  change as the result of the user adding funds
           *
           *  V / C  = (V+Vn) / (C+Cn)
@@ -1406,7 +1406,7 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
          return new_vesting;
          };
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 //      if( liquid.symbol.space() == asset_symbol_type::smt_nai_space )
 //      {
 //         FC_ASSERT( liquid.symbol.is_vesting() == false );
@@ -1443,7 +1443,7 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
 //      }
 //#endif
 
-      FC_ASSERT( liquid.symbol == STEEM_SYMBOL );
+      FC_ASSERT( liquid.symbol == BEOWULF_SYMBOL );
       // ^ A novelty, needed but risky in case someone managed to slip SBD/TESTS here in blockchain history.
       // Get share price.
       const auto& cprops = db.get_dynamic_global_properties();
@@ -1458,11 +1458,11 @@ asset create_vesting2( database& db, const account_object& to_account, asset liq
       }
       else
       {
-         if( db.has_hardfork( STEEM_HARDFORK_0_20__2539 ) )
+         if( db.has_hardfork( BEOWULF_HARDFORK_0_20__2539 ) )
          {
             db.modify( to_account, [&]( account_object& a )
             {
-               util::manabar_params params( util::get_effective_vesting_shares( a ), STEEM_VOTING_MANA_REGENERATION_SECONDS );
+               util::manabar_params params( util::get_effective_vesting_shares( a ), BEOWULF_VOTING_MANA_REGENERATION_SECONDS );
 FC_TODO( "Set skip_cap_regen=true without breaking consensus" );
                a.voting_manabar.regenerate_mana( params, db.head_block_time() );
                a.voting_manabar.use_mana( -new_vesting.amount.value );
@@ -1477,11 +1477,11 @@ FC_TODO( "Set skip_cap_regen=true without breaking consensus" );
          if( to_reward_balance )
          {
             props.pending_rewarded_vesting_shares += new_vesting;
-            props.pending_rewarded_vesting_steem += liquid;
+            props.pending_rewarded_vesting_beowulf += liquid;
          }
          else
          {
-            props.total_vesting_fund_steem += liquid;
+            props.total_vesting_fund_beowulf += liquid;
             props.total_vesting_shares += new_vesting;
          }
       } );
@@ -1496,7 +1496,7 @@ FC_TODO( "Set skip_cap_regen=true without breaking consensus" );
 
 /**
  * @param to_account - the account to receive the new vesting shares
- * @param liquid     - STEEM or liquid SMT to be converted to vesting shares
+ * @param liquid     - BEOWULF or liquid SMT to be converted to vesting shares
  */
 asset database::create_vesting( const account_object& to_account, asset liquid, bool to_reward_balance )
 {
@@ -1521,32 +1521,32 @@ asset database::create_vesting( const account_object& to_account, asset liquid, 
 //   if( dgp.num_pow_witnesses >= 1004 )
 //      return 0;
 //
-//   if( has_hardfork( STEEM_HARDFORK_0_16__551 ) )
+//   if( has_hardfork( BEOWULF_HARDFORK_0_16__551 ) )
 //      return (0xFE00 - 0x0040 * dgp.num_pow_witnesses ) << 0x10;
 //   else
 //      return (0xFC00 - 0x0040 * dgp.num_pow_witnesses) << 0x10;
 //}
 
 void database::adjust_proxied_witness_votes( const account_object& a,
-                                   const std::array< share_type, STEEM_MAX_PROXY_RECURSION_DEPTH+1 >& delta,
+                                   const std::array< share_type, BEOWULF_MAX_PROXY_RECURSION_DEPTH+1 >& delta,
                                    int depth )
 {
    share_type total_delta = 0;
-   for( int i = STEEM_MAX_PROXY_RECURSION_DEPTH - depth; i >= 0; --i )
+   for( int i = BEOWULF_MAX_PROXY_RECURSION_DEPTH - depth; i >= 0; --i )
       total_delta += delta[i];
    adjust_witness_votes( a, total_delta );
 
-//   if( a.proxy != STEEM_PROXY_TO_SELF_ACCOUNT )
+//   if( a.proxy != BEOWULF_PROXY_TO_SELF_ACCOUNT )
 //   {
 //      /// nested proxies are not supported, vote will not propagate
-//      if( depth >= STEEM_MAX_PROXY_RECURSION_DEPTH )
+//      if( depth >= BEOWULF_MAX_PROXY_RECURSION_DEPTH )
 //         return;
 //
 //      const auto& proxy = get_account( a.proxy );
 //
 //      modify( proxy, [&]( account_object& a )
 //      {
-//         for( int i = STEEM_MAX_PROXY_RECURSION_DEPTH - depth - 1; i >= 0; --i )
+//         for( int i = BEOWULF_MAX_PROXY_RECURSION_DEPTH - depth - 1; i >= 0; --i )
 //         {
 //            a.proxied_vsf_votes[i+depth] += delta[i];
 //         }
@@ -1557,7 +1557,7 @@ void database::adjust_proxied_witness_votes( const account_object& a,
 //   else
 //   {
 //      share_type total_delta = 0;
-//      for( int i = STEEM_MAX_PROXY_RECURSION_DEPTH - depth; i >= 0; --i )
+//      for( int i = BEOWULF_MAX_PROXY_RECURSION_DEPTH - depth; i >= 0; --i )
 //         total_delta += delta[i];
 //      adjust_witness_votes( a, total_delta );
 //   }
@@ -1567,10 +1567,10 @@ void database::adjust_proxied_witness_votes( const account_object& a, share_type
 {
    adjust_witness_votes( a, delta );
 
-//   if( a.proxy != STEEM_PROXY_TO_SELF_ACCOUNT )
+//   if( a.proxy != BEOWULF_PROXY_TO_SELF_ACCOUNT )
 //   {
 //      /// nested proxies are not supported, vote will not propagate
-//      if( depth >= STEEM_MAX_PROXY_RECURSION_DEPTH )
+//      if( depth >= BEOWULF_MAX_PROXY_RECURSION_DEPTH )
 //         return;
 //
 //      const auto& proxy = get_account( a.proxy );
@@ -1611,13 +1611,13 @@ void database::adjust_witness_vote( const witness_object& witness, share_type de
       w.votes += delta;
       FC_ASSERT( w.votes <= get_dynamic_global_properties().total_vesting_shares.amount, "", ("w.votes", w.votes)("props",get_dynamic_global_properties().total_vesting_shares) );
 
-      if( has_hardfork( STEEM_HARDFORK_0_2 ) )
-         w.virtual_scheduled_time = w.virtual_last_update + (STEEM_VIRTUAL_SCHEDULE_LAP_LENGTH2 - w.virtual_position)/(w.votes.value+1);
+      if( has_hardfork( BEOWULF_HARDFORK_0_2 ) )
+         w.virtual_scheduled_time = w.virtual_last_update + (BEOWULF_VIRTUAL_SCHEDULE_LAP_LENGTH2 - w.virtual_position)/(w.votes.value+1);
       else
-         w.virtual_scheduled_time = w.virtual_last_update + (STEEM_VIRTUAL_SCHEDULE_LAP_LENGTH - w.virtual_position)/(w.votes.value+1);
+         w.virtual_scheduled_time = w.virtual_last_update + (BEOWULF_VIRTUAL_SCHEDULE_LAP_LENGTH - w.virtual_position)/(w.votes.value+1);
 
       /** witnesses with a low number of votes could overflow the time field and end up with a scheduled time in the past */
-      if( has_hardfork( STEEM_HARDFORK_0_4 ) )
+      if( has_hardfork( BEOWULF_HARDFORK_0_4 ) )
       {
          if( w.virtual_scheduled_time < wso.current_virtual_time )
             w.virtual_scheduled_time = fc::uint128::max_value();
@@ -1636,7 +1636,7 @@ void database::clear_witness_votes( const account_object& a )
       remove(current);
    }
 
-   if( has_hardfork( STEEM_HARDFORK_0_6__104 ) )
+   if( has_hardfork( BEOWULF_HARDFORK_0_6__104 ) )
       modify( a, [&](account_object& acc )
       {
          acc.witnesses_voted_for = 0;
@@ -1645,23 +1645,23 @@ void database::clear_witness_votes( const account_object& a )
 
 void database::clear_null_account_balance()
 {
-   if( !has_hardfork( STEEM_HARDFORK_0_14__327 ) ) return;
+   if( !has_hardfork( BEOWULF_HARDFORK_0_14__327 ) ) return;
 
-   const auto& null_account = get_account( STEEM_NULL_ACCOUNT );
-   asset total_steem( 0, STEEM_SYMBOL );
+   const auto& null_account = get_account( BEOWULF_NULL_ACCOUNT );
+   asset total_beowulf( 0, BEOWULF_SYMBOL );
    asset total_sbd( 0, SBD_SYMBOL );
    asset total_vests( 0, VESTS_SYMBOL );
 
-   asset vesting_shares_steem_value = asset( 0, STEEM_SYMBOL );
+   asset vesting_shares_beowulf_value = asset( 0, BEOWULF_SYMBOL );
 
    if( null_account.balance.amount > 0 )
    {
-      total_steem += null_account.balance;
+      total_beowulf += null_account.balance;
    }
 
 //   if( null_account.savings_balance.amount > 0 )
 //   {
-//      total_steem += null_account.savings_balance;
+//      total_beowulf += null_account.savings_balance;
 //   }
 
    if( null_account.sbd_balance.amount > 0 )
@@ -1677,14 +1677,14 @@ void database::clear_null_account_balance()
    if( null_account.vesting_shares.amount > 0 )
    {
       const auto& gpo = get_dynamic_global_properties();
-      vesting_shares_steem_value = null_account.vesting_shares * gpo.get_vesting_share_price();
-      total_steem += vesting_shares_steem_value;
+      vesting_shares_beowulf_value = null_account.vesting_shares * gpo.get_vesting_share_price();
+      total_beowulf += vesting_shares_beowulf_value;
       total_vests += null_account.vesting_shares;
    }
 
-   if( null_account.reward_steem_balance.amount > 0 )
+   if( null_account.reward_beowulf_balance.amount > 0 )
    {
-      total_steem += null_account.reward_steem_balance;
+      total_beowulf += null_account.reward_beowulf_balance;
    }
 
    if( null_account.reward_sbd_balance.amount > 0 )
@@ -1694,17 +1694,17 @@ void database::clear_null_account_balance()
 
    if( null_account.reward_vesting_balance.amount > 0 )
    {
-      total_steem += null_account.reward_vesting_steem;
+      total_beowulf += null_account.reward_vesting_beowulf;
       total_vests += null_account.reward_vesting_balance;
    }
 
-   if( (total_steem.amount.value == 0) && (total_sbd.amount.value == 0) && (total_vests.amount.value == 0) )
+   if( (total_beowulf.amount.value == 0) && (total_sbd.amount.value == 0) && (total_vests.amount.value == 0) )
       return;
 
    operation vop_op = clear_null_account_balance_operation();
    clear_null_account_balance_operation& vop = vop_op.get< clear_null_account_balance_operation >();
-   if( total_steem.amount.value > 0 )
-      vop.total_cleared.push_back( total_steem );
+   if( total_beowulf.amount.value > 0 )
+      vop.total_cleared.push_back( total_beowulf );
    if( total_vests.amount.value > 0 )
       vop.total_cleared.push_back( total_vests );
    if( total_sbd.amount.value > 0 )
@@ -1740,7 +1740,7 @@ void database::clear_null_account_balance()
       modify( gpo, [&]( dynamic_global_property_object& g )
       {
          g.total_vesting_shares -= null_account.vesting_shares;
-         g.total_vesting_fund_steem -= vesting_shares_steem_value;
+         g.total_vesting_fund_beowulf -= vesting_shares_beowulf_value;
       });
 
       modify( null_account, [&]( account_object& a )
@@ -1749,9 +1749,9 @@ void database::clear_null_account_balance()
       });
    }
 
-   if( null_account.reward_steem_balance.amount > 0 )
+   if( null_account.reward_beowulf_balance.amount > 0 )
    {
-      adjust_reward_balance( null_account, -null_account.reward_steem_balance );
+      adjust_reward_balance( null_account, -null_account.reward_beowulf_balance );
    }
 
    if( null_account.reward_sbd_balance.amount > 0 )
@@ -1766,20 +1766,20 @@ void database::clear_null_account_balance()
       modify( gpo, [&]( dynamic_global_property_object& g )
       {
          g.pending_rewarded_vesting_shares -= null_account.reward_vesting_balance;
-         g.pending_rewarded_vesting_steem -= null_account.reward_vesting_steem;
+         g.pending_rewarded_vesting_beowulf -= null_account.reward_vesting_beowulf;
       });
 
       modify( null_account, [&]( account_object& a )
       {
-         a.reward_vesting_steem.amount = 0;
+         a.reward_vesting_beowulf.amount = 0;
          a.reward_vesting_balance.amount = 0;
       });
    }
 
    //////////////////////////////////////////////////////////////
 
-   if( total_steem.amount > 0 )
-      adjust_supply( -total_steem );
+   if( total_beowulf.amount > 0 )
+      adjust_supply( -total_beowulf );
 
    if( total_sbd.amount > 0 )
       adjust_supply( -total_sbd );
@@ -1805,7 +1805,7 @@ void database::clear_null_account_balance()
 
 void database::update_owner_authority( const account_object& account, const authority& owner_authority )
 {
-   if( head_block_num() >= STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM )
+   if( head_block_num() >= BEOWULF_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM )
    {
       create< owner_authority_history_object >( [&]( owner_authority_history_object& hist )
       {
@@ -1847,18 +1847,18 @@ void database::process_vesting_withdrawals()
       else
          to_withdraw = std::min( from_account.vesting_shares.amount, from_account.vesting_withdraw_rate.amount ).value;
 
-      share_type vests_deposited_as_steem = 0;
+      share_type vests_deposited_as_beowulf = 0;
       share_type vests_deposited_as_vests = 0;
-      asset total_steem_converted = asset( 0, STEEM_SYMBOL );
+      asset total_beowulf_converted = asset( 0, BEOWULF_SYMBOL );
 
-      // Do two passes, the first for vests, the second for steem. Try to maintain as much accuracy for vests as possible.
+      // Do two passes, the first for vests, the second for beowulf. Try to maintain as much accuracy for vests as possible.
       for( auto itr = didx.upper_bound( boost::make_tuple( from_account.name, account_name_type() ) );
            itr != didx.end() && itr->from_account == from_account.name;
            ++itr )
       {
          if( itr->auto_vest )
          {
-            share_type to_deposit = ( ( fc::uint128_t ( to_withdraw.value ) * itr->percent ) / STEEM_100_PERCENT ).to_uint64();
+            share_type to_deposit = ( ( fc::uint128_t ( to_withdraw.value ) * itr->percent ) / BEOWULF_100_PERCENT ).to_uint64();
             vests_deposited_as_vests += to_deposit;
 
             if( to_deposit > 0 )
@@ -1889,25 +1889,25 @@ void database::process_vesting_withdrawals()
          {
             const auto& to_account = get< account_object, by_name >( itr->to_account );
 
-            share_type to_deposit = ( ( fc::uint128_t ( to_withdraw.value ) * itr->percent ) / STEEM_100_PERCENT ).to_uint64();
-            vests_deposited_as_steem += to_deposit;
-            auto converted_steem = asset( to_deposit, VESTS_SYMBOL ) * cprops.get_vesting_share_price();
-            total_steem_converted += converted_steem;
+            share_type to_deposit = ( ( fc::uint128_t ( to_withdraw.value ) * itr->percent ) / BEOWULF_100_PERCENT ).to_uint64();
+            vests_deposited_as_beowulf += to_deposit;
+            auto converted_beowulf = asset( to_deposit, VESTS_SYMBOL ) * cprops.get_vesting_share_price();
+            total_beowulf_converted += converted_beowulf;
 
             if( to_deposit > 0 )
             {
-               operation vop = fill_vesting_withdraw_operation( from_account.name, to_account.name, asset( to_deposit, VESTS_SYMBOL), converted_steem );
+               operation vop = fill_vesting_withdraw_operation( from_account.name, to_account.name, asset( to_deposit, VESTS_SYMBOL), converted_beowulf );
 
                pre_push_virtual_operation( vop );
 
                modify( to_account, [&]( account_object& a )
                {
-                  a.balance += converted_steem;
+                  a.balance += converted_beowulf;
                });
 
                modify( cprops, [&]( dynamic_global_property_object& o )
                {
-                  o.total_vesting_fund_steem -= converted_steem;
+                  o.total_vesting_fund_beowulf -= converted_beowulf;
                   o.total_vesting_shares.amount -= to_deposit;
                });
 
@@ -1916,17 +1916,17 @@ void database::process_vesting_withdrawals()
          }
       }
 
-      share_type to_convert = to_withdraw - vests_deposited_as_steem - vests_deposited_as_vests;
+      share_type to_convert = to_withdraw - vests_deposited_as_beowulf - vests_deposited_as_vests;
       FC_ASSERT( to_convert >= 0, "Deposited more vests than were supposed to be withdrawn" );
 
-      auto converted_steem = asset( to_convert, VESTS_SYMBOL ) * cprops.get_vesting_share_price();
-      operation vop = fill_vesting_withdraw_operation( from_account.name, from_account.name, asset( to_convert, VESTS_SYMBOL ), converted_steem );
+      auto converted_beowulf = asset( to_convert, VESTS_SYMBOL ) * cprops.get_vesting_share_price();
+      operation vop = fill_vesting_withdraw_operation( from_account.name, from_account.name, asset( to_convert, VESTS_SYMBOL ), converted_beowulf );
       pre_push_virtual_operation( vop );
 
       modify( from_account, [&]( account_object& a )
       {
          a.vesting_shares.amount -= to_withdraw;
-         a.balance += converted_steem;
+         a.balance += converted_beowulf;
          a.withdrawn += to_withdraw;
 
          if( a.withdrawn >= a.to_withdraw || a.vesting_shares.amount == 0 )
@@ -1936,13 +1936,13 @@ void database::process_vesting_withdrawals()
          }
          else
          {
-            a.next_vesting_withdrawal += fc::seconds( STEEM_VESTING_WITHDRAW_INTERVAL_SECONDS );
+            a.next_vesting_withdrawal += fc::seconds( BEOWULF_VESTING_WITHDRAW_INTERVAL_SECONDS );
          }
       });
 
       modify( cprops, [&]( dynamic_global_property_object& o )
       {
-         o.total_vesting_fund_steem -= converted_steem;
+         o.total_vesting_fund_beowulf -= converted_beowulf;
          o.total_vesting_shares.amount -= to_convert;
       });
 
@@ -2016,7 +2016,7 @@ void database::process_vesting_withdrawals()
 //               unclaimed_rewards -= claim;
 //               const auto& voter = get( item->voter );
 //               operation vop = curation_reward_operation( voter.name, asset(0, VESTS_SYMBOL), c.author, to_string( c.permlink ) );
-//               create_vesting2( *this, voter, asset( claim, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//               create_vesting2( *this, voter, asset( claim, BEOWULF_SYMBOL ), has_hardfork( BEOWULF_HARDFORK_0_17__659 ),
 //                  [&]( const asset& reward )
 //                  {
 //                     vop.get< curation_reward_operation >().reward = reward;
@@ -2056,7 +2056,7 @@ void database::process_vesting_withdrawals()
 //      {
 //         fill_comment_reward_context_local_state( ctx, comment );
 //
-//         if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//         if( has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //         {
 //            const auto rf = get_reward_fund( comment );
 //            ctx.reward_curve = rf.author_reward_curve;
@@ -2068,7 +2068,7 @@ void database::process_vesting_withdrawals()
 //
 //         if( reward_tokens > 0 )
 //         {
-//            share_type curation_tokens = ( ( reward_tokens * get_curation_rewards_percent( comment ) ) / STEEM_100_PERCENT ).to_uint64();
+//            share_type curation_tokens = ( ( reward_tokens * get_curation_rewards_percent( comment ) ) / BEOWULF_100_PERCENT ).to_uint64();
 //            share_type author_tokens = reward_tokens.to_uint64() - curation_tokens;
 //
 //            share_type curation_remainder = pay_curators( comment, curation_tokens );
@@ -2081,21 +2081,21 @@ void database::process_vesting_withdrawals()
 //
 //            for( auto& b : comment.beneficiaries )
 //            {
-//               auto benefactor_tokens = ( author_tokens * b.weight ) / STEEM_100_PERCENT;
-//               auto benefactor_vesting_steem = benefactor_tokens;
-//               auto vop = comment_benefactor_reward_operation( b.account, comment.author, to_string( comment.permlink ), asset( 0, SBD_SYMBOL ), asset( 0, STEEM_SYMBOL ), asset( 0, VESTS_SYMBOL ) );
+//               auto benefactor_tokens = ( author_tokens * b.weight ) / BEOWULF_100_PERCENT;
+//               auto benefactor_vesting_beowulf = benefactor_tokens;
+//               auto vop = comment_benefactor_reward_operation( b.account, comment.author, to_string( comment.permlink ), asset( 0, SBD_SYMBOL ), asset( 0, BEOWULF_SYMBOL ), asset( 0, VESTS_SYMBOL ) );
 //
-//               if( has_hardfork( STEEM_HARDFORK_0_20__2022 ) )
+//               if( has_hardfork( BEOWULF_HARDFORK_0_20__2022 ) )
 //               {
-//                  auto benefactor_sbd_steem = ( benefactor_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
-//                  benefactor_vesting_steem  = benefactor_tokens - benefactor_sbd_steem;
-//                  auto sbd_payout           = create_sbd( get_account( b.account ), asset( benefactor_sbd_steem, STEEM_SYMBOL ), true );
+//                  auto benefactor_sbd_beowulf = ( benefactor_tokens * comment.percent_beowulf_dollars ) / ( 2 * BEOWULF_100_PERCENT ) ;
+//                  benefactor_vesting_beowulf  = benefactor_tokens - benefactor_sbd_beowulf;
+//                  auto sbd_payout           = create_sbd( get_account( b.account ), asset( benefactor_sbd_beowulf, BEOWULF_SYMBOL ), true );
 //
 //                  vop.sbd_payout   = sbd_payout.first; // SBD portion
-//                  vop.steem_payout = sbd_payout.second; // STEEM portion
+//                  vop.beowulf_payout = sbd_payout.second; // BEOWULF portion
 //               }
 //
-//               create_vesting2( *this, get_account( b.account ), asset( benefactor_vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//               create_vesting2( *this, get_account( b.account ), asset( benefactor_vesting_beowulf, BEOWULF_SYMBOL ), has_hardfork( BEOWULF_HARDFORK_0_17__659 ),
 //               [&]( const asset& reward )
 //               {
 //                  vop.vesting_payout = reward;
@@ -2108,24 +2108,24 @@ void database::process_vesting_withdrawals()
 //
 //            author_tokens -= total_beneficiary;
 //
-//            auto sbd_steem     = ( author_tokens * comment.percent_steem_dollars ) / ( 2 * STEEM_100_PERCENT ) ;
-//            auto vesting_steem = author_tokens - sbd_steem;
+//            auto sbd_beowulf     = ( author_tokens * comment.percent_beowulf_dollars ) / ( 2 * BEOWULF_100_PERCENT ) ;
+//            auto vesting_beowulf = author_tokens - sbd_beowulf;
 //
 //            const auto& author = get_account( comment.author );
-//            auto sbd_payout = create_sbd( author, asset( sbd_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ) );
+//            auto sbd_payout = create_sbd( author, asset( sbd_beowulf, BEOWULF_SYMBOL ), has_hardfork( BEOWULF_HARDFORK_0_17__659 ) );
 //            operation vop = author_reward_operation( comment.author, to_string( comment.permlink ), sbd_payout.first, sbd_payout.second, asset( 0, VESTS_SYMBOL ) );
 //
-//            create_vesting2( *this, author, asset( vesting_steem, STEEM_SYMBOL ), has_hardfork( STEEM_HARDFORK_0_17__659 ),
+//            create_vesting2( *this, author, asset( vesting_beowulf, BEOWULF_SYMBOL ), has_hardfork( BEOWULF_HARDFORK_0_17__659 ),
 //               [&]( const asset& vesting_payout )
 //               {
 //                  vop.get< author_reward_operation >().vesting_payout = vesting_payout;
 //                  pre_push_virtual_operation( vop );
 //               } );
 //
-//            adjust_total_payout( comment, sbd_payout.first + to_sbd( sbd_payout.second + asset( vesting_steem, STEEM_SYMBOL ) ), to_sbd( asset( curation_tokens, STEEM_SYMBOL ) ), to_sbd( asset( total_beneficiary, STEEM_SYMBOL ) ) );
+//            adjust_total_payout( comment, sbd_payout.first + to_sbd( sbd_payout.second + asset( vesting_beowulf, BEOWULF_SYMBOL ) ), to_sbd( asset( curation_tokens, BEOWULF_SYMBOL ) ), to_sbd( asset( total_beneficiary, BEOWULF_SYMBOL ) ) );
 //
 //            post_push_virtual_operation( vop );
-//            vop = comment_reward_operation( comment.author, to_string( comment.permlink ), to_sbd( asset( claimed_reward, STEEM_SYMBOL ) ) );
+//            vop = comment_reward_operation( comment.author, to_string( comment.permlink ), to_sbd( asset( claimed_reward, BEOWULF_SYMBOL ) ) );
 //            pre_push_virtual_operation( vop );
 //            post_push_virtual_operation( vop );
 //
@@ -2143,7 +2143,7 @@ void database::process_vesting_withdrawals()
 //
 //         }
 //
-//         if( !has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+//         if( !has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //            adjust_rshares2( comment, util::evaluate_reward_curve( comment.net_rshares.value ), 0 );
 //      }
 //
@@ -2161,14 +2161,14 @@ void database::process_vesting_withdrawals()
 //         c.total_vote_weight = 0;
 //         c.max_cashout_time = fc::time_point_sec::maximum();
 //
-//         if( has_hardfork( STEEM_HARDFORK_0_17__769 ) )
+//         if( has_hardfork( BEOWULF_HARDFORK_0_17__769 ) )
 //         {
 //            c.cashout_time = fc::time_point_sec::maximum();
 //         }
-//         else if( c.parent_author == STEEM_ROOT_POST_PARENT )
+//         else if( c.parent_author == BEOWULF_ROOT_POST_PARENT )
 //         {
-//            if( has_hardfork( STEEM_HARDFORK_0_12__177 ) && c.last_payout == fc::time_point_sec::min() )
-//               c.cashout_time = head_block_time() + STEEM_SECOND_CASHOUT_WINDOW;
+//            if( has_hardfork( BEOWULF_HARDFORK_0_12__177 ) && c.last_payout == fc::time_point_sec::min() )
+//               c.cashout_time = head_block_time() + BEOWULF_SECOND_CASHOUT_WINDOW;
 //            else
 //               c.cashout_time = fc::time_point_sec::maximum();
 //         }
@@ -2184,7 +2184,7 @@ void database::process_vesting_withdrawals()
 //      {
 //         const auto& cur_vote = *vote_itr;
 //         ++vote_itr;
-//         if( !has_hardfork( STEEM_HARDFORK_0_12__177 ) || calculate_discussion_payout_time( comment ) != fc::time_point_sec::maximum() )
+//         if( !has_hardfork( BEOWULF_HARDFORK_0_12__177 ) || calculate_discussion_payout_time( comment ) != fc::time_point_sec::maximum() )
 //         {
 //            modify( cur_vote, [&]( comment_vote_object& cvo )
 //            {
@@ -2208,15 +2208,15 @@ void database::process_vesting_withdrawals()
 //   /// don't allow any content to get paid out until the website is ready to launch
 //   /// and people have had a week to start posting.  The first cashout will be the biggest because it
 //   /// will represent 2+ months of rewards.
-//   if( !has_hardfork( STEEM_FIRST_CASHOUT_TIME ) )
+//   if( !has_hardfork( BEOWULF_FIRST_CASHOUT_TIME ) )
 //      return;
 //
 //   const auto& gpo = get_dynamic_global_properties();
 //   util::comment_reward_context ctx;
-//   ctx.current_steem_price = get_feed_history().current_median_history;
+//   ctx.current_beowulf_price = get_feed_history().current_median_history;
 //
 //   vector< reward_fund_context > funds;
-//   vector< share_type > steem_awarded;
+//   vector< share_type > beowulf_awarded;
 //   const auto& reward_idx = get_index< reward_fund_index, by_id >();
 //
 //   // Decay recent rshares of each fund
@@ -2227,10 +2227,10 @@ void database::process_vesting_withdrawals()
 //      {
 //         fc::microseconds decay_time;
 //
-//         if( has_hardfork( STEEM_HARDFORK_0_19__1051 ) )
-//            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF19;
+//         if( has_hardfork( BEOWULF_HARDFORK_0_19__1051 ) )
+//            decay_time = BEOWULF_RECENT_RSHARES_DECAY_TIME_HF19;
 //         else
-//            decay_time = STEEM_RECENT_RSHARES_DECAY_TIME_HF17;
+//            decay_time = BEOWULF_RECENT_RSHARES_DECAY_TIME_HF17;
 //
 //         rfo.recent_claims -= ( rfo.recent_claims * ( head_block_time() - rfo.last_update ).to_seconds() ) / decay_time.to_seconds();
 //         rfo.last_update = head_block_time();
@@ -2251,7 +2251,7 @@ void database::process_vesting_withdrawals()
 //
 //   auto current = cidx.begin();
 //   //  add all rshares about to be cashed out to the reward funds. This ensures equal satoshi per rshare payment
-//   if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
+//   if( has_hardfork( BEOWULF_HARDFORK_0_17__771 ) )
 //   {
 //      while( current != cidx.end() && current->cashout_time <= head_block_time() )
 //      {
@@ -2282,15 +2282,15 @@ void database::process_vesting_withdrawals()
 //    */
 //   while( current != cidx.end() && current->cashout_time <= head_block_time() )
 //   {
-//      if( has_hardfork( STEEM_HARDFORK_0_17__771 ) )
+//      if( has_hardfork( BEOWULF_HARDFORK_0_17__771 ) )
 //      {
 //         auto fund_id = get_reward_fund( *current ).id._id;
 //         ctx.total_reward_shares2 = funds[ fund_id ].recent_claims;
-//         ctx.total_reward_fund_steem = funds[ fund_id ].reward_balance;
+//         ctx.total_reward_fund_beowulf = funds[ fund_id ].reward_balance;
 //
-//         bool forward_curation_remainder = !has_hardfork( STEEM_HARDFORK_0_20__1877 );
+//         bool forward_curation_remainder = !has_hardfork( BEOWULF_HARDFORK_0_20__1877 );
 //
-//         funds[ fund_id ].steem_awarded += cashout_comment_helper( ctx, *current, forward_curation_remainder );
+//         funds[ fund_id ].beowulf_awarded += cashout_comment_helper( ctx, *current, forward_curation_remainder );
 //      }
 //      else
 //      {
@@ -2299,7 +2299,7 @@ void database::process_vesting_withdrawals()
 //         {
 //            const auto& comment = *itr; ++itr;
 //            ctx.total_reward_shares2 = gpo.total_reward_shares2;
-//            ctx.total_reward_fund_steem = gpo.total_reward_fund_steem;
+//            ctx.total_reward_fund_beowulf = gpo.total_reward_fund_beowulf;
 //
 //            auto reward = cashout_comment_helper( ctx, comment );
 //
@@ -2307,7 +2307,7 @@ void database::process_vesting_withdrawals()
 //            {
 //               modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& p )
 //               {
-//                  p.total_reward_fund_steem.amount -= reward;
+//                  p.total_reward_fund_beowulf.amount -= reward;
 //               });
 //            }
 //         }
@@ -2324,14 +2324,14 @@ void database::process_vesting_withdrawals()
 //         modify( get< reward_fund_object, by_id >( reward_fund_id_type( i ) ), [&]( reward_fund_object& rfo )
 //         {
 //            rfo.recent_claims = funds[ i ].recent_claims;
-//            rfo.reward_balance -= asset( funds[ i ].steem_awarded, STEEM_SYMBOL );
+//            rfo.reward_balance -= asset( funds[ i ].beowulf_awarded, BEOWULF_SYMBOL );
 //         });
 //      }
 //   }
 //}
 
 /**
- *  Overall the network has an inflation rate of 102% of virtual steem per year
+ *  Overall the network has an inflation rate of 102% of virtual beowulf per year
  *  90% of inflation is directed to vesting shares
  *  10% of inflation is directed to subjective proof of work voting
  *  1% of inflation is directed to liquidity providers
@@ -2345,35 +2345,35 @@ void database::process_funds()
    const auto& props = get_dynamic_global_properties();
    const auto& wso = get_witness_schedule_object();
 
-   if( has_hardfork( STEEM_HARDFORK_0_16__551) )
+   if( has_hardfork( BEOWULF_HARDFORK_0_16__551) )
    {
       /**
        * At block 7,000,000 have a 9.5% instantaneous inflation rate, decreasing to 0.95% at a rate of 0.01%
        * every 250k blocks. This narrowing will take approximately 20.5 years and will complete on block 220,750,000
        */
-      int64_t start_inflation_rate = int64_t( STEEM_INFLATION_RATE_START_PERCENT );
-      int64_t inflation_rate_adjustment = int64_t( head_block_num() / STEEM_INFLATION_NARROWING_PERIOD );
-      int64_t inflation_rate_floor = int64_t( STEEM_INFLATION_RATE_STOP_PERCENT );
+      int64_t start_inflation_rate = int64_t( BEOWULF_INFLATION_RATE_START_PERCENT );
+      int64_t inflation_rate_adjustment = int64_t( head_block_num() / BEOWULF_INFLATION_NARROWING_PERIOD );
+      int64_t inflation_rate_floor = int64_t( BEOWULF_INFLATION_RATE_STOP_PERCENT );
 
       // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
       int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
       //ilog("Virtual supply, inflation: ${a}, ${b}",("a", props.virtual_supply.amount)("b", current_inflation_rate));
-      //ilog("Percent, steem block per year: ${a}, ${b}",("a", STEEM_100_PERCENT)("b", STEEM_BLOCKS_PER_YEAR));
-      auto new_steem_per_year = (props.virtual_supply.amount / int64_t( STEEM_100_PERCENT ))* int64_t(current_inflation_rate);
-      //ilog("Steem per year: ${a}",("a", new_steem_per_year));
-      auto new_steem = new_steem_per_year / int64_t( STEEM_BLOCKS_PER_YEAR );
-      //ilog("New steem"" ${a}",("a", new_steem));
-      //auto content_reward = ( new_steem * STEEM_CONTENT_REWARD_PERCENT ) / STEEM_100_PERCENT;
-//      if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+      //ilog("Percent, beowulf block per year: ${a}, ${b}",("a", BEOWULF_100_PERCENT)("b", BEOWULF_BLOCKS_PER_YEAR));
+      auto new_beowulf_per_year = (props.virtual_supply.amount / int64_t( BEOWULF_100_PERCENT ))* int64_t(current_inflation_rate);
+      //ilog("Beowulf per year: ${a}",("a", new_beowulf_per_year));
+      auto new_beowulf = new_beowulf_per_year / int64_t( BEOWULF_BLOCKS_PER_YEAR );
+      //ilog("New beowulf"" ${a}",("a", new_beowulf));
+      //auto content_reward = ( new_beowulf * BEOWULF_CONTENT_REWARD_PERCENT ) / BEOWULF_100_PERCENT;
+//      if( has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 //         content_reward = pay_reward_funds( content_reward ); /// 75% to content creator
-      auto vesting_reward = ( new_steem * STEEM_VESTING_FUND_PERCENT ) / STEEM_100_PERCENT; /// 50% to vesting fund
-      //auto witness_reward = new_steem - content_reward - vesting_reward; /// Remaining 10% to witness pay
+      auto vesting_reward = ( new_beowulf * BEOWULF_VESTING_FUND_PERCENT ) / BEOWULF_100_PERCENT; /// 50% to vesting fund
+      //auto witness_reward = new_beowulf - content_reward - vesting_reward; /// Remaining 10% to witness pay
 
-      auto witness_reward = new_steem - vesting_reward; /// Remaining 50% to witness pay
+      auto witness_reward = new_beowulf - vesting_reward; /// Remaining 50% to witness pay
 
 
       const auto& cwit = get_witness( props.current_witness );
-      witness_reward *= STEEM_MAX_WITNESSES;
+      witness_reward *= BEOWULF_MAX_WITNESSES;
 
       if( cwit.schedule == witness_object::timeshare )
          witness_reward *= wso.timeshare_weight;
@@ -2386,22 +2386,22 @@ void database::process_funds()
 
       witness_reward /= wso.witness_pay_normalization_factor;
 
-      //new_steem = content_reward + vesting_reward + witness_reward;
-       new_steem = vesting_reward + witness_reward;
+      //new_beowulf = content_reward + vesting_reward + witness_reward;
+       new_beowulf = vesting_reward + witness_reward;
 
       modify( props, [&]( dynamic_global_property_object& p )
       {
-         p.total_vesting_fund_steem += asset( vesting_reward, STEEM_SYMBOL );
-         if( !has_hardfork( STEEM_HARDFORK_0_17__774 ) )
-            //p.total_reward_fund_steem  += asset( content_reward, STEEM_SYMBOL );
-             p.total_reward_fund_steem  += asset( 0, STEEM_SYMBOL );
-         p.current_supply           += asset( new_steem, STEEM_SYMBOL );
-         p.virtual_supply           += asset( new_steem, STEEM_SYMBOL );
+         p.total_vesting_fund_beowulf += asset( vesting_reward, BEOWULF_SYMBOL );
+         if( !has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
+            //p.total_reward_fund_beowulf  += asset( content_reward, BEOWULF_SYMBOL );
+             p.total_reward_fund_beowulf  += asset( 0, BEOWULF_SYMBOL );
+         p.current_supply           += asset( new_beowulf, BEOWULF_SYMBOL );
+         p.virtual_supply           += asset( new_beowulf, BEOWULF_SYMBOL );
       });
 
       operation vop = producer_reward_operation( cwit.owner, asset( 0, VESTS_SYMBOL ) );
       ilog("Witness reward in process_funds: ${a}",("a", witness_reward));
-      create_vesting2( *this, get_account( cwit.owner ), asset( witness_reward, STEEM_SYMBOL ), false,
+      create_vesting2( *this, get_account( cwit.owner ), asset( witness_reward, BEOWULF_SYMBOL ), false,
          [&]( const asset& vesting_shares )
          {
             vop.get< producer_reward_operation >().vesting_shares = vesting_shares;
@@ -2413,22 +2413,22 @@ void database::process_funds()
    {
       //auto content_reward = get_content_reward();
       //auto curate_reward = get_curation_reward();
-      auto content_reward = asset(0,STEEM_SYMBOL);
-      auto curate_reward = asset(0,STEEM_SYMBOL);
+      auto content_reward = asset(0,BEOWULF_SYMBOL);
+      auto curate_reward = asset(0,BEOWULF_SYMBOL);
       auto witness_pay = get_producer_reward();
       auto vesting_reward = content_reward + curate_reward + witness_pay;
 
       content_reward = content_reward + curate_reward;
 
-      if( props.head_block_number < STEEM_START_VESTING_BLOCK )
+      if( props.head_block_number < BEOWULF_START_VESTING_BLOCK )
          vesting_reward.amount = 0;
       else
          vesting_reward.amount.value *= 9;
 
       modify( props, [&]( dynamic_global_property_object& p )
       {
-          p.total_vesting_fund_steem += vesting_reward;
-          p.total_reward_fund_steem  += content_reward;
+          p.total_vesting_fund_beowulf += vesting_reward;
+          p.total_reward_fund_beowulf  += content_reward;
           p.current_supply += content_reward + witness_pay + vesting_reward;
           p.virtual_supply += content_reward + witness_pay + vesting_reward;
       } );
@@ -2478,10 +2478,10 @@ void database::process_funds()
 //   }
 //}
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 
 template< typename T, bool ALLOW_REMOVE >
-void process_smt_objects_internal( database* db, steem::chain::smt_phase phase )
+void process_smt_objects_internal( database* db, beowulf::chain::smt_phase phase )
 {
 //   FC_ASSERT( db != nullptr );
 //   const auto& idx = db->get_index< smt_event_token_index >().indices().get< T >();
@@ -2514,41 +2514,41 @@ void database::process_smt_objects()
 
 asset database::get_liquidity_reward()const
 {
-   if( has_hardfork( STEEM_HARDFORK_0_12__178 ) )
-      return asset( 0, STEEM_SYMBOL );
+   if( has_hardfork( BEOWULF_HARDFORK_0_12__178 ) )
+      return asset( 0, BEOWULF_SYMBOL );
 
    const auto& props = get_dynamic_global_properties();
-   static_assert( STEEM_LIQUIDITY_REWARD_PERIOD_SEC == 60*60, "this code assumes a 1 hour time interval" );
-   asset percent( protocol::calc_percent_reward_per_hour< STEEM_LIQUIDITY_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL );
-   return std::max( percent, STEEM_MIN_LIQUIDITY_REWARD );
+   static_assert( BEOWULF_LIQUIDITY_REWARD_PERIOD_SEC == 60*60, "this code assumes a 1 hour time interval" );
+   asset percent( protocol::calc_percent_reward_per_hour< BEOWULF_LIQUIDITY_APR_PERCENT >( props.virtual_supply.amount ), BEOWULF_SYMBOL );
+   return std::max( percent, BEOWULF_MIN_LIQUIDITY_REWARD );
 }
 
 //asset database::get_content_reward()const
 //{
 //   const auto& props = get_dynamic_global_properties();
-//   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-//   asset percent( protocol::calc_percent_reward_per_block< STEEM_CONTENT_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL );
-//   return std::max( percent, STEEM_MIN_CONTENT_REWARD );
+//   static_assert( BEOWULF_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+//   asset percent( protocol::calc_percent_reward_per_block< BEOWULF_CONTENT_APR_PERCENT >( props.virtual_supply.amount ), BEOWULF_SYMBOL );
+//   return std::max( percent, BEOWULF_MIN_CONTENT_REWARD );
 //}
 //
 //asset database::get_curation_reward()const
 //{
 //   const auto& props = get_dynamic_global_properties();
-//   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-//   asset percent( protocol::calc_percent_reward_per_block< STEEM_CURATE_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
-//   return std::max( percent, STEEM_MIN_CURATE_REWARD );
+//   static_assert( BEOWULF_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+//   asset percent( protocol::calc_percent_reward_per_block< BEOWULF_CURATE_APR_PERCENT >( props.virtual_supply.amount ), BEOWULF_SYMBOL);
+//   return std::max( percent, BEOWULF_MIN_CURATE_REWARD );
 //}
 
 asset database::get_producer_reward()
 {
    const auto& props = get_dynamic_global_properties();
-   static_assert( STEEM_BLOCK_INTERVAL == 10, "this code assumes a 3-second time interval" );
-   asset percent( protocol::calc_percent_reward_per_block< STEEM_PRODUCER_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
-   auto pay = std::max( percent, STEEM_MIN_PRODUCER_REWARD );
+   static_assert( BEOWULF_BLOCK_INTERVAL == 10, "this code assumes a 3-second time interval" );
+   asset percent( protocol::calc_percent_reward_per_block< BEOWULF_PRODUCER_APR_PERCENT >( props.virtual_supply.amount ), BEOWULF_SYMBOL);
+   auto pay = std::max( percent, BEOWULF_MIN_PRODUCER_REWARD );
    const auto& witness_account = get_account( props.current_witness );
 
    /// pay witness in vesting shares
-   if( props.head_block_number >= STEEM_START_MINER_VOTING_BLOCK || (witness_account.vesting_shares.amount.value == 0) )
+   if( props.head_block_number >= BEOWULF_START_MINER_VOTING_BLOCK || (witness_account.vesting_shares.amount.value == 0) )
    {
       // const auto& witness_obj = get_witness( props.current_witness );
       operation vop = producer_reward_operation( witness_account.name, asset( 0, VESTS_SYMBOL ) );
@@ -2578,15 +2578,15 @@ asset database::get_producer_reward()
 //   const auto& props = get_dynamic_global_properties();
 //
 //#ifndef IS_TEST_NET
-//   /// 0 block rewards until at least STEEM_MAX_WITNESSES have produced a POW
-//   if( props.num_pow_witnesses < STEEM_MAX_WITNESSES && props.head_block_number < STEEM_START_VESTING_BLOCK )
-//      return asset( 0, STEEM_SYMBOL );
+//   /// 0 block rewards until at least BEOWULF_MAX_WITNESSES have produced a POW
+//   if( props.num_pow_witnesses < BEOWULF_MAX_WITNESSES && props.head_block_number < BEOWULF_START_VESTING_BLOCK )
+//      return asset( 0, BEOWULF_SYMBOL );
 //#endif
 //
-//   static_assert( STEEM_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
-//   static_assert( STEEM_MAX_WITNESSES == 5, "this code assumes 5 per round" );
-//   asset percent( calc_percent_reward_per_round< STEEM_POW_APR_PERCENT >( props.virtual_supply.amount ), STEEM_SYMBOL);
-//   return std::max( percent, STEEM_MIN_POW_REWARD );
+//   static_assert( BEOWULF_BLOCK_INTERVAL == 3, "this code assumes a 3-second time interval" );
+//   static_assert( BEOWULF_MAX_WITNESSES == 5, "this code assumes 5 per round" );
+//   asset percent( calc_percent_reward_per_round< BEOWULF_POW_APR_PERCENT >( props.virtual_supply.amount ), BEOWULF_SYMBOL);
+//   return std::max( percent, BEOWULF_MIN_POW_REWARD );
 //}
 
 void database::pay_liquidity_reward()
@@ -2596,7 +2596,7 @@ void database::pay_liquidity_reward()
       return;
 #endif
 
-   if( (head_block_num() % STEEM_LIQUIDITY_REWARD_BLOCKS) == 0 )
+   if( (head_block_num() % BEOWULF_LIQUIDITY_REWARD_BLOCKS) == 0 )
    {
       auto reward = get_liquidity_reward();
 
@@ -2611,7 +2611,7 @@ void database::pay_liquidity_reward()
          adjust_balance( get(itr->owner), reward );
          modify( *itr, [&]( liquidity_reward_balance_object& obj )
          {
-            obj.steem_volume = 0;
+            obj.beowulf_volume = 0;
             obj.sbd_volume   = 0;
             obj.last_update  = head_block_time();
             obj.weight = 0;
@@ -2625,12 +2625,12 @@ void database::pay_liquidity_reward()
 //uint16_t database::get_curation_rewards_percent( const comment_object& c ) const
 //{
 //   return 0;
-////   if( has_hardfork( STEEM_HARDFORK_0_17__774 ) )
+////   if( has_hardfork( BEOWULF_HARDFORK_0_17__774 ) )
 ////      return get_reward_fund( c ).percent_curation_rewards;
-////   else if( has_hardfork( STEEM_HARDFORK_0_8__116 ) )
-////      return STEEM_1_PERCENT * 25;
+////   else if( has_hardfork( BEOWULF_HARDFORK_0_8__116 ) )
+////      return BEOWULF_1_PERCENT * 25;
 ////   else
-////      return STEEM_1_PERCENT * 50;
+////      return BEOWULF_1_PERCENT * 50;
 //}
 
 //share_type database::pay_reward_funds( share_type reward )
@@ -2641,16 +2641,16 @@ void database::pay_liquidity_reward()
 //   for( auto itr = reward_idx.begin(); itr != reward_idx.end(); ++itr )
 //   {
 //      // reward is a per block reward and the percents are 16-bit. This should never overflow
-//      auto r = ( reward * itr->percent_content_rewards ) / STEEM_100_PERCENT;
+//      auto r = ( reward * itr->percent_content_rewards ) / BEOWULF_100_PERCENT;
 //
 //      modify( *itr, [&]( reward_fund_object& rfo )
 //      {
-//         rfo.reward_balance += asset( r, STEEM_SYMBOL );
+//         rfo.reward_balance += asset( r, BEOWULF_SYMBOL );
 //      });
 //
 //      used_rewards += r;
 //
-//      // Sanity check to ensure we aren't printing more STEEM than has been allocated through inflation
+//      // Sanity check to ensure we aren't printing more BEOWULF than has been allocated through inflation
 //      FC_ASSERT( used_rewards <= reward );
 //   }
 //
@@ -2659,7 +2659,7 @@ void database::pay_liquidity_reward()
 
 /**
  *  Iterates over all conversion requests with a conversion date before
- *  the head block time and then converts them to/from steem/sbd at the
+ *  the head block time and then converts them to/from beowulf/sbd at the
  *  current median price feed history price times the premium
  */
 void database::process_conversions()
@@ -2673,7 +2673,7 @@ void database::process_conversions()
       return;
 
    asset net_sbd( 0, SBD_SYMBOL );
-   asset net_steem( 0, STEEM_SYMBOL );
+   asset net_beowulf( 0, BEOWULF_SYMBOL );
 
    while( itr != request_by_date.end() && itr->conversion_date <= now )
    {
@@ -2682,7 +2682,7 @@ void database::process_conversions()
       adjust_balance( itr->owner, amount_to_issue );
 
       net_sbd   += itr->amount;
-      net_steem += amount_to_issue;
+      net_beowulf += amount_to_issue;
 
       push_virtual_operation( fill_convert_request_operation ( itr->owner, itr->requestid, itr->amount, amount_to_issue ) );
 
@@ -2693,21 +2693,21 @@ void database::process_conversions()
    const auto& props = get_dynamic_global_properties();
    modify( props, [&]( dynamic_global_property_object& p )
    {
-       p.current_supply += net_steem;
+       p.current_supply += net_beowulf;
        p.current_sbd_supply -= net_sbd;
-       p.virtual_supply += net_steem;
+       p.virtual_supply += net_beowulf;
        p.virtual_supply -= net_sbd * get_feed_history().current_median_history;
    } );
 }
 
-asset database::to_sbd( const asset& steem )const
+asset database::to_sbd( const asset& beowulf )const
 {
-   return util::to_sbd( get_feed_history().current_median_history, steem );
+   return util::to_sbd( get_feed_history().current_median_history, beowulf );
 }
 
-asset database::to_steem( const asset& sbd )const
+asset database::to_beowulf( const asset& sbd )const
 {
-   return util::to_steem( get_feed_history().current_median_history, sbd );
+   return util::to_beowulf( get_feed_history().current_median_history, sbd );
 }
 
 //void database::account_recovery_processing()
@@ -2726,7 +2726,7 @@ asset database::to_steem( const asset& sbd )const
 ////   const auto& hist_idx = get_index< owner_authority_history_index >().indices(); //by id
 ////   auto hist = hist_idx.begin();
 ////
-////   while( hist != hist_idx.end() && time_point_sec( hist->last_valid_time + STEEM_OWNER_AUTH_RECOVERY_PERIOD ) < head_block_time() )
+////   while( hist != hist_idx.end() && time_point_sec( hist->last_valid_time + BEOWULF_OWNER_AUTH_RECOVERY_PERIOD ) < head_block_time() )
 ////   {
 ////      remove( *hist );
 ////      hist = hist_idx.begin();
@@ -2758,7 +2758,7 @@ asset database::to_steem( const asset& sbd )const
 //      const auto& old_escrow = *escrow_itr;
 //      ++escrow_itr;
 //
-//      adjust_balance( old_escrow.from, old_escrow.steem_balance );
+//      adjust_balance( old_escrow.from, old_escrow.beowulf_balance );
 //      adjust_balance( old_escrow.from, old_escrow.sbd_balance );
 //      adjust_balance( old_escrow.from, old_escrow.pending_fee );
 //
@@ -2776,9 +2776,9 @@ asset database::to_steem( const asset& sbd )const
 //      const auto& account = get< account_object, by_name >( itr->account );
 //
 //      /// remove all current votes
-//      std::array<share_type, STEEM_MAX_PROXY_RECURSION_DEPTH+1> delta;
+//      std::array<share_type, BEOWULF_MAX_PROXY_RECURSION_DEPTH+1> delta;
 //      delta[0] = -account.vesting_shares.amount;
-//      for( int i = 0; i < STEEM_MAX_PROXY_RECURSION_DEPTH; ++i )
+//      for( int i = 0; i < BEOWULF_MAX_PROXY_RECURSION_DEPTH; ++i )
 //         delta[i+1] = -account.proxied_vsf_votes[i];
 //      adjust_proxied_witness_votes( account, delta );
 //
@@ -2787,7 +2787,7 @@ asset database::to_steem( const asset& sbd )const
 //      modify( account, [&]( account_object& a )
 //      {
 //         a.can_vote = false;
-//         a.proxy = STEEM_PROXY_TO_SELF_ACCOUNT;
+//         a.proxy = BEOWULF_PROXY_TO_SELF_ACCOUNT;
 //      });
 //
 //      remove( *itr );
@@ -2862,14 +2862,14 @@ void database::initialize_evaluators()
 //           _my->_evaluator_registry.register_evaluator< reset_account_evaluator                  >();
 //           _my->_evaluator_registry.register_evaluator< set_reset_account_evaluator              >();
 //           _my->_evaluator_registry.register_evaluator< claim_reward_balance_evaluator           >();
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 //           _my->_evaluator_registry.register_evaluator< claim_reward_balance2_evaluator          >();
 //#endif
 //           _my->_evaluator_registry.register_evaluator< account_create_with_delegation_evaluator >();
 //           _my->_evaluator_registry.register_evaluator< delegate_vesting_shares_evaluator        >();
            _my->_evaluator_registry.register_evaluator< witness_set_properties_evaluator         >();
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
            _my->_evaluator_registry.register_evaluator< smt_setup_evaluator                      >();
 //           _my->_evaluator_registry.register_evaluator< smt_cap_reveal_evaluator                 >();
 //           _my->_evaluator_registry.register_evaluator< smt_refund_evaluator                     >();
@@ -2929,7 +2929,7 @@ void database::initialize_indexes()
 //   add_core_index< vesting_delegation_expiration_index     >(*this);
    add_core_index< pending_required_action_index           >(*this);
    add_core_index< pending_optional_action_index           >(*this);
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    add_core_index< smt_token_index                         >(*this);
 //   add_core_index< smt_event_token_index                   >(*this);
    add_core_index< account_regular_balance_index           >(*this);
@@ -3023,66 +3023,66 @@ void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
       } inhibitor(*this);
 
       // Create blockchain accounts
-      public_key_type      init_public_key(STEEM_INIT_PUBLIC_KEY);
+      public_key_type      init_public_key(BEOWULF_INIT_PUBLIC_KEY);
 
-//      std::string init_pubkey[STEEM_NUM_INIT_MINERS];
+//      std::string init_pubkey[BEOWULF_NUM_INIT_MINERS];
 //
-//      init_pubkey[0] = STEEM_INIT_PUBLIC_KEY_STR;
+//      init_pubkey[0] = BEOWULF_INIT_PUBLIC_KEY_STR;
 //      init_pubkey[1] = "BEO8eNn2BJnSceLPBkvQa5PgQimghaR3METb2ZDuwb8hQsRhYCjfr"; //alice
 //      init_pubkey[2] = "BEO85diL8F5DKxiY6ehyWDjnHi6YGccZrXSdndMgahq3W4HPTS3S4"; //jayce
 
 
-//      public_key_type   init_public_key[STEEM_NUM_INIT_MINERS];
-//      for( int i = 0; i < STEEM_NUM_INIT_MINERS; ++i ){
-//          init_public_key[i] = steem::protocol::public_key_type(init_pubkey[i]);
+//      public_key_type   init_public_key[BEOWULF_NUM_INIT_MINERS];
+//      for( int i = 0; i < BEOWULF_NUM_INIT_MINERS; ++i ){
+//          init_public_key[i] = beowulf::protocol::public_key_type(init_pubkey[i]);
 //      }
 
            create< account_object >( [&]( account_object& a )
       {
-         a.name = STEEM_MINER_ACCOUNT;
+         a.name = BEOWULF_MINER_ACCOUNT;
       } );
       create< account_authority_object >( [&]( account_authority_object& auth )
       {
-         auth.account = STEEM_MINER_ACCOUNT;
+         auth.account = BEOWULF_MINER_ACCOUNT;
          auth.owner.weight_threshold = 1;
          auth.active.weight_threshold = 1;
       });
 
       create< account_object >( [&]( account_object& a )
       {
-         a.name = STEEM_NULL_ACCOUNT;
+         a.name = BEOWULF_NULL_ACCOUNT;
       } );
       create< account_authority_object >( [&]( account_authority_object& auth )
       {
-         auth.account = STEEM_NULL_ACCOUNT;
+         auth.account = BEOWULF_NULL_ACCOUNT;
          auth.owner.weight_threshold = 1;
          auth.active.weight_threshold = 1;
       });
 
       create< account_object >( [&]( account_object& a )
       {
-         a.name = STEEM_TEMP_ACCOUNT;
+         a.name = BEOWULF_TEMP_ACCOUNT;
       } );
       create< account_authority_object >( [&]( account_authority_object& auth )
       {
-         auth.account = STEEM_TEMP_ACCOUNT;
+         auth.account = BEOWULF_TEMP_ACCOUNT;
          auth.owner.weight_threshold = 0;
          auth.active.weight_threshold = 0;
       });
 
-      for( int i = 0; i < STEEM_NUM_INIT_MINERS; ++i )
+      for( int i = 0; i < BEOWULF_NUM_INIT_MINERS; ++i )
       {
          create< account_object >( [&]( account_object& a )
          {
-            a.name = STEEM_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
+            a.name = BEOWULF_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
 //            a.memo_key = init_public_key;
-            a.balance  = asset( i ? 0 : init_supply, STEEM_SYMBOL );
+            a.balance  = asset( i ? 0 : init_supply, BEOWULF_SYMBOL );
             a.sbd_balance = asset(i ? 0:init_sbd_supply, SBD_SYMBOL);
          } );
 
          create< account_authority_object >( [&]( account_authority_object& auth )
          {
-            auth.account = STEEM_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
+            auth.account = BEOWULF_INIT_MINER_NAME + ( i ? fc::to_string( i ) : std::string() );
             auth.owner.add_authority( init_public_key, 1 );
             auth.owner.weight_threshold = 1;
             auth.active  = auth.owner;
@@ -3091,7 +3091,7 @@ void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
 
          create< witness_object >( [&]( witness_object& w )
          {
-            w.owner        = STEEM_INIT_MINER_NAME + ( i ? fc::to_string(i) : std::string() );
+            w.owner        = BEOWULF_INIT_MINER_NAME + ( i ? fc::to_string(i) : std::string() );
             w.signing_key  = init_public_key;
             w.schedule = witness_object::miner;
          } );
@@ -3099,17 +3099,17 @@ void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
 
       create< dynamic_global_property_object >( [&]( dynamic_global_property_object& p )
       {
-         p.current_witness = STEEM_INIT_MINER_NAME;
-         p.time = STEEM_GENESIS_TIME;
+         p.current_witness = BEOWULF_INIT_MINER_NAME;
+         p.time = BEOWULF_GENESIS_TIME;
          p.recent_slots_filled = fc::uint128::max_value();
          p.participation_count = 128;
-         p.current_supply = asset( init_supply, STEEM_SYMBOL );
+         p.current_supply = asset( init_supply, BEOWULF_SYMBOL );
          p.current_sbd_supply = asset( init_sbd_supply, SBD_SYMBOL );
          p.virtual_supply = p.current_supply;
-         p.maximum_block_size = STEEM_MAX_BLOCK_SIZE;
-         p.reverse_auction_seconds = STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF6;
-         p.sbd_stop_percent = STEEM_SBD_STOP_PERCENT_HF14;
-         p.sbd_start_percent = STEEM_SBD_START_PERCENT_HF14;
+         p.maximum_block_size = BEOWULF_MAX_BLOCK_SIZE;
+         p.reverse_auction_seconds = BEOWULF_REVERSE_AUCTION_WINDOW_SECONDS_HF6;
+         p.sbd_stop_percent = BEOWULF_SBD_STOP_PERCENT_HF14;
+         p.sbd_start_percent = BEOWULF_SBD_START_PERCENT_HF14;
       } );
 
       // Nothing to do
@@ -3118,27 +3118,27 @@ void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
          create< block_summary_object >( [&]( block_summary_object& ) {});
       create< hardfork_property_object >( [&](hardfork_property_object& hpo )
       {
-         hpo.processed_hardforks.push_back( STEEM_GENESIS_TIME );
+         hpo.processed_hardforks.push_back( BEOWULF_GENESIS_TIME );
       } );
 
       // Create witness scheduler
       create< witness_schedule_object >( [&]( witness_schedule_object& wso )
       {
          FC_TODO( "Copied from witness_schedule.cpp, do we want to abstract this to a separate function?" );
-         wso.current_shuffled_witnesses[0] = STEEM_INIT_MINER_NAME;
+         wso.current_shuffled_witnesses[0] = BEOWULF_INIT_MINER_NAME;
 //         util::rd_system_params account_subsidy_system_params;
-//         account_subsidy_system_params.resource_unit = STEEM_ACCOUNT_SUBSIDY_PRECISION;
-//         account_subsidy_system_params.decay_per_time_unit_denom_shift = STEEM_RD_DECAY_DENOM_SHIFT;
+//         account_subsidy_system_params.resource_unit = BEOWULF_ACCOUNT_SUBSIDY_PRECISION;
+//         account_subsidy_system_params.decay_per_time_unit_denom_shift = BEOWULF_RD_DECAY_DENOM_SHIFT;
 //         util::rd_user_params account_subsidy_user_params;
 //         account_subsidy_user_params.budget_per_time_unit = wso.median_props.account_subsidy_budget;
 //         account_subsidy_user_params.decay_per_time_unit = wso.median_props.account_subsidy_decay;
 //
 //         util::rd_user_params account_subsidy_per_witness_user_params;
 //         int64_t w_budget = wso.median_props.account_subsidy_budget;
-//         w_budget = (w_budget * STEEM_WITNESS_SUBSIDY_BUDGET_PERCENT) / STEEM_100_PERCENT;
+//         w_budget = (w_budget * BEOWULF_WITNESS_SUBSIDY_BUDGET_PERCENT) / BEOWULF_100_PERCENT;
 //         w_budget = std::min( w_budget, int64_t(std::numeric_limits<int32_t>::max()) );
 //         uint64_t w_decay = wso.median_props.account_subsidy_decay;
-//         w_decay = (w_decay * STEEM_WITNESS_SUBSIDY_DECAY_PERCENT) / STEEM_100_PERCENT;
+//         w_decay = (w_decay * BEOWULF_WITNESS_SUBSIDY_DECAY_PERCENT) / BEOWULF_100_PERCENT;
 //         w_decay = std::min( w_decay, uint64_t(std::numeric_limits<uint32_t>::max()) );
 //
 //         account_subsidy_per_witness_user_params.budget_per_time_unit = int32_t(w_budget);
@@ -3148,7 +3148,7 @@ void database::init_genesis( uint64_t init_supply, uint64_t init_sbd_supply )
 //         util::rd_setup_dynamics_params( account_subsidy_per_witness_user_params, account_subsidy_system_params, wso.account_subsidy_witness_rd );
       } );
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
       create< nai_pool_object >( [&]( nai_pool_object& npo ) {} );
 //#endif
    }
@@ -3172,7 +3172,7 @@ void database::notify_changed_objects()
    {
       /*vector< chainbase::generic_id > ids;
       get_changed_ids( ids );
-      STEEM_TRY_NOTIFY( changed_objects, ids )*/
+      BEOWULF_TRY_NOTIFY( changed_objects, ids )*/
       /*
       if( _undo_db.enabled() )
       {
@@ -3187,7 +3187,7 @@ void database::notify_changed_objects()
             changed_ids.push_back( item.first );
             removed.emplace_back( item.second.get() );
          }
-         STEEM_TRY_NOTIFY( changed_objects, changed_ids )
+         BEOWULF_TRY_NOTIFY( changed_objects, changed_ids )
       }
       */
    }
@@ -3258,9 +3258,9 @@ void database::check_free_memory( bool force_print, uint32_t current_block_num )
    uint64_t free_mem = get_free_memory();
    uint64_t max_mem = get_max_memory();
 
-   if( BOOST_UNLIKELY( _shared_file_full_threshold != 0 && _shared_file_scale_rate != 0 && free_mem < ( ( uint128_t( STEEM_100_PERCENT - _shared_file_full_threshold ) * max_mem ) / STEEM_100_PERCENT ).to_uint64() ) )
+   if( BOOST_UNLIKELY( _shared_file_full_threshold != 0 && _shared_file_scale_rate != 0 && free_mem < ( ( uint128_t( BEOWULF_100_PERCENT - _shared_file_full_threshold ) * max_mem ) / BEOWULF_100_PERCENT ).to_uint64() ) )
    {
-      uint64_t new_max = ( uint128_t( max_mem * _shared_file_scale_rate ) / STEEM_100_PERCENT ).to_uint64() + max_mem;
+      uint64_t new_max = ( uint128_t( max_mem * _shared_file_scale_rate ) / BEOWULF_100_PERCENT ).to_uint64() + max_mem;
 
       wlog( "Memory is almost full, increasing to ${mem}M", ("mem", new_max / (1024*1024)) );
 
@@ -3318,7 +3318,7 @@ void database::_apply_block( const signed_block& next_block )
       // This allows the test net to launch with past hardforks and apply the next harfork when running
 
       uint32_t n;
-      for( n=0; n<STEEM_NUM_HARDFORKS; n++ )
+      for( n=0; n<BEOWULF_NUM_HARDFORKS; n++ )
       {
          if( _hardfork_times[n+1] > next_block.timestamp )
             break;
@@ -3371,15 +3371,15 @@ void database::_apply_block( const signed_block& next_block )
 
    const auto& gprops = get_dynamic_global_properties();
    auto block_size = fc::raw::pack_size( next_block );
-   if( has_hardfork( STEEM_HARDFORK_0_12 ) )
+   if( has_hardfork( BEOWULF_HARDFORK_0_12 ) )
    {
       FC_ASSERT( block_size <= gprops.maximum_block_size, "Block Size is too Big", ("next_block_num",next_block_num)("block_size", block_size)("max",gprops.maximum_block_size) );
    }
 
-   if( block_size < STEEM_MIN_BLOCK_SIZE )
+   if( block_size < BEOWULF_MIN_BLOCK_SIZE )
    {
       elog( "Block size is too small",
-         ("next_block_num",next_block_num)("block_size", block_size)("min",STEEM_MIN_BLOCK_SIZE)
+         ("next_block_num",next_block_num)("block_size", block_size)("min",BEOWULF_MIN_BLOCK_SIZE)
       );
    }
 
@@ -3392,7 +3392,7 @@ void database::_apply_block( const signed_block& next_block )
    /// parse witness version reporting
    process_header_extensions( next_block );
 
-   if( has_hardfork( STEEM_HARDFORK_0_5__54 ) ) // Cannot remove after hardfork
+   if( has_hardfork( BEOWULF_HARDFORK_0_5__54 ) ) // Cannot remove after hardfork
    {
       const auto& witness = get_witness( next_block.witness );
       const auto& hardfork_state = get_hardfork_property_object();
@@ -3504,12 +3504,12 @@ struct process_header_visitor
 
    void operator()( const required_automated_actions& req_actions ) const
    {
-      FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "Automated actions are not enabled until SMT hardfork." );
+      FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "Automated actions are not enabled until SMT hardfork." );
    }
 
    void operator()( const optional_automated_actions& opt_actions ) const
    {
-      FC_ASSERT( _db.has_hardfork( STEEM_SMT_HARDFORK ), "Automated actions are not enabled until SMT hardfork." );
+      FC_ASSERT( _db.has_hardfork( BEOWULF_SMT_HARDFORK ), "Automated actions are not enabled until SMT hardfork." );
    }
 };
 
@@ -3528,7 +3528,7 @@ try {
 //        ilog("Current median history: ${a}",("a",fhistory.current_median_history));
 //        return;
 //    }
-    if( (head_block_num() % STEEM_FEED_INTERVAL_BLOCKS) != 0 && !fhistory.current_median_history.is_null())
+    if( (head_block_num() % BEOWULF_FEED_INTERVAL_BLOCKS) != 0 && !fhistory.current_median_history.is_null())
       return;
 //    ilog("Start updating median feed");
    auto now = head_block_time();
@@ -3537,22 +3537,22 @@ try {
    for( int i = 0; i < wso.num_scheduled_witnesses; i++ )
    {
       const auto& wit = get_witness( wso.current_shuffled_witnesses[i] );
-      if( has_hardfork( STEEM_HARDFORK_0_19__822 ) )
+      if( has_hardfork( BEOWULF_HARDFORK_0_19__822 ) )
       {
-         if( now < wit.last_sbd_exchange_update + STEEM_MAX_FEED_AGE_SECONDS
+         if( now < wit.last_sbd_exchange_update + BEOWULF_MAX_FEED_AGE_SECONDS
             && !wit.sbd_exchange_rate.is_null() )
          {
             feeds.push_back( wit.sbd_exchange_rate );
          }
       }
-      else if( wit.last_sbd_exchange_update < now + STEEM_MAX_FEED_AGE_SECONDS &&
+      else if( wit.last_sbd_exchange_update < now + BEOWULF_MAX_FEED_AGE_SECONDS &&
           !wit.sbd_exchange_rate.is_null() )
       {
          feeds.push_back( wit.sbd_exchange_rate );
       }
    }
 
-   if( feeds.size() >= STEEM_MIN_FEEDS )
+   if( feeds.size() >= BEOWULF_MIN_FEEDS )
    {
       std::sort( feeds.begin(), feeds.end() );
       auto median_feed = feeds[feeds.size()/2];
@@ -3560,11 +3560,11 @@ try {
       modify( get_feed_history(), [&]( feed_history_object& fho )
       {
          fho.price_history.push_back( median_feed );
-         size_t steem_feed_history_window = STEEM_FEED_HISTORY_WINDOW_PRE_HF_16;
-         if( has_hardfork( STEEM_HARDFORK_0_16__551) )
-            steem_feed_history_window = STEEM_FEED_HISTORY_WINDOW;
+         size_t beowulf_feed_history_window = BEOWULF_FEED_HISTORY_WINDOW_PRE_HF_16;
+         if( has_hardfork( BEOWULF_HARDFORK_0_16__551) )
+            beowulf_feed_history_window = BEOWULF_FEED_HISTORY_WINDOW;
 
-         if( fho.price_history.size() > steem_feed_history_window )
+         if( fho.price_history.size() > beowulf_feed_history_window )
             fho.price_history.pop_front();
 
          if( fho.price_history.size() )
@@ -3583,13 +3583,13 @@ try {
             if( skip_price_feed_limit_check )
                return;
 #endif
-            if( has_hardfork( STEEM_HARDFORK_0_14__230 ) )
+            if( has_hardfork( BEOWULF_HARDFORK_0_14__230 ) )
             {
                // This block limits the effective median price to force SBD to remain at or
-               // below 10% of the combined market cap of STEEM and SBD.
+               // below 10% of the combined market cap of BEOWULF and SBD.
                //
-               // For example, if we have 500 STEEM and 100 SBD, the price is limited to
-               // 900 SBD / 500 STEEM which works out to be $1.80.  At this price, 500 Steem
+               // For example, if we have 500 BEOWULF and 100 SBD, the price is limited to
+               // 900 SBD / 500 BEOWULF which works out to be $1.80.  At this price, 500 Beowulf
                // would be valued at 500 * $1.80 = $900.  100 SBD is by definition always $100,
                // so the combined market cap is $900 + $100 = $1000.
 
@@ -3636,10 +3636,10 @@ void database::_apply_transaction(const signed_transaction& trx)
 
       try
       {
-         trx.verify_authority( chain_id, get_active, get_owner, STEEM_MAX_SIG_CHECK_DEPTH,
-            has_hardfork( STEEM_HARDFORK_0_20 ) || is_producing() ? STEEM_MAX_AUTHORITY_MEMBERSHIP : 0,
-            has_hardfork( STEEM_HARDFORK_0_20 ) || is_producing() ? STEEM_MAX_SIG_CHECK_ACCOUNTS : 0,
-            has_hardfork( STEEM_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical );
+         trx.verify_authority( chain_id, get_active, get_owner, BEOWULF_MAX_SIG_CHECK_DEPTH,
+            has_hardfork( BEOWULF_HARDFORK_0_20 ) || is_producing() ? BEOWULF_MAX_AUTHORITY_MEMBERSHIP : 0,
+            has_hardfork( BEOWULF_HARDFORK_0_20 ) || is_producing() ? BEOWULF_MAX_SIG_CHECK_ACCOUNTS : 0,
+            has_hardfork( BEOWULF_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical );
       }
       catch( protocol::tx_missing_active_auth& e )
       {
@@ -3656,18 +3656,18 @@ void database::_apply_transaction(const signed_transaction& trx)
       {
          const auto& tapos_block_summary = get< block_summary_object >( trx.ref_block_num );
          //Verify TaPoS block summary has correct ID prefix, and that this block's time is not past the expiration
-         STEEM_ASSERT( trx.ref_block_prefix == tapos_block_summary.block_id._hash[1], transaction_tapos_exception,
+         BEOWULF_ASSERT( trx.ref_block_prefix == tapos_block_summary.block_id._hash[1], transaction_tapos_exception,
                     "", ("trx.ref_block_prefix", trx.ref_block_prefix)
                     ("tapos_block_summary",tapos_block_summary.block_id._hash[1]));
       }
 
       fc::time_point_sec now = head_block_time();
 
-      STEEM_ASSERT( trx.expiration <= now + fc::seconds(STEEM_MAX_TIME_UNTIL_EXPIRATION), transaction_expiration_exception,
-                  "", ("trx.expiration",trx.expiration)("now",now)("max_til_exp",STEEM_MAX_TIME_UNTIL_EXPIRATION));
-      if( has_hardfork( STEEM_HARDFORK_0_9 ) ) // Simple solution to pending trx bug when now == trx.expiration
-         STEEM_ASSERT( now < trx.expiration, transaction_expiration_exception, "", ("now",now)("trx.exp",trx.expiration) );
-      STEEM_ASSERT( now <= trx.expiration, transaction_expiration_exception, "", ("now",now)("trx.exp",trx.expiration) );
+      BEOWULF_ASSERT( trx.expiration <= now + fc::seconds(BEOWULF_MAX_TIME_UNTIL_EXPIRATION), transaction_expiration_exception,
+                  "", ("trx.expiration",trx.expiration)("now",now)("max_til_exp",BEOWULF_MAX_TIME_UNTIL_EXPIRATION));
+      if( has_hardfork( BEOWULF_HARDFORK_0_9 ) ) // Simple solution to pending trx bug when now == trx.expiration
+         BEOWULF_ASSERT( now < trx.expiration, transaction_expiration_exception, "", ("now",now)("trx.exp",trx.expiration) );
+      BEOWULF_ASSERT( now <= trx.expiration, transaction_expiration_exception, "", ("now",now)("trx.exp",trx.expiration) );
    }
 
    //Insert transaction into unique transactions database.
@@ -3878,7 +3878,7 @@ const witness_object& database::validate_block_header( uint32_t skip, const sign
 
    if( !(skip&skip_witness_signature) )
       FC_ASSERT( next_block.validate_signee( witness.signing_key,
-         has_hardfork( STEEM_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical ) );
+         has_hardfork( BEOWULF_HARDFORK_0_20__1944 ) ? fc::ecc::bip_0062 : fc::ecc::fc_canonical ) );
 
    if( !(skip&skip_witness_schedule_check) )
    {
@@ -3923,9 +3923,9 @@ void database::update_global_dynamic_data( const signed_block& b )
                w.total_missed++;
 FC_TODO( "#ifndef not needed after HF 20 is live" );
 #ifndef IS_TEST_NET
-               if( has_hardfork( STEEM_HARDFORK_0_14__278 ) && !has_hardfork( STEEM_HARDFORK_0_20__SP190 ) )
+               if( has_hardfork( BEOWULF_HARDFORK_0_14__278 ) && !has_hardfork( BEOWULF_HARDFORK_0_20__SP190 ) )
                {
-                  if( head_block_num() - w.last_confirmed_block_num  > STEEM_BLOCKS_PER_DAY )
+                  if( head_block_num() - w.last_confirmed_block_num  > BEOWULF_BLOCKS_PER_DAY )
                   {
                      w.signing_key = public_key_type();
                      push_virtual_operation( shutdown_witness_operation( w.owner ) );
@@ -3958,11 +3958,11 @@ FC_TODO( "#ifndef not needed after HF 20 is live" );
 
    if( !(get_node_properties().skip_flags & skip_undo_history_check) )
    {
-      STEEM_ASSERT( _dgp.head_block_number - _dgp.last_irreversible_block_num  < STEEM_MAX_UNDO_HISTORY, undo_database_exception,
+      BEOWULF_ASSERT( _dgp.head_block_number - _dgp.last_irreversible_block_num  < BEOWULF_MAX_UNDO_HISTORY, undo_database_exception,
                  "The database does not have enough undo history to support a blockchain with so many missed blocks. "
                  "Please add a checkpoint if you would like to continue applying blocks beyond this point.",
                  ("last_irreversible_block_num",_dgp.last_irreversible_block_num)("head", _dgp.head_block_number)
-                 ("max_undo",STEEM_MAX_UNDO_HISTORY) );
+                 ("max_undo",BEOWULF_MAX_UNDO_HISTORY) );
    }
 } FC_CAPTURE_AND_RETHROW() }
 
@@ -3971,21 +3971,21 @@ void database::update_virtual_supply()
    modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& dgp )
    {
       dgp.virtual_supply = dgp.current_supply
-         + ( get_feed_history().current_median_history.is_null() ? asset( 0, STEEM_SYMBOL ) : dgp.current_sbd_supply * get_feed_history().current_median_history );
+         + ( get_feed_history().current_median_history.is_null() ? asset( 0, BEOWULF_SYMBOL ) : dgp.current_sbd_supply * get_feed_history().current_median_history );
 
       auto median_price = get_feed_history().current_median_history;
 
-      if( !median_price.is_null() && has_hardfork( STEEM_HARDFORK_0_14__230 ) )
+      if( !median_price.is_null() && has_hardfork( BEOWULF_HARDFORK_0_14__230 ) )
       {
-         auto percent_sbd = uint16_t( ( ( fc::uint128_t( ( dgp.current_sbd_supply * get_feed_history().current_median_history ).amount.value ) * STEEM_100_PERCENT )
+         auto percent_sbd = uint16_t( ( ( fc::uint128_t( ( dgp.current_sbd_supply * get_feed_history().current_median_history ).amount.value ) * BEOWULF_100_PERCENT )
             / dgp.virtual_supply.amount.value ).to_uint64() );
 
          if( percent_sbd <= dgp.sbd_start_percent )
-            dgp.sbd_print_rate = STEEM_100_PERCENT;
+            dgp.sbd_print_rate = BEOWULF_100_PERCENT;
          else if( percent_sbd >= dgp.sbd_stop_percent )
             dgp.sbd_print_rate = 0;
          else
-            dgp.sbd_print_rate = ( ( dgp.sbd_stop_percent - percent_sbd ) * STEEM_100_PERCENT ) / ( dgp.sbd_stop_percent - dgp.sbd_start_percent );
+            dgp.sbd_print_rate = ( ( dgp.sbd_stop_percent - percent_sbd ) * BEOWULF_100_PERCENT ) / ( dgp.sbd_stop_percent - dgp.sbd_start_percent );
       }
    });
 } FC_CAPTURE_AND_RETHROW() }
@@ -4010,7 +4010,7 @@ void database::process_fee_witness(const witness_object& signing_witness, vector
       account_name_type witness = signing_witness.owner;
       //Calculate transaction fee from transactions
       asset totalFeeInSBD = asset(0, SBD_SYMBOL);
-      asset totalFeeInSteem = asset(0, STEEM_SYMBOL);
+      asset totalFeeInBeowulf = asset(0, BEOWULF_SYMBOL);
 
       for( const auto& trx : transactions )
       {
@@ -4019,8 +4019,8 @@ void database::process_fee_witness(const witness_object& signing_witness, vector
             operation_get_impacted_fee(op, fee);
             if(fee.symbol == SBD_SYMBOL){
                totalFeeInSBD += fee;
-            }else if(fee.symbol == STEEM_SYMBOL) {
-               totalFeeInSteem += fee;
+            }else if(fee.symbol == BEOWULF_SYMBOL) {
+               totalFeeInBeowulf += fee;
             }
          }
       }
@@ -4028,8 +4028,8 @@ void database::process_fee_witness(const witness_object& signing_witness, vector
       if(totalFeeInSBD.amount > 0){
          adjust_balance(witness, totalFeeInSBD);
       }
-      if(totalFeeInSteem.amount > 0){
-         adjust_balance(witness, totalFeeInSteem);
+      if(totalFeeInBeowulf.amount > 0){
+         adjust_balance(witness, totalFeeInBeowulf);
       }
    } FC_CAPTURE_AND_RETHROW() }
 
@@ -4043,12 +4043,12 @@ void database::update_last_irreversible_block()
     * Prior to voting taking over, we must be more conservative...
     *
     */
-   if( head_block_num() < STEEM_START_MINER_VOTING_BLOCK )
+   if( head_block_num() < BEOWULF_START_MINER_VOTING_BLOCK )
    {
       modify( dpo, [&]( dynamic_global_property_object& _dpo )
       {
-         if ( head_block_num() > STEEM_MAX_WITNESSES )
-            _dpo.last_irreversible_block_num = head_block_num() - STEEM_MAX_WITNESSES;
+         if ( head_block_num() > BEOWULF_MAX_WITNESSES )
+            _dpo.last_irreversible_block_num = head_block_num() - BEOWULF_MAX_WITNESSES;
       } );
    }
    else
@@ -4060,13 +4060,13 @@ void database::update_last_irreversible_block()
       for( int i = 0; i < wso.num_scheduled_witnesses; i++ )
          wit_objs.push_back( &get_witness( wso.current_shuffled_witnesses[i] ) );
 
-      static_assert( STEEM_IRREVERSIBLE_THRESHOLD > 0, "irreversible threshold must be nonzero" );
+      static_assert( BEOWULF_IRREVERSIBLE_THRESHOLD > 0, "irreversible threshold must be nonzero" );
 
       // 1 1 1 2 2 2 2 2 2 2 -> 2     .7*10 = 7
       // 1 1 1 1 1 1 1 2 2 2 -> 1
       // 3 3 3 3 3 3 3 3 3 3 -> 3
 
-      size_t offset = ((STEEM_100_PERCENT - STEEM_IRREVERSIBLE_THRESHOLD) * wit_objs.size() / STEEM_100_PERCENT);
+      size_t offset = ((BEOWULF_100_PERCENT - BEOWULF_IRREVERSIBLE_THRESHOLD) * wit_objs.size() / BEOWULF_100_PERCENT);
 
       std::nth_element( wit_objs.begin(), wit_objs.begin() + offset, wit_objs.end(),
          []( const witness_object* a, const witness_object* b )
@@ -4171,24 +4171,24 @@ void database::migrate_irreversible_state()
 //
 //int database::match( const limit_order_object& new_order, const limit_order_object& old_order, const price& match_price )
 //{
-////   bool has_hf_20__1815 = has_hardfork( STEEM_HARDFORK_0_20__1815 );
+////   bool has_hf_20__1815 = has_hardfork( BEOWULF_HARDFORK_0_20__1815 );
 ////
 ////#pragma message( "TODO:  Remove if(), do assert unconditionally after HF20 occurs" )
 ////   if( has_hf_20__1815 )
 ////   {
-////      STEEM_ASSERT( new_order.sell_price.quote.symbol == old_order.sell_price.base.symbol,
+////      BEOWULF_ASSERT( new_order.sell_price.quote.symbol == old_order.sell_price.base.symbol,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
-////      STEEM_ASSERT( new_order.sell_price.base.symbol  == old_order.sell_price.quote.symbol,
+////      BEOWULF_ASSERT( new_order.sell_price.base.symbol  == old_order.sell_price.quote.symbol,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
-////      STEEM_ASSERT( new_order.for_sale > 0 && old_order.for_sale > 0,
+////      BEOWULF_ASSERT( new_order.for_sale > 0 && old_order.for_sale > 0,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
-////      STEEM_ASSERT( match_price.quote.symbol == new_order.sell_price.base.symbol,
+////      BEOWULF_ASSERT( match_price.quote.symbol == new_order.sell_price.base.symbol,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
-////      STEEM_ASSERT( match_price.base.symbol == old_order.sell_price.base.symbol,
+////      BEOWULF_ASSERT( match_price.base.symbol == old_order.sell_price.base.symbol,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
 ////   }
@@ -4219,18 +4219,18 @@ void database::migrate_irreversible_state()
 ////#pragma message( "TODO:  Remove if(), do assert unconditionally after HF20 occurs" )
 ////   if( has_hf_20__1815 )
 ////   {
-////      STEEM_ASSERT( new_order_pays == new_order.amount_for_sale() ||
+////      BEOWULF_ASSERT( new_order_pays == new_order.amount_for_sale() ||
 ////                    old_order_pays == old_order.amount_for_sale(),
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
 ////   }
 ////
 ////   auto age = head_block_time() - old_order.created;
-////   if( !has_hardfork( STEEM_HARDFORK_0_12__178 ) &&
-////       ( (age >= STEEM_MIN_LIQUIDITY_REWARD_PERIOD_SEC && !has_hardfork( STEEM_HARDFORK_0_10__149)) ||
-////       (age >= STEEM_MIN_LIQUIDITY_REWARD_PERIOD_SEC_HF10 && has_hardfork( STEEM_HARDFORK_0_10__149) ) ) )
+////   if( !has_hardfork( BEOWULF_HARDFORK_0_12__178 ) &&
+////       ( (age >= BEOWULF_MIN_LIQUIDITY_REWARD_PERIOD_SEC && !has_hardfork( BEOWULF_HARDFORK_0_10__149)) ||
+////       (age >= BEOWULF_MIN_LIQUIDITY_REWARD_PERIOD_SEC_HF10 && has_hardfork( BEOWULF_HARDFORK_0_10__149) ) ) )
 ////   {
-////      if( old_order_receives.symbol == STEEM_SYMBOL )
+////      if( old_order_receives.symbol == BEOWULF_SYMBOL )
 ////      {
 ////         adjust_liquidity_reward( get_account( old_order.seller ), old_order_receives, false );
 ////         adjust_liquidity_reward( get_account( new_order.seller ), -old_order_receives, false );
@@ -4251,7 +4251,7 @@ void database::migrate_irreversible_state()
 ////#pragma message( "TODO:  Remove if(), do assert unconditionally after HF20 occurs" )
 ////   if( has_hf_20__1815 )
 ////   {
-////      STEEM_ASSERT( result != 0,
+////      BEOWULF_ASSERT( result != 0,
 ////         order_match_exception, "error matching orders: ${new_order} ${old_order} ${match_price}",
 ////         ("new_order", new_order)("old_order", old_order)("match_price", match_price) );
 ////   }
@@ -4268,19 +4268,19 @@ void database::adjust_liquidity_reward( const account_object& owner, const asset
    {
       modify<liquidity_reward_balance_object>( *itr, [&]( liquidity_reward_balance_object& r )
       {
-         if( head_block_time() - r.last_update >= STEEM_LIQUIDITY_TIMEOUT_SEC )
+         if( head_block_time() - r.last_update >= BEOWULF_LIQUIDITY_TIMEOUT_SEC )
          {
             r.sbd_volume = 0;
-            r.steem_volume = 0;
+            r.beowulf_volume = 0;
             r.weight = 0;
          }
 
          if( is_sdb )
             r.sbd_volume += volume.amount.value;
          else
-            r.steem_volume += volume.amount.value;
+            r.beowulf_volume += volume.amount.value;
 
-         r.update_weight( has_hardfork( STEEM_HARDFORK_0_10__141 ) );
+         r.update_weight( has_hardfork( BEOWULF_HARDFORK_0_10__141 ) );
          r.last_update = head_block_time();
       } );
    }
@@ -4292,9 +4292,9 @@ void database::adjust_liquidity_reward( const account_object& owner, const asset
          if( is_sdb )
             r.sbd_volume = volume.amount.value;
          else
-            r.steem_volume = volume.amount.value;
+            r.beowulf_volume = volume.amount.value;
 
-         r.update_weight( has_hardfork( STEEM_HARDFORK_0_9__141 ) );
+         r.update_weight( has_hardfork( BEOWULF_HARDFORK_0_9__141 ) );
          r.last_update = head_block_time();
       } );
    }
@@ -4305,10 +4305,10 @@ void database::adjust_liquidity_reward( const account_object& owner, const asset
 //{
 //   try
 //   {
-//      STEEM_ASSERT( order.amount_for_sale().symbol == pays.symbol,
+//      BEOWULF_ASSERT( order.amount_for_sale().symbol == pays.symbol,
 //         order_fill_exception, "error filling orders: ${order} ${pays} ${receives}",
 //         ("order", order)("pays", pays)("receives", receives) );
-//      STEEM_ASSERT( pays.symbol != receives.symbol,
+//      BEOWULF_ASSERT( pays.symbol != receives.symbol,
 //         order_fill_exception, "error filling orders: ${order} ${pays} ${receives}",
 //         ("order", order)("pays", pays)("receives", receives) );
 //
@@ -4322,9 +4322,9 @@ void database::adjust_liquidity_reward( const account_object& owner, const asset
 //      else
 //      {
 //#pragma message( "TODO:  Remove if(), do assert unconditionally after HF20 occurs" )
-//         if( has_hardfork( STEEM_HARDFORK_0_20__1815 ) )
+//         if( has_hardfork( BEOWULF_HARDFORK_0_20__1815 ) )
 //         {
-//            STEEM_ASSERT( pays < order.amount_for_sale(),
+//            BEOWULF_ASSERT( pays < order.amount_for_sale(),
 //              order_fill_exception, "error filling orders: ${order} ${pays} ${receives}",
 //              ("order", order)("pays", pays)("receives", receives) );
 //         }
@@ -4391,9 +4391,9 @@ void database::clear_expired_transactions()
 ////
 ////      modify( get_account( itr->delegator ), [&]( account_object& a )
 ////      {
-////         if( has_hardfork( STEEM_HARDFORK_0_20__2539 ) )
+////         if( has_hardfork( BEOWULF_HARDFORK_0_20__2539 ) )
 ////         {
-////            util::manabar_params params( util::get_effective_vesting_shares( a ), STEEM_VOTING_MANA_REGENERATION_SECONDS );
+////            util::manabar_params params( util::get_effective_vesting_shares( a ), BEOWULF_VOTING_MANA_REGENERATION_SECONDS );
 ////FC_TODO( "Set skip_cap_regen=true without breaking consensus" );
 ////            a.voting_manabar.regenerate_mana( params, head_block_time() );
 ////            a.voting_manabar.use_mana( -itr->vesting_shares.amount.value );
@@ -4409,7 +4409,7 @@ void database::clear_expired_transactions()
 ////   }
 //}
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 template< typename smt_balance_object_type, class balance_operator_type >
 void database::adjust_smt_balance( const account_name_type& name, const asset& delta, bool check_account,
    balance_operator_type balance_operator )
@@ -4467,25 +4467,25 @@ void database::modify_balance( const account_object& a, const asset& delta, bool
    {
       switch( delta.symbol.asset_num )
       {
-         case STEEM_ASSET_NUM_STEEM:
+         case BEOWULF_ASSET_NUM_BEOWULF:
             acnt.balance += delta;
             if( check_balance )
             {
-               FC_ASSERT( acnt.balance.amount.value >= 0, "Insufficient STEEM funds" );
+               FC_ASSERT( acnt.balance.amount.value >= 0, "Insufficient BEOWULF funds" );
             }
             break;
-         case STEEM_ASSET_NUM_SBD:
+         case BEOWULF_ASSET_NUM_SBD:
 //            if( a.sbd_seconds_last_update != head_block_time() )
 //            {
 //               acnt.sbd_seconds += fc::uint128_t(a.sbd_balance.amount.value) * (head_block_time() - a.sbd_seconds_last_update).to_seconds();
 //               acnt.sbd_seconds_last_update = head_block_time();
 //
 //               if( acnt.sbd_seconds > 0 &&
-//                   (acnt.sbd_seconds_last_update - acnt.sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
+//                   (acnt.sbd_seconds_last_update - acnt.sbd_last_interest_payment).to_seconds() > BEOWULF_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
 //               {
-//                  auto interest = acnt.sbd_seconds / STEEM_SECONDS_PER_YEAR;
+//                  auto interest = acnt.sbd_seconds / BEOWULF_SECONDS_PER_YEAR;
 //                  interest *= get_dynamic_global_properties().sbd_interest_rate;
-//                  interest /= STEEM_100_PERCENT;
+//                  interest /= BEOWULF_100_PERCENT;
 //                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
 //                  acnt.sbd_balance += interest_paid;
 //                  acnt.sbd_seconds = 0;
@@ -4507,7 +4507,7 @@ void database::modify_balance( const account_object& a, const asset& delta, bool
                FC_ASSERT( acnt.sbd_balance.amount.value >= 0, "Insufficient SBD funds" );
             }
             break;
-         case STEEM_ASSET_NUM_VESTS:
+         case BEOWULF_ASSET_NUM_VESTS:
             acnt.vesting_shares += delta;
             if( check_balance )
             {
@@ -4526,18 +4526,18 @@ void database::modify_reward_balance( const account_object& a, const asset& valu
    {
       switch( value_delta.symbol.asset_num )
       {
-         case STEEM_ASSET_NUM_STEEM:
+         case BEOWULF_ASSET_NUM_BEOWULF:
             if( share_delta.amount.value == 0 )
             {
-               acnt.reward_steem_balance += value_delta;
+               acnt.reward_beowulf_balance += value_delta;
                if( check_balance )
                {
-                  FC_ASSERT( acnt.reward_steem_balance.amount.value >= 0, "Insufficient reward STEEM funds" );
+                  FC_ASSERT( acnt.reward_beowulf_balance.amount.value >= 0, "Insufficient reward BEOWULF funds" );
                }
             }
             else
             {
-               acnt.reward_vesting_steem += value_delta;
+               acnt.reward_vesting_beowulf += value_delta;
                acnt.reward_vesting_balance += share_delta;
                if( check_balance )
                {
@@ -4545,7 +4545,7 @@ void database::modify_reward_balance( const account_object& a, const asset& valu
                }
             }
             break;
-         case STEEM_ASSET_NUM_SBD:
+         case BEOWULF_ASSET_NUM_SBD:
             FC_ASSERT( share_delta.amount.value == 0 );
             acnt.reward_sbd_balance += value_delta;
             if( check_balance )
@@ -4559,7 +4559,7 @@ void database::modify_reward_balance( const account_object& a, const asset& valu
    });
 }
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 struct smt_regular_balance_operator
 {
    smt_regular_balance_operator( const asset& delta ) : delta(delta), is_vesting(delta.symbol.is_vesting()) {}
@@ -4616,9 +4616,9 @@ struct smt_reward_balance_operator
 
 void database::adjust_balance( const account_object& a, const asset& delta )
 {
-   bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+   bool check_balance = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4633,9 +4633,9 @@ void database::adjust_balance( const account_object& a, const asset& delta )
 
 void database::adjust_balance( const account_name_type& name, const asset& delta )
 {
-   bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+   bool check_balance = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4651,31 +4651,31 @@ void database::adjust_balance( const account_name_type& name, const asset& delta
 
 //void database::adjust_savings_balance( const account_object& a, const asset& delta )
 //{
-//   bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+//   bool check_balance = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
 //
 //   modify( a, [&]( account_object& acnt )
 //   {
 //      switch( delta.symbol.asset_num )
 //      {
-//         case STEEM_ASSET_NUM_STEEM:
+//         case BEOWULF_ASSET_NUM_BEOWULF:
 //            acnt.savings_balance += delta;
 //            if( check_balance )
 //            {
-//               FC_ASSERT( acnt.savings_balance.amount.value >= 0, "Insufficient savings STEEM funds" );
+//               FC_ASSERT( acnt.savings_balance.amount.value >= 0, "Insufficient savings BEOWULF funds" );
 //            }
 //            break;
-//         case STEEM_ASSET_NUM_SBD:
+//         case BEOWULF_ASSET_NUM_SBD:
 ////            if( a.savings_sbd_seconds_last_update != head_block_time() )
 ////            {
 ////               acnt.savings_sbd_seconds += fc::uint128_t(a.savings_sbd_balance.amount.value) * (head_block_time() - a.savings_sbd_seconds_last_update).to_seconds();
 ////               acnt.savings_sbd_seconds_last_update = head_block_time();
 ////
 ////               if( acnt.savings_sbd_seconds > 0 &&
-////                   (acnt.savings_sbd_seconds_last_update - acnt.savings_sbd_last_interest_payment).to_seconds() > STEEM_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
+////                   (acnt.savings_sbd_seconds_last_update - acnt.savings_sbd_last_interest_payment).to_seconds() > BEOWULF_SBD_INTEREST_COMPOUND_INTERVAL_SEC )
 ////               {
-////                  auto interest = acnt.savings_sbd_seconds / STEEM_SECONDS_PER_YEAR;
+////                  auto interest = acnt.savings_sbd_seconds / BEOWULF_SECONDS_PER_YEAR;
 ////                  interest *= get_dynamic_global_properties().sbd_interest_rate;
-////                  interest /= STEEM_100_PERCENT;
+////                  interest /= BEOWULF_100_PERCENT;
 ////                  asset interest_paid(interest.to_uint64(), SBD_SYMBOL);
 ////                  acnt.savings_sbd_balance += interest_paid;
 ////                  acnt.savings_sbd_seconds = 0;
@@ -4706,10 +4706,10 @@ void database::adjust_balance( const account_name_type& name, const asset& delta
 void database::adjust_reward_balance( const account_object& a, const asset& value_delta,
                                       const asset& share_delta /*= asset(0,VESTS_SYMBOL)*/ )
 {
-   bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+   bool check_balance = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
    FC_ASSERT( value_delta.symbol.is_vesting() == false && share_delta.symbol.is_vesting() );
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( value_delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4726,10 +4726,10 @@ void database::adjust_reward_balance( const account_object& a, const asset& valu
 void database::adjust_reward_balance( const account_name_type& name, const asset& value_delta,
                                       const asset& share_delta /*= asset(0,VESTS_SYMBOL)*/ )
 {
-   bool check_balance = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+   bool check_balance = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
    FC_ASSERT( value_delta.symbol.is_vesting() == false && share_delta.symbol.is_vesting() );
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    // No account object modification for SMT balance, hence separate handling here.
    // Note that SMT related code, being post-20-hf needs no hf-guard to do balance checks.
    if( value_delta.symbol.space() == asset_symbol_type::smt_nai_space )
@@ -4746,7 +4746,7 @@ void database::adjust_reward_balance( const account_name_type& name, const asset
 
 void database::adjust_supply( const asset& delta, bool adjust_vesting )
 {
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
    if( delta.symbol.space() == asset_symbol_type::smt_nai_space )
    {
       const auto& smt = get< smt_token_object, by_symbol >( delta.symbol );
@@ -4760,29 +4760,29 @@ void database::adjust_supply( const asset& delta, bool adjust_vesting )
    }
 //#endif
 
-   bool check_supply = has_hardfork( STEEM_HARDFORK_0_20__1811 );
+   bool check_supply = has_hardfork( BEOWULF_HARDFORK_0_20__1811 );
 
    const auto& props = get_dynamic_global_properties();
-   if( props.head_block_number < STEEM_BLOCKS_PER_DAY*7 )
+   if( props.head_block_number < BEOWULF_BLOCKS_PER_DAY*7 )
       adjust_vesting = false;
 
    modify( props, [&]( dynamic_global_property_object& props )
    {
       switch( delta.symbol.asset_num )
       {
-         case STEEM_ASSET_NUM_STEEM:
+         case BEOWULF_ASSET_NUM_BEOWULF:
          {
-            asset new_vesting( (adjust_vesting && delta.amount > 0) ? delta.amount * 9 : 0, STEEM_SYMBOL );
+            asset new_vesting( (adjust_vesting && delta.amount > 0) ? delta.amount * 9 : 0, BEOWULF_SYMBOL );
             props.current_supply += delta + new_vesting;
             props.virtual_supply += delta + new_vesting;
-            props.total_vesting_fund_steem += new_vesting;
+            props.total_vesting_fund_beowulf += new_vesting;
             if( check_supply )
             {
                FC_ASSERT( props.current_supply.amount.value >= 0 );
             }
             break;
          }
-         case STEEM_ASSET_NUM_SBD:
+         case BEOWULF_ASSET_NUM_SBD:
             props.current_sbd_supply += delta;
             props.virtual_supply = props.current_sbd_supply * get_feed_history().current_median_history + props.current_supply;
             if( check_supply )
@@ -4801,13 +4801,13 @@ asset database::get_balance( const account_object& a, asset_symbol_type symbol )
 {
    switch( symbol.asset_num )
    {
-      case STEEM_ASSET_NUM_STEEM:
+      case BEOWULF_ASSET_NUM_BEOWULF:
          return a.balance;
-      case STEEM_ASSET_NUM_SBD:
+      case BEOWULF_ASSET_NUM_SBD:
          return a.sbd_balance;
       default:
       {
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
          FC_ASSERT( symbol.space() == asset_symbol_type::smt_nai_space, "invalid symbol" );
          const account_regular_balance_object* arbo =
             find< account_regular_balance_object, by_owner_liquid_symbol >(
@@ -4831,9 +4831,9 @@ asset database::get_balance( const account_object& a, asset_symbol_type symbol )
 //{
 //   switch( symbol.asset_num )
 //   {
-//      case STEEM_ASSET_NUM_STEEM:
+//      case BEOWULF_ASSET_NUM_BEOWULF:
 //         return a.savings_balance;
-//      case STEEM_ASSET_NUM_SBD:
+//      case BEOWULF_ASSET_NUM_SBD:
 //         return a.savings_sbd_balance;
 //      default: // Note no savings balance for SMT per comments in issue 1682.
 //         FC_ASSERT( !"invalid symbol" );
@@ -4842,80 +4842,80 @@ asset database::get_balance( const account_object& a, asset_symbol_type symbol )
 
 void database::init_hardforks()
 {
-   _hardfork_times[ 0 ] = fc::time_point_sec( STEEM_GENESIS_TIME );
+   _hardfork_times[ 0 ] = fc::time_point_sec( BEOWULF_GENESIS_TIME );
    _hardfork_versions[ 0 ] = hardfork_version( 0, 0 );
-   FC_ASSERT( STEEM_HARDFORK_0_1 == 1, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_1 ] = fc::time_point_sec( STEEM_HARDFORK_0_1_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_1 ] = STEEM_HARDFORK_0_1_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_2 == 2, "Invlaid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_2 ] = fc::time_point_sec( STEEM_HARDFORK_0_2_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_2 ] = STEEM_HARDFORK_0_2_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_3 == 3, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_3 ] = fc::time_point_sec( STEEM_HARDFORK_0_3_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_3 ] = STEEM_HARDFORK_0_3_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_4 == 4, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_4 ] = fc::time_point_sec( STEEM_HARDFORK_0_4_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_4 ] = STEEM_HARDFORK_0_4_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_5 == 5, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_5 ] = fc::time_point_sec( STEEM_HARDFORK_0_5_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_5 ] = STEEM_HARDFORK_0_5_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_6 == 6, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_6 ] = fc::time_point_sec( STEEM_HARDFORK_0_6_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_6 ] = STEEM_HARDFORK_0_6_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_7 == 7, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_7 ] = fc::time_point_sec( STEEM_HARDFORK_0_7_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_7 ] = STEEM_HARDFORK_0_7_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_8 == 8, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_8 ] = fc::time_point_sec( STEEM_HARDFORK_0_8_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_8 ] = STEEM_HARDFORK_0_8_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_9 == 9, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_9 ] = fc::time_point_sec( STEEM_HARDFORK_0_9_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_9 ] = STEEM_HARDFORK_0_9_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_10 == 10, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_10 ] = fc::time_point_sec( STEEM_HARDFORK_0_10_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_10 ] = STEEM_HARDFORK_0_10_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_11 == 11, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_11 ] = fc::time_point_sec( STEEM_HARDFORK_0_11_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_11 ] = STEEM_HARDFORK_0_11_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_12 == 12, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_12 ] = fc::time_point_sec( STEEM_HARDFORK_0_12_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_12 ] = STEEM_HARDFORK_0_12_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_13 == 13, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_13 ] = fc::time_point_sec( STEEM_HARDFORK_0_13_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_13 ] = STEEM_HARDFORK_0_13_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_14 == 14, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_14 ] = fc::time_point_sec( STEEM_HARDFORK_0_14_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_14 ] = STEEM_HARDFORK_0_14_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_15 == 15, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_15 ] = fc::time_point_sec( STEEM_HARDFORK_0_15_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_15 ] = STEEM_HARDFORK_0_15_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_16 == 16, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_16 ] = fc::time_point_sec( STEEM_HARDFORK_0_16_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_16 ] = STEEM_HARDFORK_0_16_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_17 == 17, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_17 ] = fc::time_point_sec( STEEM_HARDFORK_0_17_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_17 ] = STEEM_HARDFORK_0_17_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_18 == 18, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_18 ] = fc::time_point_sec( STEEM_HARDFORK_0_18_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_18 ] = STEEM_HARDFORK_0_18_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_19 == 19, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_19 ] = fc::time_point_sec( STEEM_HARDFORK_0_19_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_19 ] = STEEM_HARDFORK_0_19_VERSION;
-   FC_ASSERT( STEEM_HARDFORK_0_20 == 20, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_20 ] = fc::time_point_sec( STEEM_HARDFORK_0_20_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_20 ] = STEEM_HARDFORK_0_20_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_1 == 1, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_1 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_1_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_1 ] = BEOWULF_HARDFORK_0_1_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_2 == 2, "Invlaid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_2 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_2_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_2 ] = BEOWULF_HARDFORK_0_2_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_3 == 3, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_3 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_3_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_3 ] = BEOWULF_HARDFORK_0_3_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_4 == 4, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_4 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_4_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_4 ] = BEOWULF_HARDFORK_0_4_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_5 == 5, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_5 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_5_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_5 ] = BEOWULF_HARDFORK_0_5_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_6 == 6, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_6 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_6_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_6 ] = BEOWULF_HARDFORK_0_6_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_7 == 7, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_7 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_7_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_7 ] = BEOWULF_HARDFORK_0_7_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_8 == 8, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_8 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_8_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_8 ] = BEOWULF_HARDFORK_0_8_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_9 == 9, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_9 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_9_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_9 ] = BEOWULF_HARDFORK_0_9_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_10 == 10, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_10 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_10_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_10 ] = BEOWULF_HARDFORK_0_10_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_11 == 11, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_11 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_11_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_11 ] = BEOWULF_HARDFORK_0_11_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_12 == 12, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_12 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_12_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_12 ] = BEOWULF_HARDFORK_0_12_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_13 == 13, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_13 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_13_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_13 ] = BEOWULF_HARDFORK_0_13_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_14 == 14, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_14 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_14_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_14 ] = BEOWULF_HARDFORK_0_14_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_15 == 15, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_15 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_15_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_15 ] = BEOWULF_HARDFORK_0_15_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_16 == 16, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_16 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_16_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_16 ] = BEOWULF_HARDFORK_0_16_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_17 == 17, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_17 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_17_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_17 ] = BEOWULF_HARDFORK_0_17_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_18 == 18, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_18 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_18_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_18 ] = BEOWULF_HARDFORK_0_18_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_19 == 19, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_19 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_19_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_19 ] = BEOWULF_HARDFORK_0_19_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_20 == 20, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_20 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_20_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_20 ] = BEOWULF_HARDFORK_0_20_VERSION;
 #ifdef IS_TEST_NET
-   FC_ASSERT( STEEM_HARDFORK_0_21 == 21, "Invalid hardfork configuration" );
-   _hardfork_times[ STEEM_HARDFORK_0_21 ] = fc::time_point_sec( STEEM_HARDFORK_0_21_TIME );
-   _hardfork_versions[ STEEM_HARDFORK_0_21 ] = STEEM_HARDFORK_0_21_VERSION;
+   FC_ASSERT( BEOWULF_HARDFORK_0_21 == 21, "Invalid hardfork configuration" );
+   _hardfork_times[ BEOWULF_HARDFORK_0_21 ] = fc::time_point_sec( BEOWULF_HARDFORK_0_21_TIME );
+   _hardfork_versions[ BEOWULF_HARDFORK_0_21 ] = BEOWULF_HARDFORK_0_21_VERSION;
 #endif
 
 
    const auto& hardforks = get_hardfork_property_object();
-   FC_ASSERT( hardforks.last_hardfork <= STEEM_NUM_HARDFORKS, "Chain knows of more hardforks than configuration", ("hardforks.last_hardfork",hardforks.last_hardfork)("STEEM_NUM_HARDFORKS",STEEM_NUM_HARDFORKS) );
-   FC_ASSERT( _hardfork_versions[ hardforks.last_hardfork ] <= STEEM_BLOCKCHAIN_VERSION, "Blockchain version is older than last applied hardfork" );
-   FC_ASSERT( STEEM_BLOCKCHAIN_HARDFORK_VERSION >= STEEM_BLOCKCHAIN_VERSION );
-   FC_ASSERT( STEEM_BLOCKCHAIN_HARDFORK_VERSION == _hardfork_versions[ STEEM_NUM_HARDFORKS ] );
+   FC_ASSERT( hardforks.last_hardfork <= BEOWULF_NUM_HARDFORKS, "Chain knows of more hardforks than configuration", ("hardforks.last_hardfork",hardforks.last_hardfork)("BEOWULF_NUM_HARDFORKS",BEOWULF_NUM_HARDFORKS) );
+   FC_ASSERT( _hardfork_versions[ hardforks.last_hardfork ] <= BEOWULF_BLOCKCHAIN_VERSION, "Blockchain version is older than last applied hardfork" );
+   FC_ASSERT( BEOWULF_BLOCKCHAIN_HARDFORK_VERSION >= BEOWULF_BLOCKCHAIN_VERSION );
+   FC_ASSERT( BEOWULF_BLOCKCHAIN_HARDFORK_VERSION == _hardfork_versions[ BEOWULF_NUM_HARDFORKS ] );
 }
 
 void database::process_hardforks()
@@ -4925,12 +4925,12 @@ void database::process_hardforks()
       // If there are upcoming hardforks and the next one is later, do nothing
       const auto& hardforks = get_hardfork_property_object();
 
-      if( has_hardfork( STEEM_HARDFORK_0_5__54 ) )
+      if( has_hardfork( BEOWULF_HARDFORK_0_5__54 ) )
       {
          while( _hardfork_versions[ hardforks.last_hardfork ] < hardforks.next_hardfork
             && hardforks.next_hardfork_time <= head_block_time() )
          {
-            if( hardforks.last_hardfork < STEEM_NUM_HARDFORKS ) {
+            if( hardforks.last_hardfork < BEOWULF_NUM_HARDFORKS ) {
                apply_hardfork( hardforks.last_hardfork + 1 );
             }
             else
@@ -4939,9 +4939,9 @@ void database::process_hardforks()
       }
       else
       {
-         while( hardforks.last_hardfork < STEEM_NUM_HARDFORKS
+         while( hardforks.last_hardfork < BEOWULF_NUM_HARDFORKS
                && _hardfork_times[ hardforks.last_hardfork + 1 ] <= head_block_time()
-               && hardforks.last_hardfork < STEEM_HARDFORK_0_5__54 )
+               && hardforks.last_hardfork < BEOWULF_HARDFORK_0_5__54 )
          {
             apply_hardfork( hardforks.last_hardfork + 1 );
          }
@@ -4964,9 +4964,9 @@ void database::set_hardfork( uint32_t hardfork, bool apply_now )
 {
    auto const& hardforks = get_hardfork_property_object();
 
-   for( uint32_t i = hardforks.last_hardfork + 1; i <= hardfork && i <= STEEM_NUM_HARDFORKS; i++ )
+   for( uint32_t i = hardforks.last_hardfork + 1; i <= hardfork && i <= BEOWULF_NUM_HARDFORKS; i++ )
    {
-      if( i <= STEEM_HARDFORK_0_5__54 )
+      if( i <= BEOWULF_HARDFORK_0_5__54 )
          _hardfork_times[i] = head_block_time();
       else
       {
@@ -4992,30 +4992,30 @@ void database::apply_hardfork( uint32_t hardfork )
 
    switch( hardfork )
    {
-      case STEEM_HARDFORK_0_1:
+      case BEOWULF_HARDFORK_0_1:
          perform_vesting_share_split( 1000000 );
          break;
-      case STEEM_HARDFORK_0_2:
+      case BEOWULF_HARDFORK_0_2:
          retally_witness_votes();
          break;
-      case STEEM_HARDFORK_0_3:
+      case BEOWULF_HARDFORK_0_3:
          retally_witness_votes();
          break;
-      case STEEM_HARDFORK_0_4:
+      case BEOWULF_HARDFORK_0_4:
          reset_virtual_schedule_time(*this);
          break;
-      case STEEM_HARDFORK_0_5:
+      case BEOWULF_HARDFORK_0_5:
          break;
-      case STEEM_HARDFORK_0_6:
+      case BEOWULF_HARDFORK_0_6:
          retally_witness_vote_counts();
 //         retally_comment_children();
          break;
-      case STEEM_HARDFORK_0_7:
+      case BEOWULF_HARDFORK_0_7:
          break;
-      case STEEM_HARDFORK_0_8:
+      case BEOWULF_HARDFORK_0_8:
          retally_witness_vote_counts(true);
          break;
-      case STEEM_HARDFORK_0_9:
+      case BEOWULF_HARDFORK_0_9:
          {
             for( const std::string& acc : hardfork9::get_compromised_accounts() )
             {
@@ -5033,12 +5033,12 @@ void database::apply_hardfork( uint32_t hardfork )
             }
          }
          break;
-      case STEEM_HARDFORK_0_10:
+      case BEOWULF_HARDFORK_0_10:
          retally_liquidity_weight();
          break;
-      case STEEM_HARDFORK_0_11:
+      case BEOWULF_HARDFORK_0_11:
          break;
-      case STEEM_HARDFORK_0_12:
+      case BEOWULF_HARDFORK_0_12:
 //         {
 //            const auto& comment_idx = get_index< comment_index >().indices();
 //
@@ -5047,14 +5047,14 @@ void database::apply_hardfork( uint32_t hardfork )
 //               // At the hardfork time, all new posts with no votes get their cashout time set to +12 hrs from head block time.
 //               // All posts with a payout get their cashout time set to +30 days. This hardfork takes place within 30 days
 //               // initial payout so we don't have to handle the case of posts that should be frozen that aren't
-//               if( itr->parent_author == STEEM_ROOT_POST_PARENT )
+//               if( itr->parent_author == BEOWULF_ROOT_POST_PARENT )
 //               {
 //                  // Post has not been paid out and has no votes (cashout_time == 0 === net_rshares == 0, under current semmantics)
 //                  if( itr->last_payout == fc::time_point_sec::min() && itr->cashout_time == fc::time_point_sec::maximum() )
 //                  {
 //                     modify( *itr, [&]( comment_object & c )
 //                     {
-//                        c.cashout_time = head_block_time() + STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF17;
+//                        c.cashout_time = head_block_time() + BEOWULF_CASHOUT_WINDOW_SECONDS_PRE_HF17;
 //                     });
 //                  }
 //                  // Has been paid out, needs to be on second cashout window
@@ -5062,74 +5062,74 @@ void database::apply_hardfork( uint32_t hardfork )
 //                  {
 //                     modify( *itr, [&]( comment_object& c )
 //                     {
-//                        c.cashout_time = c.last_payout + STEEM_SECOND_CASHOUT_WINDOW;
+//                        c.cashout_time = c.last_payout + BEOWULF_SECOND_CASHOUT_WINDOW;
 //                     });
 //                  }
 //               }
 //            }
 //
-//            modify( get< account_authority_object, by_account >( STEEM_MINER_ACCOUNT ), [&]( account_authority_object& auth )
+//            modify( get< account_authority_object, by_account >( BEOWULF_MINER_ACCOUNT ), [&]( account_authority_object& auth )
 //            {
 //               auth.posting = authority();
 //               auth.posting.weight_threshold = 1;
 //            });
 //
-//            modify( get< account_authority_object, by_account >( STEEM_NULL_ACCOUNT ), [&]( account_authority_object& auth )
+//            modify( get< account_authority_object, by_account >( BEOWULF_NULL_ACCOUNT ), [&]( account_authority_object& auth )
 //            {
 //               auth.posting = authority();
 //               auth.posting.weight_threshold = 1;
 //            });
 //
-//            modify( get< account_authority_object, by_account >( STEEM_TEMP_ACCOUNT ), [&]( account_authority_object& auth )
+//            modify( get< account_authority_object, by_account >( BEOWULF_TEMP_ACCOUNT ), [&]( account_authority_object& auth )
 //            {
 //               auth.posting = authority();
 //               auth.posting.weight_threshold = 1;
 //            });
 //         }
          break;
-      case STEEM_HARDFORK_0_13:
+      case BEOWULF_HARDFORK_0_13:
          break;
-      case STEEM_HARDFORK_0_14:
+      case BEOWULF_HARDFORK_0_14:
          break;
-      case STEEM_HARDFORK_0_15:
+      case BEOWULF_HARDFORK_0_15:
          break;
-      case STEEM_HARDFORK_0_16:
+      case BEOWULF_HARDFORK_0_16:
          {
             modify( get_feed_history(), [&]( feed_history_object& fho )
             {
-               while( fho.price_history.size() > STEEM_FEED_HISTORY_WINDOW )
+               while( fho.price_history.size() > BEOWULF_FEED_HISTORY_WINDOW )
                   fho.price_history.pop_front();
             });
          }
          break;
-      case STEEM_HARDFORK_0_17:
+      case BEOWULF_HARDFORK_0_17:
          {
             static_assert(
-               STEEM_MAX_VOTED_WITNESSES_HF0 + STEEM_MAX_MINER_WITNESSES_HF0 + STEEM_MAX_RUNNER_WITNESSES_HF0 == STEEM_MAX_WITNESSES,
-               "HF0 witness counts must add up to STEEM_MAX_WITNESSES" );
+               BEOWULF_MAX_VOTED_WITNESSES_HF0 + BEOWULF_MAX_MINER_WITNESSES_HF0 + BEOWULF_MAX_RUNNER_WITNESSES_HF0 == BEOWULF_MAX_WITNESSES,
+               "HF0 witness counts must add up to BEOWULF_MAX_WITNESSES" );
             static_assert(
-               STEEM_MAX_VOTED_WITNESSES_HF17 + STEEM_MAX_MINER_WITNESSES_HF17 + STEEM_MAX_RUNNER_WITNESSES_HF17 == STEEM_MAX_WITNESSES,
-               "HF17 witness counts must add up to STEEM_MAX_WITNESSES" );
+               BEOWULF_MAX_VOTED_WITNESSES_HF17 + BEOWULF_MAX_MINER_WITNESSES_HF17 + BEOWULF_MAX_RUNNER_WITNESSES_HF17 == BEOWULF_MAX_WITNESSES,
+               "HF17 witness counts must add up to BEOWULF_MAX_WITNESSES" );
 
             modify( get_witness_schedule_object(), [&]( witness_schedule_object& wso )
             {
-               wso.max_voted_witnesses = STEEM_MAX_VOTED_WITNESSES_HF17;
-               wso.max_miner_witnesses = STEEM_MAX_MINER_WITNESSES_HF17;
-               wso.max_runner_witnesses = STEEM_MAX_RUNNER_WITNESSES_HF17;
+               wso.max_voted_witnesses = BEOWULF_MAX_VOTED_WITNESSES_HF17;
+               wso.max_miner_witnesses = BEOWULF_MAX_MINER_WITNESSES_HF17;
+               wso.max_runner_witnesses = BEOWULF_MAX_RUNNER_WITNESSES_HF17;
             });
 
             const auto& gpo = get_dynamic_global_properties();
 
 //            auto post_rf = create< reward_fund_object >( [&]( reward_fund_object& rfo )
 //            {
-//               rfo.name = STEEM_POST_REWARD_FUND_NAME;
+//               rfo.name = BEOWULF_POST_REWARD_FUND_NAME;
 //               rfo.last_update = head_block_time();
-//               rfo.content_constant = STEEM_CONTENT_CONSTANT_HF0;
-//               rfo.percent_curation_rewards = STEEM_1_PERCENT * 25;
-//               rfo.percent_content_rewards = STEEM_100_PERCENT;
-//               rfo.reward_balance = gpo.total_reward_fund_steem;
+//               rfo.content_constant = BEOWULF_CONTENT_CONSTANT_HF0;
+//               rfo.percent_curation_rewards = BEOWULF_1_PERCENT * 25;
+//               rfo.percent_content_rewards = BEOWULF_100_PERCENT;
+//               rfo.reward_balance = gpo.total_reward_fund_beowulf;
 //#ifndef IS_TEST_NET
-//               rfo.recent_claims = STEEM_HF_17_RECENT_CLAIMS;
+//               rfo.recent_claims = BEOWULF_HF_17_RECENT_CLAIMS;
 //#endif
 //               rfo.author_reward_curve = curve_id::quadratic;
 //               rfo.curation_reward_curve = curve_id::quadratic_curation;
@@ -5141,7 +5141,7 @@ void database::apply_hardfork( uint32_t hardfork )
 
             modify( gpo, [&]( dynamic_global_property_object& g )
             {
-               g.total_reward_fund_steem = asset( 0, STEEM_SYMBOL );
+               g.total_reward_fund_beowulf = asset( 0, BEOWULF_SYMBOL );
                g.total_reward_shares2 = 0;
             });
 
@@ -5160,9 +5160,9 @@ void database::apply_hardfork( uint32_t hardfork )
 //            const auto& comment_idx = get_index< comment_index, by_cashout_time >();
 //            const auto& by_root_idx = get_index< comment_index, by_root >();
 //            vector< const comment_object* > root_posts;
-//            root_posts.reserve( STEEM_HF_17_NUM_POSTS );
+//            root_posts.reserve( BEOWULF_HF_17_NUM_POSTS );
 //            vector< const comment_object* > replies;
-//            replies.reserve( STEEM_HF_17_NUM_REPLIES );
+//            replies.reserve( BEOWULF_HF_17_NUM_REPLIES );
 //
 //            for( auto itr = comment_idx.begin(); itr != comment_idx.end() && itr->cashout_time < fc::time_point_sec::maximum(); ++itr )
 //            {
@@ -5178,7 +5178,7 @@ void database::apply_hardfork( uint32_t hardfork )
 //            {
 //               modify( *itr, [&]( comment_object& c )
 //               {
-//                  c.cashout_time = std::max( c.created + STEEM_CASHOUT_WINDOW_SECONDS, c.cashout_time );
+//                  c.cashout_time = std::max( c.created + BEOWULF_CASHOUT_WINDOW_SECONDS, c.cashout_time );
 //               });
 //            }
 //
@@ -5186,24 +5186,24 @@ void database::apply_hardfork( uint32_t hardfork )
 //            {
 //               modify( *itr, [&]( comment_object& c )
 //               {
-//                  c.cashout_time = std::max( calculate_discussion_payout_time( c ), c.created + STEEM_CASHOUT_WINDOW_SECONDS );
+//                  c.cashout_time = std::max( calculate_discussion_payout_time( c ), c.created + BEOWULF_CASHOUT_WINDOW_SECONDS );
 //               });
 //            }
          }
          break;
-      case STEEM_HARDFORK_0_18:
+      case BEOWULF_HARDFORK_0_18:
          break;
-      case STEEM_HARDFORK_0_19:
+      case BEOWULF_HARDFORK_0_19:
          {
             modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
             {
-               gpo.vote_power_reserve_rate = STEEM_REDUCED_VOTE_POWER_RATE;
+               gpo.vote_power_reserve_rate = BEOWULF_REDUCED_VOTE_POWER_RATE;
             });
 
-//            modify( get< reward_fund_object, by_name >( STEEM_POST_REWARD_FUND_NAME ), [&]( reward_fund_object &rfo )
+//            modify( get< reward_fund_object, by_name >( BEOWULF_POST_REWARD_FUND_NAME ), [&]( reward_fund_object &rfo )
 //            {
 //#ifndef IS_TEST_NET
-//               rfo.recent_claims = STEEM_HF_19_RECENT_CLAIMS;
+//               rfo.recent_claims = BEOWULF_HF_19_RECENT_CLAIMS;
 //#endif
 //               rfo.author_reward_curve = curve_id::linear;
 //               rfo.curation_reward_curve = curve_id::square_root;
@@ -5228,14 +5228,14 @@ void database::apply_hardfork( uint32_t hardfork )
 //            }
          }
          break;
-      case STEEM_HARDFORK_0_20:
+      case BEOWULF_HARDFORK_0_20:
          {
             modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
             {
-//               gpo.delegation_return_period = STEEM_DELEGATION_RETURN_PERIOD_HF20;
-//               gpo.reverse_auction_seconds = STEEM_REVERSE_AUCTION_WINDOW_SECONDS_HF20;
-               gpo.sbd_stop_percent = STEEM_SBD_STOP_PERCENT_HF20;
-               gpo.sbd_start_percent = STEEM_SBD_START_PERCENT_HF20;
+//               gpo.delegation_return_period = BEOWULF_DELEGATION_RETURN_PERIOD_HF20;
+//               gpo.reverse_auction_seconds = BEOWULF_REVERSE_AUCTION_WINDOW_SECONDS_HF20;
+               gpo.sbd_stop_percent = BEOWULF_SBD_STOP_PERCENT_HF20;
+               gpo.sbd_start_percent = BEOWULF_SBD_START_PERCENT_HF20;
 //               gpo.available_account_subsidies = 0;
             });
 
@@ -5248,26 +5248,26 @@ void database::apply_hardfork( uint32_t hardfork )
                {
                   modify( get< witness_object, by_name >( witness ), [&]( witness_object& w )
                   {
-                     w.props.account_creation_fee = asset( w.props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, SBD_SYMBOL );
+                     w.props.account_creation_fee = asset( w.props.account_creation_fee.amount * BEOWULF_CREATE_ACCOUNT_WITH_BEOWULF_MODIFIER, SBD_SYMBOL );
                   });
                }
             }
 
             modify( wso, [&]( witness_schedule_object& wso )
             {
-               wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * STEEM_CREATE_ACCOUNT_WITH_STEEM_MODIFIER, SBD_SYMBOL );
+               wso.median_props.account_creation_fee = asset( wso.median_props.account_creation_fee.amount * BEOWULF_CREATE_ACCOUNT_WITH_BEOWULF_MODIFIER, SBD_SYMBOL );
             });
             replenish_nai_pool( *this );
          }
          break;
-//      case STEEM_SMT_HARDFORK:
+//      case BEOWULF_SMT_HARDFORK:
 //      {
-////#ifdef STEEM_ENABLE_SMT
+////#ifdef BEOWULF_ENABLE_SMT
 //         replenish_nai_pool( *this );
 ////#endif
 ////         modify( get_dynamic_global_properties(), [&]( dynamic_global_property_object& gpo )
 ////         {
-////            gpo.required_actions_partition_percent = 25 * STEEM_1_PERCENT;
+////            gpo.required_actions_partition_percent = 25 * BEOWULF_1_PERCENT;
 ////         });
 //
 //         break;
@@ -5306,10 +5306,10 @@ void database::validate_invariants()const
    try
    {
       const auto& account_idx = get_index<account_index>().indices().get<by_name>();
-      asset total_supply = asset( 0, STEEM_SYMBOL );
+      asset total_supply = asset( 0, BEOWULF_SYMBOL );
       asset total_sbd = asset( 0, SBD_SYMBOL );
       asset total_vesting = asset( 0, VESTS_SYMBOL );
-      asset pending_vesting_steem = asset( 0, STEEM_SYMBOL );
+      asset pending_vesting_beowulf = asset( 0, BEOWULF_SYMBOL );
       share_type total_vsf_votes = share_type( 0 );
 
       auto gpo = get_dynamic_global_properties();
@@ -5323,20 +5323,20 @@ void database::validate_invariants()const
       {
          total_supply += itr->balance;
 //         total_supply += itr->savings_balance;
-         total_supply += itr->reward_steem_balance;
+         total_supply += itr->reward_beowulf_balance;
          total_sbd += itr->sbd_balance;
 //         total_sbd += itr->savings_sbd_balance;
          total_sbd += itr->reward_sbd_balance;
          total_vesting += itr->vesting_shares;
          total_vesting += itr->reward_vesting_balance;
-         pending_vesting_steem += itr->reward_vesting_steem;
-//         total_vsf_votes += ( itr->proxy == STEEM_PROXY_TO_SELF_ACCOUNT ?
+         pending_vesting_beowulf += itr->reward_vesting_beowulf;
+//         total_vsf_votes += ( itr->proxy == BEOWULF_PROXY_TO_SELF_ACCOUNT ?
 //                                 itr->witness_vote_weight() :
-//                                 ( STEEM_MAX_PROXY_RECURSION_DEPTH > 0 ?
-//                                      itr->proxied_vsf_votes[STEEM_MAX_PROXY_RECURSION_DEPTH - 1] :
+//                                 ( BEOWULF_MAX_PROXY_RECURSION_DEPTH > 0 ?
+//                                      itr->proxied_vsf_votes[BEOWULF_MAX_PROXY_RECURSION_DEPTH - 1] :
 //                                      itr->vesting_shares.amount ) );
-         total_vsf_votes += ( ( STEEM_MAX_PROXY_RECURSION_DEPTH > 0 ?
-                                itr->proxied_vsf_votes[STEEM_MAX_PROXY_RECURSION_DEPTH - 1] :
+         total_vsf_votes += ( ( BEOWULF_MAX_PROXY_RECURSION_DEPTH > 0 ?
+                                itr->proxied_vsf_votes[BEOWULF_MAX_PROXY_RECURSION_DEPTH - 1] :
                                 itr->vesting_shares.amount ) );
       }
 
@@ -5344,7 +5344,7 @@ void database::validate_invariants()const
 
       for( auto itr = convert_request_idx.begin(); itr != convert_request_idx.end(); ++itr )
       {
-         if( itr->amount.symbol == STEEM_SYMBOL )
+         if( itr->amount.symbol == BEOWULF_SYMBOL )
             total_supply += itr->amount;
          else if( itr->amount.symbol == SBD_SYMBOL )
             total_sbd += itr->amount;
@@ -5356,9 +5356,9 @@ void database::validate_invariants()const
 //
 //      for( auto itr = limit_order_idx.begin(); itr != limit_order_idx.end(); ++itr )
 //      {
-//         if( itr->sell_price.base.symbol == STEEM_SYMBOL )
+//         if( itr->sell_price.base.symbol == BEOWULF_SYMBOL )
 //         {
-//            total_supply += asset( itr->for_sale, STEEM_SYMBOL );
+//            total_supply += asset( itr->for_sale, BEOWULF_SYMBOL );
 //         }
 //         else if ( itr->sell_price.base.symbol == SBD_SYMBOL )
 //         {
@@ -5370,27 +5370,27 @@ void database::validate_invariants()const
 //
 //      for( auto itr = escrow_idx.begin(); itr != escrow_idx.end(); ++itr )
 //      {
-//         total_supply += itr->steem_balance;
+//         total_supply += itr->beowulf_balance;
 //         total_sbd += itr->sbd_balance;
 //
-//         if( itr->pending_fee.symbol == STEEM_SYMBOL )
+//         if( itr->pending_fee.symbol == BEOWULF_SYMBOL )
 //            total_supply += itr->pending_fee;
 //         else if( itr->pending_fee.symbol == SBD_SYMBOL )
 //            total_sbd += itr->pending_fee;
 //         else
-//            FC_ASSERT( false, "found escrow pending fee that is not SBD or STEEM" );
+//            FC_ASSERT( false, "found escrow pending fee that is not SBD or BEOWULF" );
 //      }
 //
 //      const auto& savings_withdraw_idx = get_index< savings_withdraw_index >().indices().get< by_id >();
 //
 //      for( auto itr = savings_withdraw_idx.begin(); itr != savings_withdraw_idx.end(); ++itr )
 //      {
-//         if( itr->amount.symbol == STEEM_SYMBOL )
+//         if( itr->amount.symbol == BEOWULF_SYMBOL )
 //            total_supply += itr->amount;
 //         else if( itr->amount.symbol == SBD_SYMBOL )
 //            total_sbd += itr->amount;
 //         else
-//            FC_ASSERT( false, "found savings withdraw that is not SBD or STEEM" );
+//            FC_ASSERT( false, "found savings withdraw that is not SBD or BEOWULF" );
 //      }
 //
 //      const auto& reward_idx = get_index< reward_fund_index, by_id >();
@@ -5400,13 +5400,13 @@ void database::validate_invariants()const
 //         total_supply += itr->reward_balance;
 //      }
 
-      total_supply += gpo.total_vesting_fund_steem + gpo.total_reward_fund_steem + gpo.pending_rewarded_vesting_steem;
+      total_supply += gpo.total_vesting_fund_beowulf + gpo.total_reward_fund_beowulf + gpo.pending_rewarded_vesting_beowulf;
 
       FC_ASSERT( gpo.current_supply == total_supply, "", ("gpo.current_supply",gpo.current_supply)("total_supply",total_supply) );
       FC_ASSERT( gpo.current_sbd_supply == total_sbd, "", ("gpo.current_sbd_supply",gpo.current_sbd_supply)("total_sbd",total_sbd) );
       FC_ASSERT( gpo.total_vesting_shares + gpo.pending_rewarded_vesting_shares == total_vesting, "", ("gpo.total_vesting_shares",gpo.total_vesting_shares)("total_vesting",total_vesting) );
       FC_ASSERT( gpo.total_vesting_shares.amount == total_vsf_votes, "", ("total_vesting_shares",gpo.total_vesting_shares)("total_vsf_votes",total_vsf_votes) );
-      FC_ASSERT( gpo.pending_rewarded_vesting_steem == pending_vesting_steem, "", ("pending_rewarded_vesting_steem",gpo.pending_rewarded_vesting_steem)("pending_vesting_steem", pending_vesting_steem));
+      FC_ASSERT( gpo.pending_rewarded_vesting_beowulf == pending_vesting_beowulf, "", ("pending_rewarded_vesting_beowulf",gpo.pending_rewarded_vesting_beowulf)("pending_vesting_beowulf", pending_vesting_beowulf));
 
       FC_ASSERT( gpo.virtual_supply >= gpo.current_supply );
       if ( !get_feed_history().current_median_history.is_null() )
@@ -5418,7 +5418,7 @@ void database::validate_invariants()const
    FC_CAPTURE_LOG_AND_RETHROW( (head_block_num()) );
 }
 
-//#ifdef STEEM_ENABLE_SMT
+//#ifdef BEOWULF_ENABLE_SMT
 
 namespace {
    template <typename index_type, typename lambda>
@@ -5468,7 +5468,7 @@ void database::validate_smt_invariants()const
             }
       });
 
-      // - Process reward balances, collecting SMT counterparts of 'reward_steem_balance', 'reward_vesting_balance' & 'reward_vesting_steem'.
+      // - Process reward balances, collecting SMT counterparts of 'reward_beowulf_balance', 'reward_vesting_balance' & 'reward_vesting_beowulf'.
       const auto& rewards_balance_idx = get_index< account_rewards_balance_index, by_id >();
       add_from_balance_index( rewards_balance_idx, [ &theMap ] ( const account_rewards_balance_object& rewards )
       {
@@ -5518,7 +5518,7 @@ void database::validate_smt_invariants()const
          asset total_liquid_supply = totalIt == theMap.end() ? asset(0, smt.liquid_symbol) :
             ( totalIt->second.liquid + totalIt->second.pending_liquid );
 //         total_liquid_supply += asset( smt.total_vesting_fund_smt, smt.liquid_symbol )
-//                             /*+ gpo.total_reward_fund_steem */
+//                             /*+ gpo.total_reward_fund_beowulf */
 //                             + asset( smt.pending_rewarded_vesting_smt, smt.liquid_symbol );
 #pragma message( "TODO: Supplement ^ once SMT rewards are implemented" )
          FC_ASSERT( asset(smt.current_supply, smt.liquid_symbol) == total_liquid_supply,
@@ -5557,11 +5557,11 @@ void database::perform_vesting_share_split( uint32_t magnitude )
             a.vesting_shares.amount *= magnitude;
             a.withdrawn             *= magnitude;
             a.to_withdraw           *= magnitude;
-            a.vesting_withdraw_rate  = asset( a.to_withdraw / STEEM_VESTING_WITHDRAW_INTERVALS_PRE_HF_16, VESTS_SYMBOL );
+            a.vesting_withdraw_rate  = asset( a.to_withdraw / BEOWULF_VESTING_WITHDRAW_INTERVALS_PRE_HF_16, VESTS_SYMBOL );
             if( a.vesting_withdraw_rate.amount == 0 )
                a.vesting_withdraw_rate.amount = 1;
 
-            for( uint32_t i = 0; i < STEEM_MAX_PROXY_RECURSION_DEPTH; ++i )
+            for( uint32_t i = 0; i < BEOWULF_MAX_PROXY_RECURSION_DEPTH; ++i )
                a.proxied_vsf_votes[i] *= magnitude;
          } );
       }
@@ -5602,7 +5602,7 @@ void database::perform_vesting_share_split( uint32_t magnitude )
 //
 //   for( auto itr = cidx.begin(); itr != cidx.end(); ++itr )
 //   {
-//      if( itr->parent_author != STEEM_ROOT_POST_PARENT )
+//      if( itr->parent_author != BEOWULF_ROOT_POST_PARENT )
 //      {
 //// Low memory nodes only need immediate child count, full nodes track total children
 //#ifdef IS_LOW_MEM
@@ -5619,7 +5619,7 @@ void database::perform_vesting_share_split( uint32_t magnitude )
 //               c.children++;
 //            });
 //
-//            if( parent->parent_author != STEEM_ROOT_POST_PARENT )
+//            if( parent->parent_author != BEOWULF_ROOT_POST_PARENT )
 //               parent = &get_comment( parent->parent_author, parent->parent_permlink );
 //            else
 //               parent = nullptr;
@@ -5648,7 +5648,7 @@ void database::retally_witness_votes()
    // Apply all existing votes by account
    for( auto itr = account_idx.begin(); itr != account_idx.end(); ++itr )
    {
-//      if( itr->proxy != STEEM_PROXY_TO_SELF_ACCOUNT ) continue;
+//      if( itr->proxy != BEOWULF_PROXY_TO_SELF_ACCOUNT ) continue;
 
       const auto& a = *itr;
 
@@ -5671,7 +5671,7 @@ void database::retally_witness_vote_counts( bool force )
    {
       const auto& a = *itr;
       uint16_t witnesses_voted_for = 0;
-      if( force )//|| (a.proxy != STEEM_PROXY_TO_SELF_ACCOUNT  ) )
+      if( force )//|| (a.proxy != BEOWULF_PROXY_TO_SELF_ACCOUNT  ) )
       {
         const auto& vidx = get_index< witness_vote_index >().indices().get< by_account_witness >();
         auto wit_itr = vidx.lower_bound( boost::make_tuple( a.name, account_name_type() ) );
@@ -5695,4 +5695,4 @@ void database::retally_witness_vote_counts( bool force )
 index_info::index_info() {}
 index_info::~index_info() {}
 
-} } //steem::chain
+} } //beowulf::chain

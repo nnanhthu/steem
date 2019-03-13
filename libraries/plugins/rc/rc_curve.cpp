@@ -1,6 +1,6 @@
 
-#include <steem/plugins/rc/rc_curve.hpp>
-#include <steem/protocol/config.hpp>
+#include <beowulf/plugins/rc/rc_curve.hpp>
+#include <beowulf/protocol/config.hpp>
 
 #include <fc/exception/exception.hpp>
 #include <fc/log/logger.hpp>
@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace steem { namespace plugins { namespace rc {
+namespace beowulf { namespace plugins { namespace rc {
 
 void rc_curve_gen_params::validate()const
 {

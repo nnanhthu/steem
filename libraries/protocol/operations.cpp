@@ -1,8 +1,8 @@
-#include <steem/protocol/operations.hpp>
+#include <beowulf/protocol/operations.hpp>
 
-#include <steem/protocol/operation_util_impl.hpp>
+#include <beowulf/protocol/operation_util_impl.hpp>
 
-namespace steem { namespace protocol {
+namespace beowulf { namespace protocol {
 
 struct is_market_op_visitor {
    typedef bool result_type;
@@ -32,6 +32,6 @@ bool is_virtual_operation( const operation& op )
    return op.visit( is_vop_visitor() );
 }
 
-} } // steem::protocol
+} } // beowulf::protocol
 
-STEEM_DEFINE_OPERATION_TYPE( steem::protocol::operation )
+BEOWULF_DEFINE_OPERATION_TYPE( beowulf::protocol::operation )

@@ -1,13 +1,13 @@
-file(GLOB HEADERS "include/steem/schema/*.hpp")
-add_library( steem_schema schema.cpp ${HEADERS} )
-target_link_libraries( steem_schema fc )
-target_include_directories( steem_schema PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
+file(GLOB HEADERS "include/beowulf/schema/*.hpp")
+add_library( beowulf_schema schema.cpp ${HEADERS} )
+target_link_libraries( beowulf_schema fc )
+target_include_directories( beowulf_schema PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
 install( TARGETS
-   steem_schema
+   beowulf_schema
 
    RUNTIME DESTINATION bin
    LIBRARY DESTINATION lib
    ARCHIVE DESTINATION lib
 )
-install( FILES ${HEADERS} DESTINATION "include/steem/schema" )
+install( FILES ${HEADERS} DESTINATION "include/beowulf/schema" )
