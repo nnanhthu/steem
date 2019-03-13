@@ -47,14 +47,13 @@
 
 #define STEEM_BLOCKCHAIN_VERSION              ( version(0, 20, 8) )
 
-#define STEEM_INIT_PUBLIC_KEY_STR             "BEO6GkXgEKTYc7gNv1GWJ5ZseyESHQnN7nr3rxdo5sBjzWQcdMyKy"
-#define BLOCKCHAIN_NAME                       "BEOWULFBC"
+#define STEEM_INIT_PUBLIC_KEY_STR             "BEO5VkjXk7dTRUwV7Jgpi7UAkuQbMoyba57A1cWcUPq7iFtBpq7SZ"
+#define BLOCKCHAIN_NAME                       "BEOWULF"
 #define STEEM_CHAIN_ID                        (fc::sha256::hash(BLOCKCHAIN_NAME))
-//#define STEEM_CHAIN_ID                        fc::sha256("89c36da9bfecc0e7c8e7349d05845d7892f82055fa3a85affeff37f3792a2a60")
 #define STEEM_ADDRESS_PREFIX                  "BEO"
 
-#define STEEM_GENESIS_TIME                    (fc::time_point_sec(1458835200))
-#define STEEM_MINING_TIME                     (fc::time_point_sec(1458838800))
+#define STEEM_GENESIS_TIME                    (fc::time_point_sec(1552362392))
+#define STEEM_MINING_TIME                     (fc::time_point_sec(1552362392))
 #define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF12 (60*60*24)    /// 1 day
 #define STEEM_CASHOUT_WINDOW_SECONDS_PRE_HF17 (60*60*12)    /// 12 hours
 #define STEEM_CASHOUT_WINDOW_SECONDS          (60*60*24*7)  /// 7 days
@@ -72,8 +71,8 @@
 #define STEEM_OWNER_UPDATE_LIMIT                          fc::minutes(60)
 #define STEEM_OWNER_AUTH_HISTORY_TRACKING_START_BLOCK_NUM 3186477
 
-#define STEEM_INIT_SUPPLY                     (uint64_t(1000000000000000000ll))
-#define SBD_INIT_SUPPLY                       (uint64_t(10000000000000000ll))
+#define STEEM_INIT_SUPPLY                     (uint64_t(10000000000000000ll))
+#define SBD_INIT_SUPPLY                       (uint64_t(100000000000000ll))
 
 #define STEEM_MIN_TRANSFER_FEE           1
 //#define STEEM_MAX_TRANSFER_FEE           int64_t(10)
@@ -86,20 +85,20 @@
 
 #define STEEM_BLOCKCHAIN_HARDFORK_VERSION     ( hardfork_version( STEEM_BLOCKCHAIN_VERSION ) )
 
-#define STEEM_BLOCK_INTERVAL                  10
+#define STEEM_BLOCK_INTERVAL                  5
 #define STEEM_BLOCKS_PER_YEAR                 (365*24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_BLOCKS_PER_DAY                  (24*60*60/STEEM_BLOCK_INTERVAL)
 #define STEEM_START_VESTING_BLOCK             (STEEM_BLOCKS_PER_DAY * 7)
 #define STEEM_START_MINER_VOTING_BLOCK        (STEEM_BLOCKS_PER_DAY * 30)
 
-#define STEEM_INIT_MINER_NAME                 "initminer"
+#define STEEM_INIT_MINER_NAME                 "beowulf"
 #define STEEM_NUM_INIT_MINERS                 1
 #define STEEM_INIT_TIME                       (fc::time_point_sec());
 
 #define STEEM_MAX_WITNESSES                   21
 
 #define STEEM_MAX_VOTED_WITNESSES_HF0         20
-#define STEEM_MAX_MINER_WITNESSES_HF0         1
+#define STEEM_MAX_MINER_WITNESSES_HF0         0
 #define STEEM_MAX_RUNNER_WITNESSES_HF0        1
 
 #define STEEM_MAX_VOTED_WITNESSES_HF17        8
@@ -251,7 +250,7 @@
  * For testing
  * */
 #define STEEM_BLOCKS_PER_5MINUTES             (60*5/STEEM_BLOCK_INTERVAL)
-#define STEEM_FEED_INTERVAL_BLOCKS            (STEEM_BLOCKS_PER_5MINUTES)
+#define STEEM_FEED_INTERVAL_BLOCKS            (STEEM_BLOCKS_PER_HOUR)
 #define STEEM_FEED_HISTORY_WINDOW_PRE_HF_16   (24*7) /// 7 days * 24 hours per day
 #define STEEM_FEED_HISTORY_WINDOW             (12*7) // 3.5 days
 #define STEEM_MAX_FEED_AGE_SECONDS            (60*60*24*7) // 7 days
